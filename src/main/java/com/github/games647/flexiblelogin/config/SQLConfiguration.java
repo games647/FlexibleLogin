@@ -10,7 +10,7 @@ public class SQLConfiguration {
     private SQLType type = SQLType.H2;
 
     @Setting(comment = "Path where the database is located. This can be a file path (h2/SQLite) or an IP/Domain(MySQL)")
-    private String path = "localhost";
+    private String path = "%DIR%";
 
     @Setting(comment = "Port for example MySQL connections")
     private int port = 3306;
@@ -19,10 +19,10 @@ public class SQLConfiguration {
     private String database = "flexiblelogin";
 
     @Setting(comment = "Username to login the database system")
-    private String username = "username";
+    private String username = "";
 
     @Setting(comment = "Password in order to login")
-    private String password = "password123456789";
+    private String password = "";
 
     public SQLType getType() {
         return type;

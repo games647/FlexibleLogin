@@ -6,6 +6,7 @@ public class BcryptHasher implements Hasher {
 
     @Override
     public String hash(String rawPassword) {
+        //generate a different salt for each user
         return BCrypt.hashpw(rawPassword, BCrypt.gensalt());
     }
 

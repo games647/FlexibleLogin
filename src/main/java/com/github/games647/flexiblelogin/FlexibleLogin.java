@@ -40,6 +40,7 @@ public class FlexibleLogin {
 
     @Inject
     @DefaultConfig(sharedRoot = false)
+    //We will place more than one config there (i.e. H2/SQLite database)
     private File defaultConfigFile;
 
     @Inject
@@ -147,6 +148,7 @@ public class FlexibleLogin {
     }
 
     public Hasher getHasher() {
+        //this is thread-safe because it won't change after config load
         return hasher;
     }
 }

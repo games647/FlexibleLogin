@@ -29,7 +29,7 @@ public class LogoutCommand implements CommandExecutor {
 
         Account account = plugin.getDatabase().getAccountIfPresent((Player) source);
         if (account == null || !account.isLoggedIn()) {
-            source.sendMessage(Texts.of(TextColors.DARK_RED, "You aren't loggedIn"));
+            source.sendMessage(Texts.of(TextColors.DARK_RED, "You aren't logged in"));
         } else {
             source.sendMessage(Texts.of(TextColors.DARK_GREEN, "Logged out"));
             account.setLoggedIn(false);

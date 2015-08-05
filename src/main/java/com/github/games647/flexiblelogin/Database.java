@@ -13,14 +13,18 @@ import java.sql.Statement;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.service.sql.SqlService;
 
+@ThreadSafe
 public class Database {
 
     private static final String USERS_TABLE = "users";
 
     private final FlexibleLogin plugin;
+    //this cache is thread-safe
     private final Cache<UUID, Account> cache;
 
     private final String jdbcUrl;
@@ -95,6 +99,7 @@ public class Database {
 
             boolean tableExists = false;
             try {
+                //check if the table already exists
                 Statement statement = conn.createStatement();
                 statement.execute("SELECT 1 FROM " + USERS_TABLE);
                 statement.close();
@@ -176,8 +181,6 @@ public class Database {
             cache.put(uuid, new Account(uuid, player.getName(), password, ip));
         } catch (SQLException ex) {
             plugin.getLogger().error("Error registering account", ex);
-        } catch (Exception ex) {
-            plugin.getLogger().error("Unexpected error", ex);
         } finally {
             closeQuietly(conn);
         }

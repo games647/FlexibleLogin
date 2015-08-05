@@ -10,14 +10,15 @@
 
     <name>FlexibleLogin</name>
     <version>0.1</version>
-	<description>Second Auth plugin for Sponge minecraft servers</description>
-	<url>https://github.com/games647/FlexibleLogin</url>
+    <description>Second Auth plugin for Sponge minecraft servers</description>
+    <url>https://github.com/games647/FlexibleLogin</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--Possibility to deploy directly to the plugins folder-->
         <outputDir>${basedir}/target</outputDir>
     </properties>
-	
+
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/games647/FlexibleLogin/issues</url>

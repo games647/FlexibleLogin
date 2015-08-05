@@ -31,6 +31,7 @@ public class RegisterTask implements Runnable {
             try {
                 String hashedPassword = plugin.getHasher().hash(password);
                 plugin.getDatabase().createAccount(player, hashedPassword);
+                //thread-safe, because it's immutable after config load
                 if (plugin.getConfigManager().getConfiguration().getHashAlgo().equalsIgnoreCase("totp")) {
                     sendTotpHint(hashedPassword);
                 }
@@ -45,6 +46,7 @@ public class RegisterTask implements Runnable {
     }
 
     private void sendTotpHint(String secretCode) {
+        //I assume this thread-safe, because PlayerChat is also in an async task
         String host = plugin.getGame().getServer().getBoundAddress().get().getAddress().getCanonicalHostName();
         try {
             URL barcodeUrl = new URL(TOTP.getQRBarcodeURL(player.getName(), host, secretCode));

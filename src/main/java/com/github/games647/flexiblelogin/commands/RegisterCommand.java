@@ -31,6 +31,7 @@ public class RegisterCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
+        //If the server is using TOTP, no password is required
         if (!args.hasAny("password")) {
             if (plugin.getConfigManager().getConfiguration().getHashAlgo().equals("totp")) {
                 startTask(source, "");
@@ -46,6 +47,7 @@ public class RegisterCommand implements CommandExecutor {
         List<String> indexPasswords = Lists.newArrayList(passwords);
         String password = indexPasswords.get(0);
         if (password.equals(indexPasswords.get(1))) {
+            //Check if the first two passwords are equal to prevent typos
             startTask(source, password);
         } else {
             source.sendMessage(Texts.of(TextColors.DARK_RED, "The passwords are not equal"));
@@ -56,6 +58,7 @@ public class RegisterCommand implements CommandExecutor {
 
     private void startTask(CommandSource source, String password) {
         plugin.getGame().getScheduler().getTaskBuilder()
+                //we are executing a SQL Query which is blocking
                 .async()
                 .execute(new RegisterTask(plugin, (Player) source, password))
                 .name("Register Query")

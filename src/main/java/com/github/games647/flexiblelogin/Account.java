@@ -18,6 +18,7 @@ public class Account {
 
     private transient boolean loggedIn;
 
+    //new account
     public Account(UUID uuid, String username, String password, byte[] ip) {
         this.uuid = uuid;
         this.username = username;
@@ -29,7 +30,9 @@ public class Account {
         this.loggedIn = true;
     }
 
+    //existing account
     public Account(ResultSet resultSet) throws SQLException {
+        //uuid in binary format
         byte[] uuidBytes = resultSet.getBytes(2);
 
         byte[] mostBits = ArrayUtils.subarray(uuidBytes, 0, 3);
@@ -63,11 +66,13 @@ public class Account {
         return timestamp;
     }
 
-    public boolean isLoggedIn() {
+    //these methods have to thread-safe as they will be accessed
+    //through Async (PlayerChatEvent/LoginTask) and sync methods
+    public synchronized boolean isLoggedIn() {
         return loggedIn;
     }
 
-    public void setLoggedIn(boolean loggedIn) {
+    public synchronized void setLoggedIn(boolean loggedIn) {
         this.loggedIn = loggedIn;
     }
 

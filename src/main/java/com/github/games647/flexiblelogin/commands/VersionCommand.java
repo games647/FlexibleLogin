@@ -20,6 +20,7 @@ public class VersionCommand implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
+        //pluginname v1.0
         source.sendMessage(Texts
                 .builder(plugin.getContainer().getName() + " v")
                 .color(TextColors.YELLOW)
