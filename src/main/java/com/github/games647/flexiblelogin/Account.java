@@ -1,0 +1,91 @@
+package com.github.games647.flexiblelogin;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.UUID;
+
+import org.apache.commons.lang3.ArrayUtils;
+
+public class Account {
+
+    private final UUID uuid;
+    private final String username;
+    private final String passwordHash;
+
+    private final byte[] ip;
+    private final Timestamp timestamp;
+
+    private transient boolean loggedIn;
+
+    public Account(UUID uuid, String username, String password, byte[] ip) {
+        this.uuid = uuid;
+        this.username = username;
+        this.passwordHash = password;
+
+        this.ip = ip;
+        this.timestamp = null;
+
+        this.loggedIn = true;
+    }
+
+    public Account(ResultSet resultSet) throws SQLException {
+        byte[] uuidBytes = resultSet.getBytes(2);
+
+        byte[] mostBits = ArrayUtils.subarray(uuidBytes, 0, 3);
+        byte[] leastBits = ArrayUtils.subarray(uuidBytes, 3, 7);
+
+        this.uuid = new UUID(parseMostSignificant(mostBits), parseLeastSignificant(leastBits));
+        this.username = resultSet.getString(3);
+        this.passwordHash = resultSet.getString(4);
+
+        this.ip = resultSet.getBytes(5);
+        this.timestamp = resultSet.getTimestamp(6);
+    }
+
+    public boolean checkPassword(FlexibleLogin plugin, String userInput) throws Exception {
+        return plugin.getHasher().checkPassword(passwordHash, userInput);
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public byte[] getIp() {
+        return ip;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
+    }
+
+    private long parseLeastSignificant(byte[] byteArray) {
+        long value = 0;
+        for (int i = 0; i < byteArray.length; i++) {
+            value += ((long) byteArray[i] & 0xffL) << (8 * i);
+        }
+
+        return value;
+    }
+
+    private long parseMostSignificant(byte[] byteArray) {
+        long value = 0;
+        for (int i = 0; i < byteArray.length; i++) {
+            value = (value << 8) + (byteArray[i] & 0xff);
+        }
+
+        return value;
+    }
+}
