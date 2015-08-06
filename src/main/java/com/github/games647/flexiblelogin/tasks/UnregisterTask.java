@@ -41,7 +41,7 @@ public class UnregisterTask implements Runnable {
         if (accountFound) {
             src.sendMessage(Texts.of(TextColors.DARK_GREEN, "Deleted account of: " + accountIndentifer));
         } else {
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "Error executing command. See console"));
+            src.sendMessage(Texts.of(TextColors.DARK_RED, "User account not found"));
         }
     }
 }
