@@ -4,6 +4,8 @@ import com.github.games647.flexiblelogin.listener.PlayerListener;
 import com.github.games647.flexiblelogin.commands.LoginCommand;
 import com.github.games647.flexiblelogin.commands.LogoutCommand;
 import com.github.games647.flexiblelogin.commands.RegisterCommand;
+import com.github.games647.flexiblelogin.commands.SetEmailCommand;
+import com.github.games647.flexiblelogin.commands.UnregisterCommand;
 import com.github.games647.flexiblelogin.commands.VersionCommand;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;
@@ -31,7 +33,7 @@ import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.args.GenericArguments;
 import org.spongepowered.api.util.command.spec.CommandSpec;
 
-@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.1")
+@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.2")
 public class FlexibleLogin {
 
     private final PluginContainer pluginContainer;
@@ -91,8 +93,7 @@ public class FlexibleLogin {
                 .arguments(GenericArguments.onlyOne(GenericArguments.string(Texts.of("password"))))
                 .build(), "login");
 
-        commandDispatcher.register(this, CommandSpec
-                .builder()
+        commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new RegisterCommand(this))
                 .arguments(
                         GenericArguments
@@ -101,10 +102,24 @@ public class FlexibleLogin {
                                                 .string(Texts.of("password")), 2)))
                 .build(), "register");
 
-        commandDispatcher.register(this, CommandSpec
-                .builder()
+        commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new LogoutCommand(this))
                 .build(), "logout");
+
+        commandDispatcher.register(this, CommandSpec.builder()
+                .executor(new UnregisterCommand(this))
+                .arguments(GenericArguments.onlyOne(GenericArguments.string(Texts.of("account"))))
+                .permission("flexiblelogin.admin")
+                .build(), "unregister");
+
+        commandDispatcher.register(this, CommandSpec.builder()
+                .executor(new SetEmailCommand(this))
+                .arguments(GenericArguments.onlyOne(GenericArguments.string(Texts.of("email"))))
+                .build(), "setemail");
+
+        commandDispatcher.register(this, CommandSpec.builder()
+                .executor(new UnregisterCommand(this))
+                .build(), "forgotpassword");
 
         //register events
         initEvent.getGame().getEventManager().register(this, new PlayerListener(this));

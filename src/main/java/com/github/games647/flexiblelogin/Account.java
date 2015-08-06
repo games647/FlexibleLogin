@@ -16,7 +16,10 @@ public class Account {
     private final byte[] ip;
     private final Timestamp timestamp;
 
+    private String email;
+
     private transient boolean loggedIn;
+    private transient boolean changed;
 
     //new account
     public Account(UUID uuid, String username, String password, byte[] ip) {
@@ -44,6 +47,8 @@ public class Account {
 
         this.ip = resultSet.getBytes(5);
         this.timestamp = resultSet.getTimestamp(6);
+
+        this.email = resultSet.getString(7);
     }
 
     public boolean checkPassword(FlexibleLogin plugin, String userInput) throws Exception {
@@ -58,12 +63,29 @@ public class Account {
         return username;
     }
 
+    /* package */ String getPassword() {
+        return passwordHash;
+    }
+
     public byte[] getIp() {
         return ip;
     }
 
     public Timestamp getTimestamp() {
         return timestamp;
+    }
+
+    public synchronized String getEmail() {
+        return email;
+    }
+
+    public synchronized void setEmail(String email) {
+        this.changed = true;
+        this.email = email;
+    }
+
+    public synchronized boolean isChanged() {
+        return changed;
     }
 
     //these methods have to thread-safe as they will be accessed

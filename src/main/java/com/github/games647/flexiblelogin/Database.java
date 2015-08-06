@@ -40,8 +40,7 @@ public class Database {
         this.username = sqlConfig.getUsername();
         this.password = sqlConfig.getPassword();
 
-        StringBuilder urlBuilder = new StringBuilder("jdbc")
-                .append(':')
+        StringBuilder urlBuilder = new StringBuilder("jdbc:")
                 .append(sqlConfig.getType().name().toLowerCase())
                 .append(':');
         switch (sqlConfig.getType()) {
@@ -67,7 +66,6 @@ public class Database {
         }
 
         this.jdbcUrl = urlBuilder.toString();
-
         cache = CacheBuilder.newBuilder()
                 .expireAfterAccess(30, TimeUnit.MINUTES)
                 .maximumSize(1024)
@@ -118,6 +116,7 @@ public class Database {
                         + "`Password` VARCHAR(64) NOT NULL , "
                         + "`IP` BINARY(32) NOT NULL , "
                         + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
+                        + "`Email` VARCHAR(64) DEFAULT NULL , "
                         + "PRIMARY KEY (`UserID`) , UNIQUE (`UUID`) "
                         + ")");
                 statement.close();
@@ -125,9 +124,48 @@ public class Database {
         } catch (SQLException ex) {
             plugin.getLogger().error("Error creating database table", ex);
         } finally {
-            //this closes automatically the statement and resultset
             closeQuietly(conn);
         }
+    }
+
+    public boolean deleteAccount(String playerName) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            PreparedStatement statement = conn.prepareStatement("DELETE FROM " + USERS_TABLE + " WHERE Username=?");
+            statement.setString(1, playerName);
+
+            int affectedRows = statement.executeUpdate();
+            //min one account was found
+            return affectedRows > 0;
+        } catch (SQLException ex) {
+            plugin.getLogger().error("Error deleting user account", ex);
+        } finally {
+            closeQuietly(conn);
+        }
+
+        return false;
+    }
+
+    public boolean deleteAccount(UUID uuid) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            PreparedStatement statement = conn.prepareStatement("DELETE FROM " + USERS_TABLE + " WHERE UUID=?");
+            statement.setObject(1, uuid);
+
+            int affectedRows = statement.executeUpdate();
+            //min one account was found
+            return affectedRows > 0;
+        } catch (SQLException ex) {
+            plugin.getLogger().error("Error deleting user account", ex);
+        } finally {
+            closeQuietly(conn);
+        }
+
+        return false;
     }
 
     /**
@@ -135,20 +173,23 @@ public class Database {
      * @return null if the player doesn't exist
      */
     public Account loadAccount(Player player) {
-        Account loadedAccount = cache.getIfPresent(player.getUniqueId());
+        return loadAccount(player.getUniqueId());
+    }
+
+    public Account loadAccount(UUID uuid) {
+        Account loadedAccount = cache.getIfPresent(uuid);
         if (loadedAccount == null) {
             Connection conn = null;
             try {
                 conn = getConnection();
                 PreparedStatement prepareStatement = conn.prepareStatement("SELECT * FROM " + USERS_TABLE
                         + " WHERE UUID=?");
-                UUID uuid = player.getUniqueId();
                 prepareStatement.setObject(1, uuid);
 
                 ResultSet resultSet = prepareStatement.executeQuery();
                 if (resultSet.next()) {
                     loadedAccount = new Account(resultSet);
-                    cache.put(player.getUniqueId(), loadedAccount);
+                    cache.put(uuid, loadedAccount);
                 }
             } catch (SQLException ex) {
                 plugin.getLogger().error("Error loading account", ex);
@@ -189,10 +230,32 @@ public class Database {
     public void closeQuietly(Connection conn) {
         if (conn != null) {
             try {
+                //this closes automatically the statement and resultset
                 conn.close();
             } catch (SQLException ex) {
                 //ingore
             }
+        }
+    }
+
+    public void save(Account account) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            PreparedStatement statement = conn.prepareStatement("UPDATE " + USERS_TABLE
+                    + " SET Username=?, Password=?, IP=?"
+                    + " WHERE UUID=?");
+            //username is now changeable by Mojang - so keep it up to date
+            statement.setString(1, account.getUsername());
+            statement.setString(2, account.getPassword());
+            statement.setObject(3, account.getIp());
+
+            statement.setObject(4, account.getUuid());
+        } catch (SQLException ex) {
+            plugin.getLogger().error("Error updating user account", ex);
+        } finally {
+            closeQuietly(conn);
         }
     }
 }

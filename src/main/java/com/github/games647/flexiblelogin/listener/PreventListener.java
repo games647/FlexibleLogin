@@ -45,7 +45,8 @@ public class PreventListener {
         if (commandEvent.getSource() instanceof Player) {
             String command = commandEvent.getCommand();
             //do not blacklist our own commands
-            if ("register".equals(command) || "login".equals(command)) {
+            if ("register".equals(command) || "login".equals(command)
+                    || "forgotpassword".equals(command)) {
                 return;
             }
 

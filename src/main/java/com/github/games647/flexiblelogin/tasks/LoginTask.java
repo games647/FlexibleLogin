@@ -38,6 +38,7 @@ public class LoginTask implements Runnable {
             }
         } catch (Exception ex) {
             plugin.getLogger().error("Unexpected error while password checking", ex);
+            player.sendMessage(Texts.of(TextColors.DARK_RED, "Error executing command. See console"));
         }
     }
 }

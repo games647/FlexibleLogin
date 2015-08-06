@@ -39,6 +39,7 @@ public class RegisterTask implements Runnable {
                 player.sendMessage(Texts.of(TextColors.DARK_GREEN, "Account created"));
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash", ex);
+                player.sendMessage(Texts.of(TextColors.DARK_RED, "Error executing command. See console"));
             }
         } else {
             player.sendMessage(Texts.of(TextColors.DARK_RED, "Your account already exists"));
