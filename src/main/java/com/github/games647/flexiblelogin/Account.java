@@ -10,11 +10,12 @@ import org.apache.commons.lang3.ArrayUtils;
 public class Account {
 
     private final UUID uuid;
-    private final String username;
-    private final String passwordHash;
 
-    private final byte[] ip;
-    private final Timestamp timestamp;
+    private String username;
+    private String passwordHash;
+
+    private byte[] ip;
+    private Timestamp timestamp;
 
     private String email;
 
@@ -67,11 +68,27 @@ public class Account {
         return passwordHash;
     }
 
-    public byte[] getIp() {
+    public synchronized void setUsername(String username) {
+        this.username = username;
+    }
+
+    public synchronized void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public synchronized void setIp(byte[] ip) {
+        this.ip = ip;
+    }
+
+    public synchronized void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public synchronized byte[] getIp() {
         return ip;
     }
 
-    public Timestamp getTimestamp() {
+    public synchronized Timestamp getTimestamp() {
         return timestamp;
     }
 

@@ -28,6 +28,7 @@ public class LoginCommand implements CommandExecutor {
 
         //the arg isn't optional. We can be sure there is value
         String password = args.<String>getOne("password").get();
+
         plugin.getGame().getScheduler().getTaskBuilder()
                 //we are executing a SQL Query which is blocking
                 .async()

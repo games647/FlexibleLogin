@@ -17,3 +17,9 @@
 + Added email column to the database
 + Added /unregister command for admins to delete user accounts
 + Added player messages if a command fails to execute
+
+#####0.2.1
+
++ Fixed email sending
++ Fixed MySQL support (Missing connection account properties)
++ Fixed UUID support for MySQL

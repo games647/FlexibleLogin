@@ -3,18 +3,20 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfiguration;
+import com.github.games647.flexiblelogin.tasks.SaveTask;
+import com.github.games647.flexiblelogin.tasks.SendEmailTask;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Properties;
 
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
@@ -39,7 +41,8 @@ public class ForgotPasswordCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        Account account = plugin.getDatabase().getAccountIfPresent((Player) src);
+        Player player = (Player) src;
+        Account account = plugin.getDatabase().getAccountIfPresent(player);
         if (account == null) {
             src.sendMessage(Texts.of(TextColors.DARK_RED, "You are account isn't loaded"));
             return CommandResult.success();
@@ -53,6 +56,8 @@ public class ForgotPasswordCommand implements CommandExecutor {
             src.sendMessage(Texts.of(TextColors.DARK_RED, "You didn't submitted a email adress"));
             return CommandResult.success();
         }
+
+        String newPassword = generatePassword();
 
         EmailConfiguration emailConfig = plugin.getConfigManager().getConfiguration().getEmailConfiguration();
 
@@ -71,29 +76,46 @@ public class ForgotPasswordCommand implements CommandExecutor {
             //sender email with an alias
             message.setFrom(new InternetAddress(senderEmail, emailConfig.getSenderName()));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(email, src.getName()));
-            message.setSubject(emailConfig.getSubject());
+            message.setSubject(replaceVariables(emailConfig.getSubject(), player, newPassword));
 
             //current time
             message.setSentDate(Calendar.getInstance().getTime());
 
-            String textContent = emailConfig.getText();
+            String textContent = replaceVariables(emailConfig.getText(), player, newPassword);
             //allow html
             message.setContent(textContent, "text/html");
 
             //we only need to send the message so we use smtp
             Transport transport = session.getTransport("smtp");
+            //send email
+            plugin.getGame().getScheduler().getTaskBuilder()
+                    .async()
+                    .execute(new SendEmailTask(plugin, player, transport, message))
+                    .submit(plugin);
 
-            //connect to host and send message
-            String password = emailConfig.getPassword();
-            transport.connect(emailConfig.getHost(), senderEmail, password);
-            transport.sendMessage(message, message.getAllRecipients());
-        } catch (MessagingException ex) {
-            plugin.getLogger().error("Error preparing email for password recovery", ex);
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "Error executing command. See console"));
+            //set new password here if the email sending fails fails we have still the old password
+            account.setPasswordHash(plugin.getHasher().hash(newPassword));
+            plugin.getGame().getScheduler().getTaskBuilder()
+                    .async()
+                    .execute(new SaveTask(plugin, account))
+                    .submit(plugin);
         } catch (UnsupportedEncodingException ex) {
             //we can ignore this, because we will encode with UTF-8 which all Java platforms supports
+        } catch (Exception ex) {
+            plugin.getLogger().error("Error preparing email for password recovery", ex);
+            src.sendMessage(Texts.of(TextColors.DARK_RED, "Error executing command. See console"));
         }
 
         return CommandResult.success();
+    }
+
+    private String replaceVariables(String text, Player player, String newPassword) {
+        String serverName = plugin.getGame().getServer().getBoundAddress().get().getAddress().getHostAddress();
+        return text.replace("%player%", player.getName())
+                .replace("%server%", serverName).replace("%password%", newPassword);
+    }
+
+    private String generatePassword() {
+        return RandomStringUtils.random(8);
     }
 }

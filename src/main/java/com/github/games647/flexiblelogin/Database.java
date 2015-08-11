@@ -1,8 +1,11 @@
 package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.config.SQLConfiguration;
+import com.github.games647.flexiblelogin.config.SQLType;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.primitives.Bytes;
+import com.google.common.primitives.Longs;
 
 import java.io.File;
 import java.sql.Connection;
@@ -37,12 +40,18 @@ public class Database {
         this.plugin = plugin;
         SQLConfiguration sqlConfig = plugin.getConfigManager().getConfiguration().getSqlConfiguration();
 
-        this.username = sqlConfig.getUsername();
-        this.password = sqlConfig.getPassword();
+        if (sqlConfig.getType() == SQLType.MYSQL) {
+            this.username = sqlConfig.getUsername();
+            this.password = sqlConfig.getPassword();
+        } else {
+            //flat file drivers throw exception if you try to connect with a account
+            this.username = "";
+            this.password = "";
+        }
 
         StringBuilder urlBuilder = new StringBuilder("jdbc:")
                 .append(sqlConfig.getType().name().toLowerCase())
-                .append(':');
+                .append("://");
         switch (sqlConfig.getType()) {
             case SQLITE:
                 urlBuilder.append(sqlConfig.getPath()
@@ -51,10 +60,13 @@ public class Database {
                         .append("database.db");
                 break;
             case MYSQL:
-                urlBuilder.append("//")
+                //jdbc:<engine>://[<username>[:<password>]@]<host>/<database> - copied from sponge doc
+                urlBuilder.append(username).append(':').append(password).append("@")
                         .append(sqlConfig.getPath())
                         .append(':')
-                        .append(sqlConfig.getPort());
+                        .append(sqlConfig.getPort())
+                        .append('/')
+                        .append(sqlConfig.getDatabase());
                 break;
             case H2:
             default:
@@ -78,7 +90,7 @@ public class Database {
             sql = plugin.getGame().getServiceManager().provide(SqlService.class).get();
         }
 
-        return sql.getDataSource(jdbcUrl).getConnection(username, password);
+        return sql.getDataSource(jdbcUrl).getConnection();
     }
 
     public Account getAccountIfPresent(Player player) {
@@ -154,7 +166,11 @@ public class Database {
             conn = getConnection();
 
             PreparedStatement statement = conn.prepareStatement("DELETE FROM " + USERS_TABLE + " WHERE UUID=?");
-            statement.setObject(1, uuid);
+
+            byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
+            byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
+
+            statement.setObject(1, Bytes.concat(mostBytes, leastBytes));
 
             int affectedRows = statement.executeUpdate();
             //min one account was found
@@ -184,7 +200,10 @@ public class Database {
                 conn = getConnection();
                 PreparedStatement prepareStatement = conn.prepareStatement("SELECT * FROM " + USERS_TABLE
                         + " WHERE UUID=?");
-                prepareStatement.setObject(1, uuid);
+                byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
+                byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
+
+                prepareStatement.setObject(1, Bytes.concat(mostBytes, leastBytes));
 
                 ResultSet resultSet = prepareStatement.executeQuery();
                 if (resultSet.next()) {
@@ -209,7 +228,10 @@ public class Database {
                     + " (UUID, Username, Password, IP) VALUES (?,?,?,?)");
 
             UUID uuid = player.getUniqueId();
-            prepareStatement.setObject(1, uuid);
+            byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
+            byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
+
+            prepareStatement.setObject(1, Bytes.concat(mostBytes, leastBytes));
             prepareStatement.setString(2, player.getName());
             prepareStatement.setString(3, password);
 
@@ -251,7 +273,12 @@ public class Database {
             statement.setString(2, account.getPassword());
             statement.setObject(3, account.getIp());
 
-            statement.setObject(4, account.getUuid());
+            UUID uuid = account.getUuid();
+
+            byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
+            byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
+
+            statement.setObject(1, Bytes.concat(mostBytes, leastBytes));
         } catch (SQLException ex) {
             plugin.getLogger().error("Error updating user account", ex);
         } finally {
