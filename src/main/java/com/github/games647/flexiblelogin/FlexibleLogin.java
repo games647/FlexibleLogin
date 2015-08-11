@@ -33,7 +33,7 @@ import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.args.GenericArguments;
 import org.spongepowered.api.util.command.spec.CommandSpec;
 
-@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.2.1")
+@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.2.2")
 public class FlexibleLogin {
 
     private final PluginContainer pluginContainer;

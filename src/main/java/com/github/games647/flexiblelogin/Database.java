@@ -149,6 +149,8 @@ public class Database {
             statement.setString(1, playerName);
 
             int affectedRows = statement.executeUpdate();
+            //remove cache entry if the player name is the key id
+            cache.invalidate(playerName);
             //min one account was found
             return affectedRows > 0;
         } catch (SQLException ex) {
@@ -173,6 +175,9 @@ public class Database {
             statement.setObject(1, Bytes.concat(mostBytes, leastBytes));
 
             int affectedRows = statement.executeUpdate();
+            //removes the account from the cache
+            cache.invalidate(uuid);
+
             //min one account was found
             return affectedRows > 0;
         } catch (SQLException ex) {
