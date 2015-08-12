@@ -35,7 +35,7 @@ public class SetEmailCommand implements CommandExecutor {
             if (account != null) {
                 account.setEmail(email);
                 src.sendMessage(Texts.of(TextColors.DARK_GREEN, "Your email was set"));
-                plugin.getGame().getScheduler().getTaskBuilder()
+                plugin.getGame().getScheduler().createTaskBuilder()
                         .async()
                         .execute(new SaveTask(plugin, account))
                         .submit(plugin);

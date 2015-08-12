@@ -31,7 +31,7 @@ public class UnregisterCommand implements CommandExecutor {
         if (account.matches(UUID_REGEX)) {
             //check if the account is an UUID
             UUID uuid = UUID.fromString(account);
-            plugin.getGame().getScheduler().getTaskBuilder()
+            plugin.getGame().getScheduler().createTaskBuilder()
                     //Async as it could run a SQL query
                     .async()
                     .execute(new UnregisterTask(plugin, src, uuid))
@@ -39,7 +39,7 @@ public class UnregisterCommand implements CommandExecutor {
             return CommandResult.success();
         } else if (account.matches(VALID_USERNAME)) {
             //check if the account is a valid player name
-            plugin.getGame().getScheduler().getTaskBuilder()
+            plugin.getGame().getScheduler().createTaskBuilder()
                     //Async as it could run a SQL query
                     .async()
                     .execute(new UnregisterTask(plugin, src, account))

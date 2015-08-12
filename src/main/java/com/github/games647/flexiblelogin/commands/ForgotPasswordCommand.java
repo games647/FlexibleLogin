@@ -88,14 +88,14 @@ public class ForgotPasswordCommand implements CommandExecutor {
             //we only need to send the message so we use smtp
             Transport transport = session.getTransport("smtp");
             //send email
-            plugin.getGame().getScheduler().getTaskBuilder()
+            plugin.getGame().getScheduler().createTaskBuilder()
                     .async()
                     .execute(new SendEmailTask(plugin, player, transport, message))
                     .submit(plugin);
 
             //set new password here if the email sending fails fails we have still the old password
             account.setPasswordHash(plugin.getHasher().hash(newPassword));
-            plugin.getGame().getScheduler().getTaskBuilder()
+            plugin.getGame().getScheduler().createTaskBuilder()
                     .async()
                     .execute(new SaveTask(plugin, account))
                     .submit(plugin);

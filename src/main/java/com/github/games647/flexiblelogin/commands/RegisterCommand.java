@@ -57,7 +57,7 @@ public class RegisterCommand implements CommandExecutor {
     }
 
     private void startTask(CommandSource source, String password) {
-        plugin.getGame().getScheduler().getTaskBuilder()
+        plugin.getGame().getScheduler().createTaskBuilder()
                 //we are executing a SQL Query which is blocking
                 .async()
                 .execute(new RegisterTask(plugin, (Player) source, password))
