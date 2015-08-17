@@ -120,18 +120,34 @@ public class Database {
             }
 
             if (!tableExists) {
-                Statement statement = conn.createStatement();
-                statement.execute("CREATE TABLE " + USERS_TABLE + " ( "
-                        + "`UserID` INT UNSIGNED NOT NULL AUTO_INCREMENT , "
-                        + "`UUID` BINARY(16) NOT NULL , "
-                        + "`Username` VARCHAR(32) NOT NULL , "
-                        + "`Password` VARCHAR(64) NOT NULL , "
-                        + "`IP` BINARY(32) NOT NULL , "
-                        + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
-                        + "`Email` VARCHAR(64) DEFAULT NULL , "
-                        + "PRIMARY KEY (`UserID`) , UNIQUE (`UUID`) "
-                        + ")");
-                statement.close();
+                if (sqlConfig.getType() == SQLType.SQLITE) {
+                    Statement statement = conn.createStatement();
+                    statement.execute("CREATE TABLE " + USERS_TABLE + " ( "
+                            + "`UserID` INT UNSIGNED NOT NULL , "
+                            + "`UUID` BINARY(16) NOT NULL , "
+                            + "`Username` VARCHAR(32) NOT NULL , "
+                            + "`Password` VARCHAR(64) NOT NULL , "
+                            + "`IP` BINARY(32) NOT NULL , "
+                            + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
+                            + "`Email` VARCHAR(64) DEFAULT NULL , "
+                            + "PRIMARY KEY (`UserID`) , UNIQUE (`UUID`) "
+                            + ")");
+                    statement.close();
+                } else {
+                    Statement statement = conn.createStatement();
+                    statement.execute("CREATE TABLE " + USERS_TABLE + " ( "
+                            + "`UserID` INT UNSIGNED NOT NULL AUTO_INCREMENT , "
+                            + "`UUID` BINARY(16) NOT NULL , "
+                            + "`Username` VARCHAR(32) NOT NULL , "
+                            + "`Password` VARCHAR(64) NOT NULL , "
+                            + "`IP` BINARY(32) NOT NULL , "
+                            + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
+                            + "`Email` VARCHAR(64) DEFAULT NULL , "
+                            + "PRIMARY KEY (`UserID`) , UNIQUE (`UUID`) "
+                            + ")");
+                    statement.close();
+            	}
+                
             }
         } catch (SQLException ex) {
             plugin.getLogger().error("Error creating database table", ex);
