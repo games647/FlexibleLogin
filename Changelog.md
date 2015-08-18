@@ -22,8 +22,9 @@
 
 + Fixed email sending
 + Fixed MySQL support (Missing connection account properties)
-+ Fixed UUID support for MySQ
++ Fixed UUID support for MySQL
 
 ##### 0.2.2
 
 + Fixed deleted account remains in cache
++ Update to newest sponge version (555+)

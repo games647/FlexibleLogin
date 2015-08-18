@@ -120,7 +120,7 @@ public class Database {
             }
 
             if (!tableExists) {
-                if (sqlConfig.getType() == SQLType.SQLITE) {
+                if (plugin.getConfigManager().getConfiguration().getSqlConfiguration().getType() == SQLType.SQLITE) {
                     Statement statement = conn.createStatement();
                     statement.execute("CREATE TABLE " + USERS_TABLE + " ( "
                             + "`UserID` INT UNSIGNED NOT NULL , "
@@ -147,7 +147,6 @@ public class Database {
                             + ")");
                     statement.close();
             	}
-                
             }
         } catch (SQLException ex) {
             plugin.getLogger().error("Error creating database table", ex);
