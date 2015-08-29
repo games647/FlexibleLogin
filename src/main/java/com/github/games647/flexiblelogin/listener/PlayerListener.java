@@ -34,7 +34,7 @@ public class PlayerListener {
     }
 
     @Subscribe(ignoreCancelled = true)
-    public void onPlayerJoin(PlayerQuitEvent playerQuitEvent) {
+    public void onPlayerQuit(PlayerQuitEvent playerQuitEvent) {
         Player player = playerQuitEvent.getEntity();
         Account account = plugin.getDatabase().getAccountIfPresent(player);
         if (account != null) {
