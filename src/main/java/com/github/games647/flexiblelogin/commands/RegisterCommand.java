@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
 
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.command.CommandException;

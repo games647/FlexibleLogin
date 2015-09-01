@@ -84,8 +84,8 @@ public class TOTP implements Hasher {
             truncatedHash |= (hash[offset + i] & 0xFF);
         }
 
-        truncatedHash &= 0x7FFFFFFF;
-        truncatedHash %= 1000000;
+        truncatedHash &= 0x7FFF_FFFF;
+        truncatedHash %= 1_000_000;
 
         return (int) truncatedHash;
     }

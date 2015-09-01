@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.sql.SqlService;
 
 @ThreadSafe
@@ -61,7 +61,7 @@ public class Database {
                 break;
             case MYSQL:
                 //jdbc:<engine>://[<username>[:<password>]@]<host>/<database> - copied from sponge doc
-                urlBuilder.append(username).append(':').append(password).append("@")
+                urlBuilder.append(username).append(':').append(password).append('@')
                         .append(sqlConfig.getPath())
                         .append(':')
                         .append(sqlConfig.getPort())

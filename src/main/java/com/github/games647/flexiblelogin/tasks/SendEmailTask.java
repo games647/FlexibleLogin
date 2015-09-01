@@ -6,7 +6,7 @@ import com.github.games647.flexiblelogin.config.EmailConfiguration;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 

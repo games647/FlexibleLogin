@@ -6,7 +6,7 @@ import com.github.games647.flexiblelogin.hasher.TOTP;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;

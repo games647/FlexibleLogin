@@ -126,8 +126,8 @@ public class Account {
 
     private long parseMostSignificant(byte[] byteArray) {
         long value = 0;
-        for (int i = 0; i < byteArray.length; i++) {
-            value = (value << 8) + (byteArray[i] & 0xff);
+        for (byte aByte : byteArray) {
+            value = (value << 8) + (aByte & 0xff);
         }
 
         return value;
