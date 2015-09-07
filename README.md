@@ -9,7 +9,7 @@ Do you want to let your players protect their account (from hackers/login steale
 
 Tested against:
 
-	Sponge: sponge-1.8-1499-2.1DEV-532
+	Sponge: sponge-1.8-1499-2.1DEV-602
 
 	Minecraft (Client): 1.8.8
 
@@ -63,17 +63,6 @@ This is a complete new project, so many features can be added.
 ![Minecraft image picture](http://fs2.directupload.net/images/150804/3qrcb9j3.png)
 You can see there a time generated code which can be used for the login process. (/login <code>)
 Additionally it display your user account name and the server ip.
-
-###Changelog
-
-#####0.1
-
-    + First Release
-
-###Todo
-
-    Open for suggestions
-
 
   [1]: https://github.com/games647/FlexibleLogin
   [2]: https://github.com/games647/FlexibleLogin/releases

@@ -2,6 +2,7 @@ package com.github.games647.flexiblelogin.listener;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.google.common.base.Optional;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
@@ -9,10 +10,11 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.BreakBlockEvent;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.block.PlaceBlockEvent;
+import org.spongepowered.api.event.command.MessageSinkEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
-import org.spongepowered.api.event.entity.living.player.PlayerChatEvent;
 import org.spongepowered.api.event.inventory.DropItemStackEvent;
 import org.spongepowered.api.event.inventory.PickUpItemEvent;
 import org.spongepowered.api.event.inventory.UseItemStackEvent;
@@ -27,8 +29,8 @@ public class PreventListener {
 
     @Listener(ignoreCancelled = true)
     public void onPlayerMove(DisplaceEntityEvent.TargetPlayer playerMoveEvent) {
-        Vector3d oldLocation = playerMoveEvent.getOldTransform().getPosition();
-        Vector3d newLocation = playerMoveEvent.getNewTransform().getPosition();
+        Vector3d oldLocation = playerMoveEvent.getFromTransform().getPosition();
+        Vector3d newLocation = playerMoveEvent.getToTransform().getPosition();
         if ((oldLocation.getFloorX()!= newLocation.getFloorX()
                 || oldLocation.getFloorZ()!= newLocation.getFloorZ())) {
             checkAllowance(playerMoveEvent, playerMoveEvent.getTargetEntity());
@@ -36,8 +38,11 @@ public class PreventListener {
     }
 
     @Listener(ignoreCancelled = true)
-    public void onChat(PlayerChatEvent chatEvent) {
-        checkAllowance(chatEvent, chatEvent.getSource());
+    public void onChat(MessageSinkEvent chatEvent) {
+        Optional<Player> playerOptional = chatEvent.getCause().first(Player.class);
+        if (playerOptional.isPresent()) {
+            checkAllowance(chatEvent, playerOptional.get());
+        }
     }
 
     @Listener(ignoreCancelled = true)
@@ -55,38 +60,67 @@ public class PreventListener {
     }
 
     @Listener(ignoreCancelled = true)
-    public void onPlayerItemDrop(DropItemStackEvent.SourcePlayer dropItemEvent) {
-        checkAllowance(dropItemEvent, dropItemEvent.getSourceEntity());
+    public void onPlayerItemDrop(DropItemStackEvent.Drop dropItemEvent) {
+        Optional<Player> playerOptional = dropItemEvent.getCause().first(Player.class);
+        if (playerOptional.isPresent()) {
+            checkAllowance(dropItemEvent, playerOptional.get());
+        }
     }
 
     @Listener(ignoreCancelled = true)
-    public void onPlayerItemPickup(PickUpItemEvent.SourcePlayer pickUpItemEvent) {
-        checkAllowance(pickUpItemEvent, pickUpItemEvent.getSourceEntity());
+    public void onPlayerItemPickup(PickUpItemEvent pickUpItemEvent) {
+        Optional<Player> playerOptional = pickUpItemEvent.getCause().first(Player.class);
+        if (playerOptional.isPresent()) {
+            checkAllowance(pickUpItemEvent, playerOptional.get());
+        }
     }
 
     @Listener(ignoreCancelled = true)
-    public void onItemConsume(UseItemStackEvent.SourcePlayer itemConsumeEvent) {
-        checkAllowance(itemConsumeEvent, itemConsumeEvent.getSourceEntity());
+    public void onItemConsume(UseItemStackEvent itemConsumeEvent) {
+        Optional<Player> playerOptional = itemConsumeEvent.getCause().first(Player.class);
+        if (playerOptional.isPresent()) {
+            checkAllowance(itemConsumeEvent, playerOptional.get());
+        }
     }
 
     @Listener(ignoreCancelled = true)
-    public void onBlockBreak(BreakBlockEvent.SourcePlayer breakBlockEvent) {
-        checkAllowance(breakBlockEvent, breakBlockEvent.getSourceEntity());
+    public void onBlockBreak(BreakBlockEvent breakBlockEvent) {
+        Optional<Player> playerOptional = breakBlockEvent.getCause().first(Player.class);
+        if (playerOptional.isPresent()) {
+            checkAllowance(breakBlockEvent, playerOptional.get());
+        }
     }
 
     @Listener(ignoreCancelled = true)
-    public void onBlockChange(ChangeBlockEvent.SourcePlayer changeBlockEvent) {
-        checkAllowance(changeBlockEvent, changeBlockEvent.getSourceEntity());
+    public void onBlockBreak(PlaceBlockEvent blockPlaceEvent) {
+        Optional<Player> playerOptional = blockPlaceEvent.getCause().first(Player.class);
+        if (playerOptional.isPresent()) {
+            checkAllowance(blockPlaceEvent, playerOptional.get());
+        }
     }
 
     @Listener(ignoreCancelled = true)
-    public void onBlockInteract(InteractBlockEvent.SourcePlayer interactBlockEvent) {
-        checkAllowance(interactBlockEvent, interactBlockEvent.getSourceEntity());
+    public void onBlockChange(ChangeBlockEvent changeBlockEvent) {
+        Optional<Player> playerOptional = changeBlockEvent.getCause().first(Player.class);
+        if (playerOptional.isPresent()) {
+            checkAllowance(changeBlockEvent, playerOptional.get());
+        }
     }
 
     @Listener(ignoreCancelled = true)
-    public void onBlockChange(InteractEntityEvent.SourcePlayer interactEntityEvent) {
-        checkAllowance(interactEntityEvent, interactEntityEvent.getSourceEntity());
+    public void onBlockInteract(InteractBlockEvent interactBlockEvent) {
+        Optional<Player> playerOptional = interactBlockEvent.getCause().first(Player.class);
+        if (playerOptional.isPresent()) {
+            checkAllowance(interactBlockEvent, playerOptional.get());
+        }
+    }
+
+    @Listener(ignoreCancelled = true)
+    public void onEntityInteract(InteractEntityEvent interactEntityEvent) {
+        Optional<Player> playerOptional = interactEntityEvent.getCause().first(Player.class);
+        if (playerOptional.isPresent()) {
+            checkAllowance(interactEntityEvent, playerOptional.get());
+        }
     }
 
     private void checkAllowance(Cancellable event, Player player) {

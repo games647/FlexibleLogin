@@ -43,7 +43,8 @@ public class TOTP implements Hasher {
         return String.format(format, user, host, secret);
     }
 
-    private static boolean check_code(String secret, long code, long t) throws NoSuchAlgorithmException, InvalidKeyException {
+    private static boolean check_code(String secret, long code, long t) throws NoSuchAlgorithmException
+            , InvalidKeyException {
         byte[] decodedKey = BaseEncoding.base32().decode(secret);
 
         // Window is used to check codes generated in the near past.
