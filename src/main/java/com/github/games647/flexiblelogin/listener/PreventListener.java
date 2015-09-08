@@ -47,7 +47,8 @@ public class PreventListener {
 
     @Listener(ignoreCancelled = true)
     public void onCommand(SendCommandEvent commandEvent) {
-        if (commandEvent.getSource() instanceof Player) {
+        Optional<Player> playerOptional = commandEvent.getCause().first(Player.class);
+        if (playerOptional.isPresent()) {
             String command = commandEvent.getCommand();
             //do not blacklist our own commands
             if ("register".equals(command) || "login".equals(command)
@@ -55,7 +56,7 @@ public class PreventListener {
                 return;
             }
 
-            checkAllowance(commandEvent, (Player) commandEvent.getSource());
+            checkAllowance(commandEvent, playerOptional.get());
         }
     }
 
