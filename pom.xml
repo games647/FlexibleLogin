@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>FlexibleLogin</name>
-    <version>0.2.3</version>
+    <version>0.2.4</version>
     <description>Second Auth plugin for Sponge minecraft servers</description>
     <url>https://github.com/games647/FlexibleLogin</url>
 
@@ -47,7 +47,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
+                <version>3.3</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
