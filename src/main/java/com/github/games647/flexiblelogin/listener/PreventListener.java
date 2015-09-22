@@ -34,13 +34,13 @@ public class PreventListener {
         Vector3d newLocation = playerMoveEvent.getToTransform().getPosition();
         if ((oldLocation.getFloorX()!= newLocation.getFloorX()
                 || oldLocation.getFloorZ()!= newLocation.getFloorZ())) {
-            checkAllowance(playerMoveEvent, playerMoveEvent.getTargetEntity());
+            checkLoginStatus(playerMoveEvent, playerMoveEvent.getTargetEntity());
         }
     }
 
     @Listener(ignoreCancelled = true)
     public void onChat(MessageSinkEvent chatEvent) {
-        checkAllowance(chatEvent, chatEvent.getCause());
+        checkLoginStatus(chatEvent, chatEvent.getCause());
     }
 
     @Listener(ignoreCancelled = true)
@@ -54,7 +54,7 @@ public class PreventListener {
                 return;
             }
 
-            checkAllowance(commandEvent, playerOptional.get());
+            checkLoginStatus(commandEvent, playerOptional.get());
         }
     }
 
@@ -62,53 +62,53 @@ public class PreventListener {
     public void onPlayerItemDrop(DropItemStackEvent.Drop dropItemEvent) {
         Optional<Player> playerOptional = dropItemEvent.getCause().first(Player.class);
         if (playerOptional.isPresent()) {
-            checkAllowance(dropItemEvent, playerOptional.get());
+            checkLoginStatus(dropItemEvent, playerOptional.get());
         }
     }
 
     @Listener(ignoreCancelled = true)
     public void onPlayerItemPickup(PickUpItemEvent pickUpItemEvent) {
-        checkAllowance(pickUpItemEvent, pickUpItemEvent.getCause());
+        checkLoginStatus(pickUpItemEvent, pickUpItemEvent.getCause());
     }
 
     @Listener(ignoreCancelled = true)
     public void onItemConsume(UseItemStackEvent itemConsumeEvent) {
-        checkAllowance(itemConsumeEvent, itemConsumeEvent.getCause());
+        checkLoginStatus(itemConsumeEvent, itemConsumeEvent.getCause());
     }
 
     @Listener(ignoreCancelled = true)
     public void onBlockBreak(BreakBlockEvent breakBlockEvent) {
-        checkAllowance(breakBlockEvent, breakBlockEvent.getCause());
+        checkLoginStatus(breakBlockEvent, breakBlockEvent.getCause());
     }
 
     @Listener(ignoreCancelled = true)
     public void onBlockBreak(PlaceBlockEvent blockPlaceEvent) {
-        checkAllowance(blockPlaceEvent, blockPlaceEvent.getCause());
+        checkLoginStatus(blockPlaceEvent, blockPlaceEvent.getCause());
     }
 
     @Listener(ignoreCancelled = true)
     public void onBlockChange(ChangeBlockEvent changeBlockEvent) {
-        checkAllowance(changeBlockEvent, changeBlockEvent.getCause());
+        checkLoginStatus(changeBlockEvent, changeBlockEvent.getCause());
     }
 
     @Listener(ignoreCancelled = true)
     public void onBlockInteract(InteractBlockEvent interactBlockEvent) {
-        checkAllowance(interactBlockEvent, interactBlockEvent.getCause());
+        checkLoginStatus(interactBlockEvent, interactBlockEvent.getCause());
     }
 
     @Listener(ignoreCancelled = true)
     public void onEntityInteract(InteractEntityEvent interactEntityEvent) {
-        checkAllowance(interactEntityEvent, interactEntityEvent.getCause());
+        checkLoginStatus(interactEntityEvent, interactEntityEvent.getCause());
     }
 
-    private void checkAllowance(Cancellable event, Cause cause) {
+    private void checkLoginStatus(Cancellable event, Cause cause) {
         Optional<Player> playerOptional = cause.first(Player.class);
         if (playerOptional.isPresent()) {
-            checkAllowance(event, playerOptional.get());
+            checkLoginStatus(event, playerOptional.get());
         }
     }
 
-    private void checkAllowance(Cancellable event, Player player) {
+    private void checkLoginStatus(Cancellable event, Player player) {
         if (!plugin.getDatabase().isLoggedin(player)) {
             event.setCancelled(true);
         }
