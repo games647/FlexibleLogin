@@ -108,7 +108,7 @@ public class FlexibleLogin {
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new UnregisterCommand(this))
                 .arguments(GenericArguments.onlyOne(GenericArguments.string(Texts.of("account"))))
-                .permission("flexiblelogin.admin")
+                .permission(pluginContainer.getName() + ".admin")
                 .build(), "unregister");
 
         commandDispatcher.register(this, CommandSpec.builder()

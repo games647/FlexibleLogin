@@ -39,7 +39,7 @@ public class PreventListener {
     }
 
     @Listener(ignoreCancelled = true)
-    public void onChat(MessageSinkEvent chatEvent) {
+    public void onChat(MessageSinkEvent.Chat chatEvent) {
         checkLoginStatus(chatEvent, chatEvent.getCause());
     }
 
