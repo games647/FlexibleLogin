@@ -2,21 +2,20 @@ package com.github.games647.flexiblelogin.listener;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.google.common.base.Optional;
+
+import java.util.Optional;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.block.BreakBlockEvent;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.block.PlaceBlockEvent;
-import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.CauseTracked;
 import org.spongepowered.api.event.command.MessageSinkEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
-import org.spongepowered.api.event.inventory.DropItemStackEvent;
+import org.spongepowered.api.event.inventory.DropItemEvent;
 import org.spongepowered.api.event.inventory.PickUpItemEvent;
 import org.spongepowered.api.event.inventory.UseItemStackEvent;
 
@@ -40,7 +39,7 @@ public class PreventListener {
 
     @Listener(ignoreCancelled = true)
     public void onChat(MessageSinkEvent.Chat chatEvent) {
-        checkLoginStatus(chatEvent, chatEvent.getCause());
+        checkLoginStatus(chatEvent, chatEvent);
     }
 
     @Listener(ignoreCancelled = true)
@@ -59,50 +58,47 @@ public class PreventListener {
     }
 
     @Listener(ignoreCancelled = true)
-    public void onPlayerItemDrop(DropItemStackEvent.Drop dropItemEvent) {
-        Optional<Player> playerOptional = dropItemEvent.getCause().first(Player.class);
-        if (playerOptional.isPresent()) {
-            checkLoginStatus(dropItemEvent, playerOptional.get());
-        }
+    public void onPlayerItemDrop(DropItemEvent dropItemEvent) {
+        checkLoginStatus(dropItemEvent, dropItemEvent);
     }
 
     @Listener(ignoreCancelled = true)
     public void onPlayerItemPickup(PickUpItemEvent pickUpItemEvent) {
-        checkLoginStatus(pickUpItemEvent, pickUpItemEvent.getCause());
+        checkLoginStatus(pickUpItemEvent, pickUpItemEvent);
     }
 
     @Listener(ignoreCancelled = true)
     public void onItemConsume(UseItemStackEvent itemConsumeEvent) {
-        checkLoginStatus(itemConsumeEvent, itemConsumeEvent.getCause());
+        checkLoginStatus(itemConsumeEvent, itemConsumeEvent);
     }
 
     @Listener(ignoreCancelled = true)
-    public void onBlockBreak(BreakBlockEvent breakBlockEvent) {
-        checkLoginStatus(breakBlockEvent, breakBlockEvent.getCause());
+    public void onBlockBreak(ChangeBlockEvent.Break breakBlockEvent) {
+        checkLoginStatus(breakBlockEvent, breakBlockEvent);
     }
 
     @Listener(ignoreCancelled = true)
-    public void onBlockBreak(PlaceBlockEvent blockPlaceEvent) {
-        checkLoginStatus(blockPlaceEvent, blockPlaceEvent.getCause());
+    public void onBlockBreak(ChangeBlockEvent.Place blockPlaceEvent) {
+        checkLoginStatus(blockPlaceEvent, blockPlaceEvent);
     }
 
     @Listener(ignoreCancelled = true)
     public void onBlockChange(ChangeBlockEvent changeBlockEvent) {
-        checkLoginStatus(changeBlockEvent, changeBlockEvent.getCause());
+        checkLoginStatus(changeBlockEvent, changeBlockEvent);
     }
 
     @Listener(ignoreCancelled = true)
     public void onBlockInteract(InteractBlockEvent interactBlockEvent) {
-        checkLoginStatus(interactBlockEvent, interactBlockEvent.getCause());
+        checkLoginStatus(interactBlockEvent, interactBlockEvent);
     }
 
     @Listener(ignoreCancelled = true)
     public void onEntityInteract(InteractEntityEvent interactEntityEvent) {
-        checkLoginStatus(interactEntityEvent, interactEntityEvent.getCause());
+        checkLoginStatus(interactEntityEvent, interactEntityEvent);
     }
 
-    private void checkLoginStatus(Cancellable event, Cause cause) {
-        Optional<Player> playerOptional = cause.first(Player.class);
+    private void checkLoginStatus(Cancellable event, CauseTracked causeEvent) {
+        Optional<Player> playerOptional = causeEvent.getCause().first(Player.class);
         if (playerOptional.isPresent()) {
             checkLoginStatus(event, playerOptional.get());
         }
