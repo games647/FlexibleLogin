@@ -13,11 +13,12 @@ import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.cause.CauseTracked;
 import org.spongepowered.api.event.command.MessageSinkEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
+import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.inventory.DropItemEvent;
-import org.spongepowered.api.event.inventory.PickUpItemEvent;
 import org.spongepowered.api.event.inventory.UseItemStackEvent;
+import org.spongepowered.api.item.inventory.ItemStack;
 
 public class PreventListener {
 
@@ -63,8 +64,10 @@ public class PreventListener {
     }
 
     @Listener(ignoreCancelled = true)
-    public void onPlayerItemPickup(PickUpItemEvent pickUpItemEvent) {
-        checkLoginStatus(pickUpItemEvent, pickUpItemEvent);
+    public void onPlayerItemPickup(CollideEntityEvent collideEntityEvent) {
+        if (collideEntityEvent.getCause().first(ItemStack.class).isPresent()) {
+            checkLoginStatus(collideEntityEvent, collideEntityEvent);
+        }
     }
 
     @Listener(ignoreCancelled = true)
