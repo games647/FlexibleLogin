@@ -13,12 +13,11 @@ import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.cause.CauseTracked;
 import org.spongepowered.api.event.command.MessageSinkEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
-import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
+import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
-import org.spongepowered.api.item.inventory.ItemStack;
 
 public class PreventListener {
 
@@ -64,13 +63,6 @@ public class PreventListener {
     }
 
     @Listener(ignoreCancelled = true)
-    public void onPlayerItemPickup(CollideEntityEvent collideEntityEvent) {
-        if (collideEntityEvent.getCause().first(ItemStack.class).isPresent()) {
-            checkLoginStatus(collideEntityEvent, collideEntityEvent);
-        }
-    }
-
-    @Listener(ignoreCancelled = true)
     public void onItemConsume(UseItemStackEvent itemConsumeEvent) {
         checkLoginStatus(itemConsumeEvent, itemConsumeEvent);
     }
@@ -81,7 +73,12 @@ public class PreventListener {
     }
 
     @Listener(ignoreCancelled = true)
-    public void onBlockBreak(ChangeBlockEvent.Place blockPlaceEvent) {
+    public void onInventoryChange(ChangeInventoryEvent breakBlockEvent) {
+        checkLoginStatus(breakBlockEvent, breakBlockEvent);
+    }
+
+    @Listener(ignoreCancelled = true)
+    public void onBlockPlace(ChangeBlockEvent.Place blockPlaceEvent) {
         checkLoginStatus(blockPlaceEvent, blockPlaceEvent);
     }
 
