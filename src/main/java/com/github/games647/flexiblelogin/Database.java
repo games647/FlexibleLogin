@@ -13,6 +13,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -164,7 +166,16 @@ public class Database {
             statement.setString(1, playerName);
 
             int affectedRows = statement.executeUpdate();
-            //remove cache entry if the player name is the key id
+            //remove cache entry
+            Set<Map.Entry<UUID, Account>> cacheEntries = cache.asMap().entrySet();
+            for (Map.Entry<UUID, Account> cacheEntry : cacheEntries) {
+                Account account = cacheEntry.getValue();
+                if (account.getUsername().equals(playerName)) {
+                    cache.invalidate(account.getUuid());
+                    break;
+                }
+            }
+
             cache.invalidate(playerName);
             //min one account was found
             return affectedRows > 0;
