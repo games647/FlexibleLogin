@@ -2,8 +2,8 @@ package com.github.games647.flexiblelogin.listener;
 
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import org.spongepowered.api.entity.living.player.Player;
 
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Texts;
@@ -32,7 +32,7 @@ public class PlayerListener {
         player.sendMessage(Texts.of(TextColors.DARK_AQUA, "Type /register or /login to login in"));
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onPlayerQuit(ClientConnectionEvent.Disconnect playerQuitEvent) {
         Player player = playerQuitEvent.getTargetEntity();
         Account account = plugin.getDatabase().getAccountIfPresent(player);

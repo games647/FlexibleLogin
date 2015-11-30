@@ -27,6 +27,7 @@ public class SetEmailCommand implements CommandExecutor {
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
             src.sendMessage(Texts.of(TextColors.DARK_RED, "Only players can set their own email"));
+            return CommandResult.empty();
         }
 
         String email = args.<String>getOne("email").get();

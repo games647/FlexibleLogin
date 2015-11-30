@@ -43,15 +43,15 @@ public class TOTP implements Hasher {
         return String.format(format, user, host, secret);
     }
 
-    private static boolean check_code(String secret, long code, long t) throws NoSuchAlgorithmException
-            , InvalidKeyException {
+    private static boolean check_code(String secret, long code, long time)
+            throws NoSuchAlgorithmException, InvalidKeyException {
         byte[] decodedKey = BaseEncoding.base32().decode(secret);
 
         // Window is used to check codes generated in the near past.
         // You can use this value to tune how far you're willing to go.
         int window = TIME_PRECISION;
         for (int i = -window; i <= window; ++i) {
-            long hash = verify_code(decodedKey, t + i);
+            long hash = verify_code(decodedKey, time + i);
 
             if (hash == code) {
                 return true;
@@ -62,9 +62,9 @@ public class TOTP implements Hasher {
         return false;
     }
 
-    private static int verify_code(byte[] key, long t) throws NoSuchAlgorithmException, InvalidKeyException {
+    private static int verify_code(byte[] key, long time) throws NoSuchAlgorithmException, InvalidKeyException {
         byte[] data = new byte[8];
-        long value = t;
+        long value = time;
         for (int i = 8; i-- > 0; value >>>= 8) {
             data[i] = (byte) value;
         }
@@ -99,12 +99,12 @@ public class TOTP implements Hasher {
 
     @Override
     public boolean checkPassword(String passwordHash, String userInput) throws Exception {
-        long currentTime = new Date().getTime() / TimeUnit.SECONDS.toMillis(30);
         Integer code = Ints.tryParse(userInput);
         if (code == null) {
             return false;
         }
 
+        long currentTime = new Date().getTime() / TimeUnit.SECONDS.toMillis(30);
         return check_code(passwordHash, code, currentTime);
     }
 }

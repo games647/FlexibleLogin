@@ -6,7 +6,6 @@ import com.github.games647.flexiblelogin.commands.LogoutCommand;
 import com.github.games647.flexiblelogin.commands.RegisterCommand;
 import com.github.games647.flexiblelogin.commands.SetEmailCommand;
 import com.github.games647.flexiblelogin.commands.UnregisterCommand;
-import com.github.games647.flexiblelogin.commands.VersionCommand;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;
 import com.github.games647.flexiblelogin.hasher.Hasher;
@@ -32,7 +31,7 @@ import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.args.GenericArguments;
 import org.spongepowered.api.util.command.spec.CommandSpec;
 
-@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.2.5")
+@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.2.7")
 public class FlexibleLogin {
 
     private final PluginContainer pluginContainer;
@@ -82,10 +81,6 @@ public class FlexibleLogin {
     public void onInit(GameInitializationEvent initEvent) {
         //register commands
         CommandService commandDispatcher = initEvent.getGame().getCommandDispatcher();
-        CommandSpec mainCommand = CommandSpec.builder()
-                .executor(new VersionCommand(this))
-                .build();
-        commandDispatcher.register(this, mainCommand, pluginContainer.getId(), "auth", "authenticate");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new LoginCommand(this))

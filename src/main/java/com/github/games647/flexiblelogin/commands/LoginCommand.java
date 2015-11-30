@@ -24,6 +24,7 @@ public class LoginCommand implements CommandExecutor {
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
             source.sendMessage(Texts.of(TextColors.DARK_RED, "Only players need to login"));
+            return CommandResult.empty();
         }
 
         //the arg isn't optional. We can be sure there is value
