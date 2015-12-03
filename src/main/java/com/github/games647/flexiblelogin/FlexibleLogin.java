@@ -1,6 +1,7 @@
 package com.github.games647.flexiblelogin;
 
-import com.github.games647.flexiblelogin.listener.PlayerListener;
+import com.google.inject.Inject;
+
 import com.github.games647.flexiblelogin.commands.LoginCommand;
 import com.github.games647.flexiblelogin.commands.LogoutCommand;
 import com.github.games647.flexiblelogin.commands.RegisterCommand;
@@ -10,13 +11,8 @@ import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;
 import com.github.games647.flexiblelogin.hasher.Hasher;
 import com.github.games647.flexiblelogin.hasher.TOTP;
+import com.github.games647.flexiblelogin.listener.PlayerListener;
 import com.github.games647.flexiblelogin.listener.PreventListener;
-import com.google.inject.Inject;
-
-import java.io.File;
-
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -24,19 +20,30 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.service.command.CommandService;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.service.command.CommandService;
 import org.spongepowered.api.service.config.DefaultConfig;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.args.GenericArguments;
 import org.spongepowered.api.util.command.spec.CommandSpec;
 
+import java.io.File;
+
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
+
 @Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.2.7")
 public class FlexibleLogin {
 
-    private final PluginContainer pluginContainer;
-    private final Logger logger;
-    private final Game game;
+    private static FlexibleLogin instance = new FlexibleLogin();
+
+    public static FlexibleLogin getInstance() {
+        return instance;
+    }
+
+    @Inject private PluginContainer pluginContainer;
+    @Inject private Logger logger;
+    @Inject private Game game;
 
     @Inject
     @DefaultConfig(sharedRoot = false)
@@ -52,12 +59,7 @@ public class FlexibleLogin {
 
     private Hasher hasher;
 
-    @Inject
-    public FlexibleLogin(Logger logger, PluginContainer pluginContainer, Game game) {
-        this.logger = logger;
-        this.pluginContainer = pluginContainer;
-        this.game = game;
-    }
+    private FlexibleLogin() {}
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
     public void onPreInit(GamePreInitializationEvent preInitEvent) {

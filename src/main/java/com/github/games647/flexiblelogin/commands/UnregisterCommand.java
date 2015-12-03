@@ -3,15 +3,13 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.UnregisterTask;
 
-import java.util.UUID;
-
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.util.command.args.CommandContext;
 import org.spongepowered.api.util.command.spec.CommandExecutor;
+
+import java.util.UUID;
 
 public class UnregisterCommand implements CommandExecutor {
 
@@ -47,7 +45,7 @@ public class UnregisterCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        src.sendMessage(Texts.of(TextColors.DARK_RED, "Your request is neither a valid player name or UUID"));
+        src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getUnregisteringFailedMessage());
 
         return CommandResult.success();
     }

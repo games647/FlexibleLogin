@@ -5,6 +5,15 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfiguration;
 import com.github.games647.flexiblelogin.tasks.SaveTask;
 import com.github.games647.flexiblelogin.tasks.SendEmailTask;
+import com.gmail.frogocomics.flexiblelogin.LogUtils;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.command.CommandException;
+import org.spongepowered.api.util.command.CommandResult;
+import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.util.command.args.CommandContext;
+import org.spongepowered.api.util.command.spec.CommandExecutor;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
@@ -15,16 +24,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import org.apache.commons.lang3.RandomStringUtils;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandContext;
-import org.spongepowered.api.util.command.spec.CommandExecutor;
 
 public class ForgotPasswordCommand implements CommandExecutor {
 
@@ -37,23 +36,23 @@ public class ForgotPasswordCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "Only player need to recover their password"));
+            src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlyRecoverPasswordMessage());
             return CommandResult.success();
         }
 
         Player player = (Player) src;
         Account account = plugin.getDatabase().getAccountIfPresent(player);
         if (account == null) {
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "You are account isn't loaded"));
+            src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getPlayersAccountNotLoadedMessage());
             return CommandResult.success();
         } else if (account.isLoggedIn()) {
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "You are already logged in"));
+            src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getPlayersAccountAlreadyLoggedInMessage());
             return CommandResult.success();
         }
 
         String email = account.getEmail();
         if (email == null || email.isEmpty()) {
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "You didn't submitted a email adress"));
+            src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getUncommittedEmailAddressMessage());
             return CommandResult.success();
         }
 
@@ -101,9 +100,9 @@ public class ForgotPasswordCommand implements CommandExecutor {
                     .submit(plugin);
         } catch (UnsupportedEncodingException ex) {
             //we can ignore this, because we will encode with UTF-8 which all Java platforms supports
-        } catch (Exception ex) {
-            plugin.getLogger().error("Error preparing email for password recovery", ex);
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "Error executing command. See console"));
+        } catch (Exception e) {
+            LogUtils.logException(e);
+            src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getErrorExecutingCommandMessage());
         }
 
         return CommandResult.success();
