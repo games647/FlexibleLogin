@@ -24,7 +24,7 @@ public class SetEmailCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlySetEmail());
+            src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlySetEmail());
             return CommandResult.empty();
         }
 
@@ -33,7 +33,7 @@ public class SetEmailCommand implements CommandExecutor {
             Account account = plugin.getDatabase().getAccountIfPresent((Player) src);
             if (account != null) {
                 account.setEmail(email);
-                src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getEmailSetMessage());
+                src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getEmailSetMessage());
                 plugin.getGame().getScheduler().createTaskBuilder()
                         .async()
                         .execute(new SaveTask(plugin, account))
@@ -43,7 +43,7 @@ public class SetEmailCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getNotEmailMessage());
+        src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getNotEmailMessage());
         return CommandResult.success();
     }
 }

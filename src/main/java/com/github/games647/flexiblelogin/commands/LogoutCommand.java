@@ -21,15 +21,15 @@ public class LogoutCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlyLogoutMessage());
+            source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlyLogoutMessage());
             return CommandResult.success();
         }
 
         Account account = plugin.getDatabase().getAccountIfPresent((Player) source);
         if (account == null || !account.isLoggedIn()) {
-            source.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getNotLoggedInMessage());
+            source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getNotLoggedInMessage());
         } else {
-            source.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getSuccessfullyLoggedOutMessage());
+            source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getSuccessfullyLoggedOutMessage());
             account.setLoggedIn(false);
         }
 

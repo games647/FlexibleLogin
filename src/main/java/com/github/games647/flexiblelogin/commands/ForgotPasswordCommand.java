@@ -36,23 +36,23 @@ public class ForgotPasswordCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlyRecoverPasswordMessage());
+            src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlyRecoverPasswordMessage());
             return CommandResult.success();
         }
 
         Player player = (Player) src;
         Account account = plugin.getDatabase().getAccountIfPresent(player);
         if (account == null) {
-            src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getPlayersAccountNotLoadedMessage());
+            src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersAccountNotLoadedMessage());
             return CommandResult.success();
         } else if (account.isLoggedIn()) {
-            src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getPlayersAccountAlreadyLoggedInMessage());
+            src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersAccountAlreadyLoggedInMessage());
             return CommandResult.success();
         }
 
         String email = account.getEmail();
         if (email == null || email.isEmpty()) {
-            src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getUncommittedEmailAddressMessage());
+            src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getUncommittedEmailAddressMessage());
             return CommandResult.success();
         }
 
@@ -102,7 +102,7 @@ public class ForgotPasswordCommand implements CommandExecutor {
             //we can ignore this, because we will encode with UTF-8 which all Java platforms supports
         } catch (Exception e) {
             LogUtils.logException(e);
-            src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getErrorExecutingCommandMessage());
+            src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getErrorExecutingCommandMessage());
         }
 
         return CommandResult.success();

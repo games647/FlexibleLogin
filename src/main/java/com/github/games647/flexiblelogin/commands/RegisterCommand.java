@@ -26,7 +26,7 @@ public class RegisterCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlyRegisterMessage());
+            source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlyRegisterMessage());
             return CommandResult.success();
         }
 
@@ -35,7 +35,7 @@ public class RegisterCommand implements CommandExecutor {
             if (plugin.getConfigManager().getConfiguration().getHashAlgo().equals("totp")) {
                 startTask(source, "");
             } else {
-                source.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getTotpNotEnabledMessage());
+                source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getTotpNotEnabledMessage());
             }
 
             return CommandResult.success();
@@ -48,7 +48,7 @@ public class RegisterCommand implements CommandExecutor {
             //Check if the first two passwords are equal to prevent typos
             startTask(source, password);
         } else {
-            source.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getUnequalPasswordsMessage());
+            source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getUnequalPasswordsMessage());
         }
 
         return CommandResult.success();

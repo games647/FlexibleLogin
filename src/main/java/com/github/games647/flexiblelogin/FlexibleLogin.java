@@ -35,9 +35,12 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 @Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.2.7")
 public class FlexibleLogin {
 
-    private static FlexibleLogin instance = new FlexibleLogin();
+    private static FlexibleLogin instance = null;
 
     public static FlexibleLogin getInstance() {
+        if(instance == null) {
+            instance = new FlexibleLogin();
+        }
         return instance;
     }
 

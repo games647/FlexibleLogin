@@ -208,7 +208,7 @@ public class TextConfiguration {
         }
     }
 
-    private Text fromString(String s) throws TextMessageException {
-        return Texts.legacy().from(s);
+    private Text fromString(String textString) throws TextMessageException {
+        return Texts.legacy().from(textString);
     }
 }

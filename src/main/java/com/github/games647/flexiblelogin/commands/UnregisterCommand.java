@@ -45,7 +45,7 @@ public class UnregisterCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        src.sendMessage(FlexibleLogin.getInstance().getConfigManager().getConfiguration().getTextConfiguration().getUnregisteringFailedMessage());
+        src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getUnregisteringFailedMessage());
 
         return CommandResult.success();
     }
