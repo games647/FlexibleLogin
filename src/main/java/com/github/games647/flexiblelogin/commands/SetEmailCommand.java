@@ -5,8 +5,6 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.SaveTask;
 
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
@@ -26,7 +24,7 @@ public class SetEmailCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "Only players can set their own email"));
+            src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlySetEmail());
             return CommandResult.empty();
         }
 
@@ -35,7 +33,7 @@ public class SetEmailCommand implements CommandExecutor {
             Account account = plugin.getDatabase().getAccountIfPresent((Player) src);
             if (account != null) {
                 account.setEmail(email);
-                src.sendMessage(Texts.of(TextColors.DARK_GREEN, "Your email was set"));
+                src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getEmailSetMessage());
                 plugin.getGame().getScheduler().createTaskBuilder()
                         .async()
                         .execute(new SaveTask(plugin, account))
@@ -45,7 +43,7 @@ public class SetEmailCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        src.sendMessage(Texts.of(TextColors.DARK_RED, "Your input isn't a valid email adress"));
+        src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getNotEmailMessage());
         return CommandResult.success();
     }
 }

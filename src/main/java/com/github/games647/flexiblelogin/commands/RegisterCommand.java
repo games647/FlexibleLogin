@@ -1,20 +1,19 @@
 package com.github.games647.flexiblelogin.commands;
 
-import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.tasks.RegisterTask;
 import com.google.common.collect.Lists;
 
-import java.util.Collection;
-import java.util.List;
+import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.tasks.RegisterTask;
 
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.util.command.args.CommandContext;
 import org.spongepowered.api.util.command.spec.CommandExecutor;
+
+import java.util.Collection;
+import java.util.List;
 
 public class RegisterCommand implements CommandExecutor {
 
@@ -27,7 +26,7 @@ public class RegisterCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(Texts.of(TextColors.DARK_RED, "Only players need to register"));
+            source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlyRegisterMessage());
             return CommandResult.success();
         }
 
@@ -36,8 +35,7 @@ public class RegisterCommand implements CommandExecutor {
             if (plugin.getConfigManager().getConfiguration().getHashAlgo().equals("totp")) {
                 startTask(source, "");
             } else {
-                source.sendMessage(Texts.of(TextColors.DARK_RED
-                        , "TOTP isn't enabled. You have to enter two passwords"));
+                source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getTotpNotEnabledMessage());
             }
 
             return CommandResult.success();
@@ -50,7 +48,7 @@ public class RegisterCommand implements CommandExecutor {
             //Check if the first two passwords are equal to prevent typos
             startTask(source, password);
         } else {
-            source.sendMessage(Texts.of(TextColors.DARK_RED, "The passwords are not equal"));
+            source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getUnequalPasswordsMessage());
         }
 
         return CommandResult.success();

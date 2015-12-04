@@ -4,8 +4,6 @@ import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
@@ -23,15 +21,15 @@ public class LogoutCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(Texts.of(TextColors.DARK_RED, "Only players could logout"));
+            source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlyLogoutMessage());
             return CommandResult.success();
         }
 
         Account account = plugin.getDatabase().getAccountIfPresent((Player) source);
         if (account == null || !account.isLoggedIn()) {
-            source.sendMessage(Texts.of(TextColors.DARK_RED, "You aren't logged in"));
+            source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getNotLoggedInMessage());
         } else {
-            source.sendMessage(Texts.of(TextColors.DARK_GREEN, "Logged out"));
+            source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getSuccessfullyLoggedOutMessage());
             account.setLoggedIn(false);
         }
 
