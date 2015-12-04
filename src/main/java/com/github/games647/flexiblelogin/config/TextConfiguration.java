@@ -1,5 +1,6 @@
 package com.github.games647.flexiblelogin.config;
 
+import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.gmail.frogocomics.flexiblelogin.LogUtils;
 
 import org.spongepowered.api.text.Text;
@@ -14,7 +15,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class TextConfiguration {
 
-    private Text parsingTextError = Texts.of(TextStyles.BOLD, TextColors.AQUA, "FlexibleLogin ", TextColors.GRAY, "\u2759 ", TextStyles.NONE, TextColors.DARK_RED, "The text configuration cannot be parsed. Please check the configuration and try again.");
+    private final Text parsingTextError = Texts.of(TextStyles.BOLD, TextColors.AQUA, FlexibleLogin.getInstance().getClass().getSimpleName() + " ", TextColors.GRAY, "\u2759 ", TextStyles.NONE, TextColors.DARK_RED, "The text configuration cannot be parsed. Please check the configuration and try again.");
 
     @Setting(comment = "When a non-player (i.e. Console, Command Block) tries to login.")
     private String playersOnly = "§4Only players need to login!";
