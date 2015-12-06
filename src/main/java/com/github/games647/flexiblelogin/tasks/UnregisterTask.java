@@ -4,9 +4,9 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import java.util.UUID;
 
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.util.command.CommandSource;
 
 public class UnregisterTask implements Runnable {
 

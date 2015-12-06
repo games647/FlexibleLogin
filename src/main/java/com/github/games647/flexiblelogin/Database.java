@@ -206,8 +206,8 @@ public class Database {
 
             //min one account was found
             return affectedRows > 0;
-        } catch (SQLException ex) {
-            plugin.getLogger().error("Error deleting user account", ex);
+        } catch (SQLException sqlEx) {
+            plugin.getLogger().error("Error deleting user account", sqlEx);
         } finally {
             closeQuietly(conn);
         }
@@ -241,8 +241,8 @@ public class Database {
                     loadedAccount = new Account(resultSet);
                     cache.put(uuid, loadedAccount);
                 }
-            } catch (SQLException ex) {
-                plugin.getLogger().error("Error loading account", ex);
+            } catch (SQLException sqlEx) {
+                plugin.getLogger().error("Error loading account", sqlEx);
             } finally {
                 closeQuietly(conn);
             }
@@ -273,8 +273,8 @@ public class Database {
 
             //if successfull
             cache.put(uuid, new Account(uuid, player.getName(), password, ip));
-        } catch (SQLException ex) {
-            plugin.getLogger().error("Error registering account", ex);
+        } catch (SQLException sqlEx) {
+            plugin.getLogger().error("Error registering account", sqlEx);
         } finally {
             closeQuietly(conn);
         }
