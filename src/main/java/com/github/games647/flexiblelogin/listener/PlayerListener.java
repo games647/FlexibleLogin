@@ -19,7 +19,7 @@ public class PlayerListener {
         this.plugin = plugin;
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join playerJoinEvent) {
         Player player = playerJoinEvent.getTargetEntity();
         if (!player.getName().matches(VALID_USERNAME)) {

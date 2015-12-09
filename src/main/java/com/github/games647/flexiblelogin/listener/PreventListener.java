@@ -27,7 +27,7 @@ public class PreventListener {
         this.plugin = plugin;
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onPlayerMove(DisplaceEntityEvent.TargetPlayer playerMoveEvent) {
         Vector3d oldLocation = playerMoveEvent.getFromTransform().getPosition();
         Vector3d newLocation = playerMoveEvent.getToTransform().getPosition();
@@ -37,12 +37,12 @@ public class PreventListener {
         }
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onChat(MessageSinkEvent.Chat chatEvent) {
         checkLoginStatus(chatEvent, chatEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onCommand(SendCommandEvent commandEvent) {
         Optional<Player> playerOptional = commandEvent.getCause().first(Player.class);
         if (playerOptional.isPresent()) {
@@ -57,42 +57,42 @@ public class PreventListener {
         }
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onPlayerItemDrop(DropItemEvent dropItemEvent) {
         checkLoginStatus(dropItemEvent, dropItemEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onItemConsume(UseItemStackEvent itemConsumeEvent) {
         checkLoginStatus(itemConsumeEvent, itemConsumeEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onBlockBreak(ChangeBlockEvent.Break breakBlockEvent) {
         checkLoginStatus(breakBlockEvent, breakBlockEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onInventoryChange(ChangeInventoryEvent breakBlockEvent) {
         checkLoginStatus(breakBlockEvent, breakBlockEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onBlockPlace(ChangeBlockEvent.Place blockPlaceEvent) {
         checkLoginStatus(blockPlaceEvent, blockPlaceEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onBlockChange(ChangeBlockEvent changeBlockEvent) {
         checkLoginStatus(changeBlockEvent, changeBlockEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onBlockInteract(InteractBlockEvent interactBlockEvent) {
         checkLoginStatus(interactBlockEvent, interactBlockEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onEntityInteract(InteractEntityEvent interactEntityEvent) {
         checkLoginStatus(interactEntityEvent, interactEntityEvent);
     }
