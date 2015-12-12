@@ -10,8 +10,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
 
 public class UnregisterCommand implements CommandExecutor {
 
@@ -47,7 +45,7 @@ public class UnregisterCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        src.sendMessage(Texts.of(TextColors.DARK_RED, "Your request is neither a valid player name or UUID"));
+        src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getUnregisteringFailedMessage());
 
         return CommandResult.success();
     }

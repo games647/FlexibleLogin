@@ -1,6 +1,5 @@
 package com.github.games647.flexiblelogin;
 
-import com.github.games647.flexiblelogin.listener.PlayerListener;
 import com.github.games647.flexiblelogin.commands.LoginCommand;
 import com.github.games647.flexiblelogin.commands.LogoutCommand;
 import com.github.games647.flexiblelogin.commands.RegisterCommand;
@@ -10,6 +9,7 @@ import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;
 import com.github.games647.flexiblelogin.hasher.Hasher;
 import com.github.games647.flexiblelogin.hasher.TOTP;
+import com.github.games647.flexiblelogin.listener.PlayerListener;
 import com.github.games647.flexiblelogin.listener.PreventListener;
 import com.google.inject.Inject;
 
@@ -69,7 +69,7 @@ public class FlexibleLogin {
         database = new Database(this);
         database.createTable();
 
-        if (configuration.getConfiguration().getHashAlgo().equalsIgnoreCase("totp")) {
+        if (configuration.getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
             hasher = new TOTP();
         } else {
             //use bcrypt as fallback for now
@@ -77,7 +77,7 @@ public class FlexibleLogin {
         }
     }
 
-    @Listener //During this state, the plugin should finish any work needed in order to be functional. Commands register + events
+    @Listener //Commands register + events
     public void onInit(GameInitializationEvent initEvent) {
         //register commands
         CommandManager commandDispatcher = initEvent.getGame().getCommandManager();
@@ -91,9 +91,9 @@ public class FlexibleLogin {
                 .executor(new RegisterCommand(this))
                 .arguments(
                         GenericArguments
-                                .optional(GenericArguments
-                                        .repeated(GenericArguments
-                                                .string(Texts.of("password")), 2)))
+                            .optional(GenericArguments
+                                    .repeated(GenericArguments
+                                            .string(Texts.of("password")), 2)))
                 .build(), "register");
 
         commandDispatcher.register(this, CommandSpec.builder()
@@ -124,17 +124,14 @@ public class FlexibleLogin {
 //    public void onPostInit(PostInitializationEvent postInitEvent) {
 //        //inter-plugin communication + Plugins providing an API should be ready to accept basic requests.
 //    }
-
 //    @Listener
 //    public void onServerStart(GameAboutToStartServerEvent serverAboutToStartEvent) {
 //        //The server instance exists, but worlds are not yet loaded.
 //    }
-
 //    @Subscribe
 //    public void onServerStopping(ServerStoppingEvent serverStoppingEvent) {
 //        //This state occurs immediately before the final tick, before the worlds are saved.
 //    }
-
     public Settings getConfigManager() {
         return configuration;
     }

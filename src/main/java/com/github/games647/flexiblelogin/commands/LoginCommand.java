@@ -9,8 +9,6 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
 
 public class LoginCommand implements CommandExecutor {
 
@@ -23,7 +21,7 @@ public class LoginCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(Texts.of(TextColors.DARK_RED, "Only players need to login"));
+            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyMessage());
             return CommandResult.empty();
         }
 

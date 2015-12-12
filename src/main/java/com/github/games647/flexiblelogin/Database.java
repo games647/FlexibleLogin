@@ -40,7 +40,7 @@ public class Database {
 
     public Database(FlexibleLogin plugin) {
         this.plugin = plugin;
-        SQLConfiguration sqlConfig = plugin.getConfigManager().getConfiguration().getSqlConfiguration();
+        SQLConfiguration sqlConfig = plugin.getConfigManager().getConfig().getSqlConfiguration();
 
         if (sqlConfig.getType() == SQLType.MYSQL) {
             this.username = sqlConfig.getUsername();
@@ -122,7 +122,7 @@ public class Database {
             }
 
             if (!tableExists) {
-                if (plugin.getConfigManager().getConfiguration().getSqlConfiguration().getType() == SQLType.SQLITE) {
+                if (plugin.getConfigManager().getConfig().getSqlConfiguration().getType() == SQLType.SQLITE) {
                     Statement statement = conn.createStatement();
                     statement.execute("CREATE TABLE " + USERS_TABLE + " ( "
                             + "`UserID` INT UNSIGNED NOT NULL , "

@@ -10,8 +10,6 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
 
 public class SetEmailCommand implements CommandExecutor {
 
@@ -26,7 +24,7 @@ public class SetEmailCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "Only players can set their own email"));
+            src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlySetEmail());
             return CommandResult.empty();
         }
 
@@ -35,7 +33,7 @@ public class SetEmailCommand implements CommandExecutor {
             Account account = plugin.getDatabase().getAccountIfPresent((Player) src);
             if (account != null) {
                 account.setEmail(email);
-                src.sendMessage(Texts.of(TextColors.DARK_GREEN, "Your email was set"));
+                src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getEmailSetMessage());
                 plugin.getGame().getScheduler().createTaskBuilder()
                         .async()
                         .execute(new SaveTask(plugin, account))
@@ -45,7 +43,7 @@ public class SetEmailCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        src.sendMessage(Texts.of(TextColors.DARK_RED, "Your input isn't a valid email adress"));
+        src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getNotEmailMessage());
         return CommandResult.success();
     }
 }

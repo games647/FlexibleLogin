@@ -29,7 +29,7 @@ public class SendEmailTask implements Runnable {
     @Override
     public void run() {
         try {
-            EmailConfiguration emailConfig = plugin.getConfigManager().getConfiguration().getEmailConfiguration();
+            EmailConfiguration emailConfig = plugin.getConfigManager().getConfig().getEmailConfiguration();
 
             //connect to host and send message
             if (!transport.isConnected()) {

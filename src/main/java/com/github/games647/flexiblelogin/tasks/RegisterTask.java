@@ -32,7 +32,7 @@ public class RegisterTask implements Runnable {
                 String hashedPassword = plugin.getHasher().hash(password);
                 plugin.getDatabase().createAccount(player, hashedPassword);
                 //thread-safe, because it's immutable after config load
-                if (plugin.getConfigManager().getConfiguration().getHashAlgo().equalsIgnoreCase("totp")) {
+                if (plugin.getConfigManager().getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
                     sendTotpHint(hashedPassword);
                 }
 

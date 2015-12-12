@@ -1,8 +1,8 @@
 package com.github.games647.flexiblelogin.commands;
 
+import com.google.common.collect.Lists;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.RegisterTask;
-import com.google.common.collect.Lists;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,8 +13,6 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
 
 public class RegisterCommand implements CommandExecutor {
 
@@ -27,17 +25,16 @@ public class RegisterCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(Texts.of(TextColors.DARK_RED, "Only players need to register"));
+            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyRegisterMessage());
             return CommandResult.success();
         }
 
         //If the server is using TOTP, no password is required
         if (!args.hasAny("password")) {
-            if (plugin.getConfigManager().getConfiguration().getHashAlgo().equals("totp")) {
+            if (plugin.getConfigManager().getConfig().getHashAlgo().equals("totp")) {
                 startTask(source, "");
             } else {
-                source.sendMessage(Texts.of(TextColors.DARK_RED
-                        , "TOTP isn't enabled. You have to enter two passwords"));
+                source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getTotpNotEnabledMessage());
             }
 
             return CommandResult.success();
@@ -50,7 +47,7 @@ public class RegisterCommand implements CommandExecutor {
             //Check if the first two passwords are equal to prevent typos
             startTask(source, password);
         } else {
-            source.sendMessage(Texts.of(TextColors.DARK_RED, "The passwords are not equal"));
+            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getUnequalPasswordsMessage());
         }
 
         return CommandResult.success();

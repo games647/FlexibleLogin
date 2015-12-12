@@ -9,8 +9,6 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
 
 public class LogoutCommand implements CommandExecutor {
 
@@ -23,15 +21,15 @@ public class LogoutCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(Texts.of(TextColors.DARK_RED, "Only players could logout"));
+            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyLogoutMessage());
             return CommandResult.success();
         }
 
         Account account = plugin.getDatabase().getAccountIfPresent((Player) source);
         if (account == null || !account.isLoggedIn()) {
-            source.sendMessage(Texts.of(TextColors.DARK_RED, "You aren't logged in"));
+            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getNotLoggedInMessage());
         } else {
-            source.sendMessage(Texts.of(TextColors.DARK_GREEN, "Logged out"));
+            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getSuccessfullyLoggedOutMessage());
             account.setLoggedIn(false);
         }
 

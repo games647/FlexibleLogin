@@ -10,6 +10,9 @@ public class Config {
     @Setting(comment = "Email configuration for password recovery")
     private EmailConfiguration emailConfiguration = new EmailConfiguration();
 
+    @Setting(comment = "Text configuration for custom messages in chat")
+    private TextConfiguration textConfiguration = new TextConfiguration();
+
     @Setting(comment = "Algorithms for hashing user passwords. You can also choose totp")
     private String hashAlgo = "bcrypt";
 
@@ -22,6 +25,10 @@ public class Config {
 
     public SQLConfiguration getSqlConfiguration() {
         return sqlConfiguration;
+    }
+
+    public TextConfiguration getTextConfig() {
+        return textConfiguration;
     }
 
     public String getHashAlgo() {

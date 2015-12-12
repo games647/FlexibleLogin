@@ -37,29 +37,29 @@ public class ForgotPasswordCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "Only player need to recover their password"));
+            src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyRecoverMessage());
             return CommandResult.success();
         }
 
         Player player = (Player) src;
         Account account = plugin.getDatabase().getAccountIfPresent(player);
         if (account == null) {
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "You are account isn't loaded"));
+            src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAccountNotLoadedMessage());
             return CommandResult.success();
         } else if (account.isLoggedIn()) {
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "You are already logged in"));
+            src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAlreadyLoggedInMessage());
             return CommandResult.success();
         }
 
         String email = account.getEmail();
         if (email == null || email.isEmpty()) {
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "You didn't submitted a email adress"));
+            src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getUncommittedEmailAddressMessage());
             return CommandResult.success();
         }
 
         String newPassword = generatePassword();
 
-        EmailConfiguration emailConfig = plugin.getConfigManager().getConfiguration().getEmailConfiguration();
+        EmailConfiguration emailConfig = plugin.getConfigManager().getConfig().getEmailConfiguration();
 
         Properties properties = new Properties();
         properties.setProperty("mail.smtp.host", emailConfig.getHost());
@@ -102,8 +102,9 @@ public class ForgotPasswordCommand implements CommandExecutor {
         } catch (UnsupportedEncodingException ex) {
             //we can ignore this, because we will encode with UTF-8 which all Java platforms supports
         } catch (Exception ex) {
-            plugin.getLogger().error("Error preparing email for password recovery", ex);
-            src.sendMessage(Texts.of(TextColors.DARK_RED, "Error executing command. See console"));
+            plugin.getLogger().error("Error executing command", ex);
+            src.sendMessage(Texts.of(TextColors.DARK_RED
+                    , plugin.getConfigManager().getConfig().getTextConfig().getErrorCommandMessage()));
         }
 
         return CommandResult.success();
