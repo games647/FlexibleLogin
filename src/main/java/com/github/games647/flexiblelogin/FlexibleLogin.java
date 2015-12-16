@@ -31,7 +31,7 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Texts;
 
-@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.2.7")
+@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.3.1")
 public class FlexibleLogin {
 
     private final PluginContainer pluginContainer;
@@ -91,9 +91,9 @@ public class FlexibleLogin {
                 .executor(new RegisterCommand(this))
                 .arguments(
                         GenericArguments
-                            .optional(GenericArguments
-                                    .repeated(GenericArguments
-                                            .string(Texts.of("password")), 2)))
+                        .optional(GenericArguments
+                                .repeated(GenericArguments
+                                        .string(Texts.of("password")), 2)))
                 .build(), "register");
 
         commandDispatcher.register(this, CommandSpec.builder()
@@ -132,6 +132,7 @@ public class FlexibleLogin {
 //    public void onServerStopping(ServerStoppingEvent serverStoppingEvent) {
 //        //This state occurs immediately before the final tick, before the worlds are saved.
 //    }
+
     public Settings getConfigManager() {
         return configuration;
     }
