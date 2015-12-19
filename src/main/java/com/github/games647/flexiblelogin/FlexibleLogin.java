@@ -80,7 +80,7 @@ public class FlexibleLogin {
     @Listener //Commands register + events
     public void onInit(GameInitializationEvent initEvent) {
         //register commands
-        CommandManager commandDispatcher = initEvent.getGame().getCommandManager();
+        CommandManager commandDispatcher = game.getCommandManager();
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new LoginCommand(this))
@@ -116,8 +116,8 @@ public class FlexibleLogin {
                 .build(), "forgotpassword");
 
         //register events
-        initEvent.getGame().getEventManager().registerListeners(this, new PlayerListener(this));
-        initEvent.getGame().getEventManager().registerListeners(this, new PreventListener(this));
+        game.getEventManager().registerListeners(this, new PlayerListener(this));
+        game.getEventManager().registerListeners(this, new PreventListener(this));
     }
 
 //    @Subscribe
