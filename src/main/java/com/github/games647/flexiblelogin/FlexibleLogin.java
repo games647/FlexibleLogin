@@ -29,7 +29,7 @@ import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 
 @Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.3.1")
 public class FlexibleLogin {
@@ -84,7 +84,7 @@ public class FlexibleLogin {
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new LoginCommand(this))
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Texts.of("password"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("password"))))
                 .build(), "login");
 
         commandDispatcher.register(this, CommandSpec.builder()
@@ -93,7 +93,7 @@ public class FlexibleLogin {
                         GenericArguments
                         .optional(GenericArguments
                                 .repeated(GenericArguments
-                                        .string(Texts.of("password")), 2)))
+                                        .string(Text.of("password")), 2)))
                 .build(), "register");
 
         commandDispatcher.register(this, CommandSpec.builder()
@@ -102,13 +102,13 @@ public class FlexibleLogin {
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new UnregisterCommand(this))
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Texts.of("account"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("account"))))
                 .permission(pluginContainer.getName() + ".admin")
                 .build(), "unregister");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new SetEmailCommand(this))
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Texts.of("email"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("email"))))
                 .build(), "setemail");
 
         commandDispatcher.register(this, CommandSpec.builder()

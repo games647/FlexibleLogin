@@ -1,10 +1,10 @@
 package com.github.games647.flexiblelogin.config;
 
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 @ConfigSerializable
 public class TextConfiguration {
@@ -122,6 +122,6 @@ public class TextConfiguration {
     }
 
     private Text fromString(String textString) {
-        return Texts.legacy().fromUnchecked(textString);
+        return TextSerializers.LEGACY_FORMATTING_CODE.deserialize(textString);
     }
 }

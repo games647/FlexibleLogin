@@ -23,7 +23,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 public class ForgotPasswordCommand implements CommandExecutor {
@@ -103,7 +103,7 @@ public class ForgotPasswordCommand implements CommandExecutor {
             //we can ignore this, because we will encode with UTF-8 which all Java platforms supports
         } catch (Exception ex) {
             plugin.getLogger().error("Error executing command", ex);
-            src.sendMessage(Texts.of(TextColors.DARK_RED
+            src.sendMessage(Text.of(TextColors.DARK_RED
                     , plugin.getConfigManager().getConfig().getTextConfig().getErrorCommandMessage()));
         }
 

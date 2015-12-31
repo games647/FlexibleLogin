@@ -7,7 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -36,13 +36,13 @@ public class RegisterTask implements Runnable {
                     sendTotpHint(hashedPassword);
                 }
 
-                player.sendMessage(Texts.of(TextColors.DARK_GREEN, "Account created"));
+                player.sendMessage(Text.of(TextColors.DARK_GREEN, "Account created"));
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash", ex);
-                player.sendMessage(Texts.of(TextColors.DARK_RED, "Error executing command. See console"));
+                player.sendMessage(Text.of(TextColors.DARK_RED, "Error executing command. See console"));
             }
         } else {
-            player.sendMessage(Texts.of(TextColors.DARK_RED, "Your account already exists"));
+            player.sendMessage(Text.of(TextColors.DARK_RED, "Your account already exists"));
         }
     }
 
@@ -51,13 +51,13 @@ public class RegisterTask implements Runnable {
         String host = plugin.getGame().getServer().getBoundAddress().get().getAddress().getCanonicalHostName();
         try {
             URL barcodeUrl = new URL(TOTP.getQRBarcodeURL(player.getName(), host, secretCode));
-            player.sendMessage(Texts.builder("SecretKey genereted: ")
+            player.sendMessage(Text.builder("SecretKey genereted: ")
                     .color(TextColors.DARK_GREEN)
                     .build());
-            player.sendMessage(Texts.builder(secretCode)
+            player.sendMessage(Text.builder(secretCode)
                     .color(TextColors.GOLD)
-                    .append(Texts.of(TextColors.DARK_BLUE, " or "))
-                    .append(Texts.builder("Click here to scan the QR-Code")
+                    .append(Text.of(TextColors.DARK_BLUE, " or "))
+                    .append(Text.builder("Click here to scan the QR-Code")
                             .color(TextColors.GOLD)
                             .onClick(TextActions.openUrl(barcodeUrl))
                             .build())

@@ -7,7 +7,7 @@ import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 public class SendEmailTask implements Runnable {
@@ -38,10 +38,10 @@ public class SendEmailTask implements Runnable {
             }
 
             transport.sendMessage(email, email.getAllRecipients());
-            player.sendMessage(Texts.of(TextColors.DARK_GREEN, "Email sent"));
+            player.sendMessage(Text.of(TextColors.DARK_GREEN, "Email sent"));
         } catch (Exception ex) {
             plugin.getLogger().error("Error sending email", ex);
-            player.sendMessage(Texts.of(TextColors.DARK_RED, "Error executing command. See console"));
+            player.sendMessage(Text.of(TextColors.DARK_RED, "Error executing command. See console"));
         }
     }
 }
