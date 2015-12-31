@@ -11,13 +11,13 @@ import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.command.MessageSinkEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
+import org.spongepowered.api.event.message.MessageChannelEvent;
 
 public class PreventListener {
 
@@ -38,7 +38,7 @@ public class PreventListener {
     }
 
     @Listener
-    public void onChat(MessageSinkEvent.Chat chatEvent) {
+    public void onChat(MessageChannelEvent.Chat chatEvent) {
         checkLoginStatus(chatEvent, chatEvent);
     }
 
