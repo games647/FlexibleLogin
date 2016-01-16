@@ -5,15 +5,6 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfiguration;
 import com.github.games647.flexiblelogin.tasks.SaveTask;
 import com.github.games647.flexiblelogin.tasks.SendEmailTask;
-import com.gmail.frogocomics.flexiblelogin.LogUtils;
-
-import org.apache.commons.lang3.RandomStringUtils;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandContext;
-import org.spongepowered.api.util.command.spec.CommandExecutor;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
@@ -24,6 +15,16 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public class ForgotPasswordCommand implements CommandExecutor {
 
@@ -36,29 +37,29 @@ public class ForgotPasswordCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlyRecoverPasswordMessage());
+            src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyRecoverMessage());
             return CommandResult.success();
         }
 
         Player player = (Player) src;
         Account account = plugin.getDatabase().getAccountIfPresent(player);
         if (account == null) {
-            src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersAccountNotLoadedMessage());
+            src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAccountNotLoadedMessage());
             return CommandResult.success();
         } else if (account.isLoggedIn()) {
-            src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersAccountAlreadyLoggedInMessage());
+            src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAlreadyLoggedInMessage());
             return CommandResult.success();
         }
 
         String email = account.getEmail();
         if (email == null || email.isEmpty()) {
-            src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getUncommittedEmailAddressMessage());
+            src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getUncommittedEmailAddressMessage());
             return CommandResult.success();
         }
 
         String newPassword = generatePassword();
 
-        EmailConfiguration emailConfig = plugin.getConfigManager().getConfiguration().getEmailConfiguration();
+        EmailConfiguration emailConfig = plugin.getConfigManager().getConfig().getEmailConfiguration();
 
         Properties properties = new Properties();
         properties.setProperty("mail.smtp.host", emailConfig.getHost());
@@ -100,9 +101,10 @@ public class ForgotPasswordCommand implements CommandExecutor {
                     .submit(plugin);
         } catch (UnsupportedEncodingException ex) {
             //we can ignore this, because we will encode with UTF-8 which all Java platforms supports
-        } catch (Exception e) {
-            LogUtils.logException(e);
-            src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getErrorExecutingCommandMessage());
+        } catch (Exception ex) {
+            plugin.getLogger().error("Error executing command", ex);
+            src.sendMessage(Text.of(TextColors.DARK_RED
+                    , plugin.getConfigManager().getConfig().getTextConfig().getErrorCommandMessage()));
         }
 
         return CommandResult.success();

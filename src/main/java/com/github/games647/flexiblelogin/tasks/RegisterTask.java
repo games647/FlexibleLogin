@@ -3,13 +3,10 @@ package com.github.games647.flexiblelogin.tasks;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.hasher.TOTP;
 
+import org.spongepowered.api.entity.living.player.Player;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.format.TextColors;
 
 public class RegisterTask implements Runnable {
 
@@ -32,17 +29,17 @@ public class RegisterTask implements Runnable {
                 String hashedPassword = plugin.getHasher().hash(password);
                 plugin.getDatabase().createAccount(player, hashedPassword);
                 //thread-safe, because it's immutable after config load
-                if (plugin.getConfigManager().getConfiguration().getHashAlgo().equalsIgnoreCase("totp")) {
+                if (plugin.getConfigManager().getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
                     sendTotpHint(hashedPassword);
                 }
 
-                player.sendMessage(Texts.of(TextColors.DARK_GREEN, "Account created"));
+                player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAccountCreatedMessage());
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash", ex);
-                player.sendMessage(Texts.of(TextColors.DARK_RED, "Error executing command. See console"));
+                player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getUnexpectedErrorMessage());
             }
         } else {
-            player.sendMessage(Texts.of(TextColors.DARK_RED, "Your account already exists"));
+            player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAccountExistsMessage());
         }
     }
 
@@ -51,17 +48,8 @@ public class RegisterTask implements Runnable {
         String host = plugin.getGame().getServer().getBoundAddress().get().getAddress().getCanonicalHostName();
         try {
             URL barcodeUrl = new URL(TOTP.getQRBarcodeURL(player.getName(), host, secretCode));
-            player.sendMessage(Texts.builder("SecretKey genereted: ")
-                    .color(TextColors.DARK_GREEN)
-                    .build());
-            player.sendMessage(Texts.builder(secretCode)
-                    .color(TextColors.GOLD)
-                    .append(Texts.of(TextColors.DARK_BLUE, " or "))
-                    .append(Texts.builder("Click here to scan the QR-Code")
-                            .color(TextColors.GOLD)
-                            .onClick(TextActions.openUrl(barcodeUrl))
-                            .build())
-                    .build());
+            player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getSecretKeyCreatedMessageHeader());
+            player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getSecretKeyCreatedMessage(secretCode, barcodeUrl.toString()));
         }catch (MalformedURLException ex) {
             plugin.getLogger().error("Malformed totp url link", ex);
         }

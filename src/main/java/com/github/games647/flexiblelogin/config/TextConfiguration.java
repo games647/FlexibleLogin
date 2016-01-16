@@ -1,21 +1,13 @@
 package com.github.games647.flexiblelogin.config;
 
-import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.gmail.frogocomics.flexiblelogin.LogUtils;
-
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextStyles;
-import org.spongepowered.api.util.TextMessageException;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 @ConfigSerializable
 public class TextConfiguration {
-
-    private final Text parsingTextError = Texts.of(TextStyles.BOLD, TextColors.AQUA, FlexibleLogin.getInstance().getClass().getSimpleName() + " ", TextColors.GRAY, "\u2759 ", TextStyles.NONE, TextColors.DARK_RED, "The text configuration cannot be parsed. Please check the configuration and try again.");
 
     @Setting(comment = "When a non-player (i.e. Console, Command Block) tries to login.")
     private String playersOnly = "§4Only players need to login!";
@@ -35,8 +27,17 @@ public class TextConfiguration {
     @Setting(comment = "When the account does not exist on the account database.")
     private String playersAccountNotLoaded = "§4Your account cannot be loaded.";
 
-    @Setting(comment = "When the player's account is already in: it is then pointless to use the forgot password command")
+    @Setting(comment = "If the player is logged in, it is then pointless to use the forgot password command")
     private String playersAccountAlreadyLoggedIn = "§4You are already logged in!";
+
+    @Setting(comment = "When the player successfully created his/her account.")
+    private String playersAccountCreated = "§2Account created.";
+
+    @Setting(comment = "When an account already exists, and therefore cannot be created.")
+    private String playersAccountExists = "§4Account already exists!";
+
+    @Setting(comment = "When a player's account was not found!")
+    private String playersAccountNotFound = "&4Account not found!";
 
     @Setting(comment = "When the player did not or forgot to submit an email address used to recover a password.")
     private String uncommittedEmailAddress = "§4You did not submit an email address!";
@@ -50,6 +51,9 @@ public class TextConfiguration {
     @Setting(comment = "When the player is not logged in of his/her account.")
     private String notLoggedIn = "§4Not logged in.";
 
+    @Setting(comment = "When a player successfully logs in.")
+    private String loggedIn = "§2Logged in";
+
     @Setting(comment = "When totp is not enabled.")
     private String totpNotEnabled = "§4Totp is not enabled. You have to enter two passwords.";
 
@@ -62,154 +66,139 @@ public class TextConfiguration {
     @Setting(comment = "When the player enters an email that does not exist.")
     private String notEmail = "§4You have entered in an invalid email!";
 
+    @Setting(comment = "When the email was sent!")
+    private String emailSent = "&2The email has been sent!";
+
     @Setting(comment = "When the unregister process failed.")
     private String unregisterFailed = "§4Your request is neither a player name or uuid.";
 
+    @Setting(comment = "When a player's account does not exist.")
+    private String accountDoesNotExist = "§4Your account does not exist!";
+
+    @Setting(comment = "When a player enters an incorrect password.")
+    private String incorrectPassword = "§4Your password is incorrect!";
+
+    @Setting(comment = "When an unexpected error occurs. (Should not happen)")
+    private String unexpectedError = "§4An unexpected exception has occured. Please check console for details.";
+
+    @Setting(comment = "When a secretkey is created (header).")
+    private String secretKeyCreatedHeader = "§2SecretKey created:";
+
+    @Setting(comment = "When a secretkey is created.")
+    private String secretKeyCreated = "&l(secretkey) or click &lHERE &rto scan the url. (url)";
+
+    @Setting(comment = "When an account was successfully deleted.")
+    private String accountDeleted = "§2Deleted account of: (identifier)";
+
     public Text getPlayersOnlyMessage() {
-        try {
-            return fromString(playersOnly);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+        return fromString(playersOnly);
     }
 
-    public Text getPlayersOnlyRecoverPasswordMessage() {
-        try {
-            return fromString(playersOnlyPassword);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+    public Text getPlayersOnlyRecoverMessage() {
+        return fromString(playersOnlyPassword);
     }
 
     public Text getPlayersOnlyLogoutMessage() {
-        try {
-            return fromString(playersOnlyLogout);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+        return fromString(playersOnlyLogout);
     }
 
     public Text getPlayersOnlyRegisterMessage() {
-        try {
-            return fromString(playersOnlyRegister);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+        return fromString(playersOnlyRegister);
     }
 
     public Text getPlayersOnlySetEmail() {
-        try {
-            return fromString(playersOnlySetEmail);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+        return fromString(playersOnlySetEmail);
     }
 
-    public Text getPlayersAccountNotLoadedMessage() {
-        try {
-            return fromString(playersAccountNotLoaded);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+    public Text getAccountNotLoadedMessage() {
+        return fromString(playersAccountNotLoaded);
     }
 
-    public Text getPlayersAccountAlreadyLoggedInMessage() {
-        try {
-            return fromString(playersAccountAlreadyLoggedIn);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+    public Text getAlreadyLoggedInMessage() {
+        return fromString(playersAccountAlreadyLoggedIn);
+    }
+
+    public Text getAccountCreatedMessage() {
+        return fromString(playersAccountCreated);
+    }
+
+    public Text getAccountExistsMessage() {
+        return fromString(playersAccountExists);
+    }
+
+    public Text getAccountNotFoundMessage() {
+        return fromString(playersAccountNotFound);
+    }
+
+    public Text getAccountDeletedMessage(String identifier) {
+        return fromString(accountDeleted.replaceAll("\\(identifier\\)", identifier));
     }
 
     public Text getUncommittedEmailAddressMessage() {
-        try {
-            return fromString(uncommittedEmailAddress);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+        return fromString(uncommittedEmailAddress);
     }
 
-    public Text getErrorExecutingCommandMessage() {
-        try {
-            return fromString(errorExecutingCommand);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+    public Text getErrorCommandMessage() {
+        return fromString(errorExecutingCommand);
     }
 
     public Text getSuccessfullyLoggedOutMessage() {
-        try {
-            return fromString(loggedOut);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+        return fromString(loggedOut);
     }
 
     public Text getNotLoggedInMessage() {
-        try {
-            return fromString(notLoggedIn);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+        return fromString(notLoggedIn);
+    }
+
+    public Text getLoggedInMessage() {
+        return fromString(loggedIn);
     }
 
     public Text getTotpNotEnabledMessage() {
-        try {
-            return fromString(totpNotEnabled);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+        return fromString(totpNotEnabled);
     }
 
     public Text getUnequalPasswordsMessage() {
-        try {
-            return fromString(unevenPasswords);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+        return fromString(unevenPasswords);
     }
 
     public Text getEmailSetMessage() {
-        try {
-            return fromString(emailSet);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+        return fromString(emailSet);
     }
 
     public Text getNotEmailMessage() {
-        try {
-            return fromString(notEmail);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+        return fromString(notEmail);
+    }
+
+    public Text getEmailSentMessage() {
+        return fromString(emailSent);
     }
 
     public Text getUnregisteringFailedMessage() {
-        try {
-            return fromString(unregisterFailed);
-        } catch(TextMessageException e) {
-            LogUtils.logException(e);
-            return parsingTextError;
-        }
+        return fromString(unregisterFailed);
     }
 
-    private Text fromString(String textString) throws TextMessageException {
-        return Texts.legacy().from(textString);
+    public Text getAccountDoesNotExistMessage() {
+        return fromString(accountDoesNotExist);
+    }
+
+    public Text getIncorrectPasswordMessage() {
+        return fromString(incorrectPassword);
+    }
+
+    public Text getUnexpectedErrorMessage() {
+        return fromString(unexpectedError);
+    }
+
+    public Text getSecretKeyCreatedMessageHeader() {
+        return fromString(secretKeyCreatedHeader);
+    }
+
+    public Text getSecretKeyCreatedMessage(String key, String url) {
+        return fromString(secretKeyCreated.replaceAll("\\(secretkey\\)", key).replaceAll("\\(url\\)", url));
+    }
+
+    private Text fromString(String textString) {
+        return TextSerializers.LEGACY_FORMATTING_CODE.deserialize(textString);
     }
 }

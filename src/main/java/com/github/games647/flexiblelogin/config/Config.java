@@ -27,7 +27,7 @@ public class Config {
         return sqlConfiguration;
     }
 
-    public TextConfiguration getTextConfiguration() {
+    public TextConfiguration getTextConfig() {
         return textConfiguration;
     }
 

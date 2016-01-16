@@ -16,37 +16,34 @@ import com.github.games647.flexiblelogin.listener.PreventListener;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.command.CommandManager;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.service.command.CommandService;
-import org.spongepowered.api.service.config.DefaultConfig;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.args.GenericArguments;
-import org.spongepowered.api.util.command.spec.CommandSpec;
+import org.spongepowered.api.text.Text;
 
 import java.io.File;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.2.7")
+@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.3.2")
 public class FlexibleLogin {
 
-    private static FlexibleLogin instance = null;
+    private final PluginContainer pluginContainer;
+    private final Logger logger;
+    private final Game game;
+
+    private static FlexibleLogin instance;
 
     public static FlexibleLogin getInstance() {
-        if(instance == null) {
-            instance = new FlexibleLogin();
-        }
         return instance;
     }
-
-    @Inject private PluginContainer pluginContainer;
-    @Inject private Logger logger;
-    @Inject private Game game;
 
     @Inject
     @DefaultConfig(sharedRoot = false)
@@ -62,7 +59,12 @@ public class FlexibleLogin {
 
     private Hasher hasher;
 
-    private FlexibleLogin() {}
+    @Inject
+    public FlexibleLogin(Logger logger, PluginContainer pluginContainer, Game game) {
+        this.logger = logger;
+        this.pluginContainer = pluginContainer;
+        this.game = game;
+    }
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
@@ -74,7 +76,7 @@ public class FlexibleLogin {
         database = new Database(this);
         database.createTable();
 
-        if (configuration.getConfiguration().getHashAlgo().equalsIgnoreCase("totp")) {
+        if (configuration.getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
             hasher = new TOTP();
         } else {
             //use bcrypt as fallback for now
@@ -82,23 +84,25 @@ public class FlexibleLogin {
         }
     }
 
-    @Listener //During this state, the plugin should finish any work needed in order to be functional. Commands register + events
+    @Listener //Commands register + events
     public void onInit(GameInitializationEvent initEvent) {
+        //Pass instance to instance
+        instance = this;
         //register commands
-        CommandService commandDispatcher = initEvent.getGame().getCommandDispatcher();
+        CommandManager commandDispatcher = game.getCommandManager();
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new LoginCommand(this))
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Texts.of("password"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("password"))))
                 .build(), "login");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new RegisterCommand(this))
                 .arguments(
                         GenericArguments
-                                .optional(GenericArguments
-                                        .repeated(GenericArguments
-                                                .string(Texts.of("password")), 2)))
+                        .optional(GenericArguments
+                                .repeated(GenericArguments
+                                        .string(Text.of("password")), 2)))
                 .build(), "register");
 
         commandDispatcher.register(this, CommandSpec.builder()
@@ -107,13 +111,13 @@ public class FlexibleLogin {
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new UnregisterCommand(this))
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Texts.of("account"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("account"))))
                 .permission(pluginContainer.getName() + ".admin")
                 .build(), "unregister");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new SetEmailCommand(this))
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Texts.of("email"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("email"))))
                 .build(), "setemail");
 
         commandDispatcher.register(this, CommandSpec.builder()
@@ -121,20 +125,18 @@ public class FlexibleLogin {
                 .build(), "forgotpassword");
 
         //register events
-        initEvent.getGame().getEventManager().registerListeners(this, new PlayerListener(this));
-        initEvent.getGame().getEventManager().registerListeners(this, new PreventListener(this));
+        game.getEventManager().registerListeners(this, new PlayerListener(this));
+        game.getEventManager().registerListeners(this, new PreventListener(this));
     }
 
 //    @Subscribe
 //    public void onPostInit(PostInitializationEvent postInitEvent) {
 //        //inter-plugin communication + Plugins providing an API should be ready to accept basic requests.
 //    }
-
 //    @Listener
 //    public void onServerStart(GameAboutToStartServerEvent serverAboutToStartEvent) {
 //        //The server instance exists, but worlds are not yet loaded.
 //    }
-
 //    @Subscribe
 //    public void onServerStopping(ServerStoppingEvent serverStoppingEvent) {
 //        //This state occurs immediately before the final tick, before the worlds are saved.

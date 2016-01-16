@@ -3,13 +3,13 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.UnregisterTask;
 
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandContext;
-import org.spongepowered.api.util.command.spec.CommandExecutor;
-
 import java.util.UUID;
+
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
 
 public class UnregisterCommand implements CommandExecutor {
 
@@ -45,7 +45,7 @@ public class UnregisterCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getUnregisteringFailedMessage());
+        src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getUnregisteringFailedMessage());
 
         return CommandResult.success();
     }

@@ -3,12 +3,12 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.LoginTask;
 
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandContext;
-import org.spongepowered.api.util.command.spec.CommandExecutor;
 
 public class LoginCommand implements CommandExecutor {
 
@@ -21,7 +21,7 @@ public class LoginCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlyMessage());
+            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyMessage());
             return CommandResult.empty();
         }
 

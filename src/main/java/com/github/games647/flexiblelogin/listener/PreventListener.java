@@ -7,17 +7,17 @@ import java.util.Optional;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
+import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.cause.CauseTracked;
-import org.spongepowered.api.event.command.MessageSinkEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
+import org.spongepowered.api.event.message.MessageChannelEvent;
 
 public class PreventListener {
 
@@ -27,7 +27,7 @@ public class PreventListener {
         this.plugin = plugin;
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onPlayerMove(DisplaceEntityEvent.TargetPlayer playerMoveEvent) {
         Vector3d oldLocation = playerMoveEvent.getFromTransform().getPosition();
         Vector3d newLocation = playerMoveEvent.getToTransform().getPosition();
@@ -37,12 +37,12 @@ public class PreventListener {
         }
     }
 
-    @Listener(ignoreCancelled = true)
-    public void onChat(MessageSinkEvent.Chat chatEvent) {
+    @Listener
+    public void onChat(MessageChannelEvent.Chat chatEvent) {
         checkLoginStatus(chatEvent, chatEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onCommand(SendCommandEvent commandEvent) {
         Optional<Player> playerOptional = commandEvent.getCause().first(Player.class);
         if (playerOptional.isPresent()) {
@@ -57,47 +57,47 @@ public class PreventListener {
         }
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onPlayerItemDrop(DropItemEvent dropItemEvent) {
         checkLoginStatus(dropItemEvent, dropItemEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onItemConsume(UseItemStackEvent itemConsumeEvent) {
         checkLoginStatus(itemConsumeEvent, itemConsumeEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onBlockBreak(ChangeBlockEvent.Break breakBlockEvent) {
         checkLoginStatus(breakBlockEvent, breakBlockEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onInventoryChange(ChangeInventoryEvent breakBlockEvent) {
         checkLoginStatus(breakBlockEvent, breakBlockEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onBlockPlace(ChangeBlockEvent.Place blockPlaceEvent) {
         checkLoginStatus(blockPlaceEvent, blockPlaceEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onBlockChange(ChangeBlockEvent changeBlockEvent) {
         checkLoginStatus(changeBlockEvent, changeBlockEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onBlockInteract(InteractBlockEvent interactBlockEvent) {
         checkLoginStatus(interactBlockEvent, interactBlockEvent);
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onEntityInteract(InteractEntityEvent interactEntityEvent) {
         checkLoginStatus(interactEntityEvent, interactEntityEvent);
     }
 
-    private void checkLoginStatus(Cancellable event, CauseTracked causeEvent) {
+    private void checkLoginStatus(Cancellable event, Event causeEvent) {
         Optional<Player> playerOptional = causeEvent.getCause().first(Player.class);
         if (playerOptional.isPresent()) {
             checkLoginStatus(event, playerOptional.get());

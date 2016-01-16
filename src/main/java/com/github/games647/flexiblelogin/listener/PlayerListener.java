@@ -6,7 +6,7 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 public class PlayerListener {
@@ -19,17 +19,17 @@ public class PlayerListener {
         this.plugin = plugin;
     }
 
-    @Listener(ignoreCancelled = true)
+    @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join playerJoinEvent) {
         Player player = playerJoinEvent.getTargetEntity();
         if (!player.getName().matches(VALID_USERNAME)) {
             //validate invalid characters
-            player.kick(Texts.of(TextColors.DARK_RED
+            player.kick(Text.of(TextColors.DARK_RED
                     , "Invalid username - Choose characters a-z,A-Z,0-9 or _ and a length between 2 and 16"));
-            playerJoinEvent.setMessage(Texts.of());
+            playerJoinEvent.setMessage(Text.EMPTY);
         }
 
-        player.sendMessage(Texts.of(TextColors.DARK_AQUA, "Type /register or /login to login in"));
+        player.sendMessage(Text.of(TextColors.DARK_AQUA, "Type /register or /login to login in"));
     }
 
     @Listener

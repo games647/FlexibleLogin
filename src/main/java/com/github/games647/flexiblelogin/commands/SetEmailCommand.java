@@ -4,12 +4,12 @@ import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.SaveTask;
 
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandContext;
-import org.spongepowered.api.util.command.spec.CommandExecutor;
 
 public class SetEmailCommand implements CommandExecutor {
 
@@ -24,7 +24,7 @@ public class SetEmailCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlySetEmail());
+            src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlySetEmail());
             return CommandResult.empty();
         }
 
@@ -33,7 +33,7 @@ public class SetEmailCommand implements CommandExecutor {
             Account account = plugin.getDatabase().getAccountIfPresent((Player) src);
             if (account != null) {
                 account.setEmail(email);
-                src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getEmailSetMessage());
+                src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getEmailSetMessage());
                 plugin.getGame().getScheduler().createTaskBuilder()
                         .async()
                         .execute(new SaveTask(plugin, account))
@@ -43,7 +43,7 @@ public class SetEmailCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        src.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getNotEmailMessage());
+        src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getNotEmailMessage());
         return CommandResult.success();
     }
 }

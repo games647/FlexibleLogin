@@ -3,12 +3,10 @@ package com.github.games647.flexiblelogin.tasks;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfiguration;
 
+import org.spongepowered.api.entity.living.player.Player;
+
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
-
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
 
 public class SendEmailTask implements Runnable {
 
@@ -29,7 +27,7 @@ public class SendEmailTask implements Runnable {
     @Override
     public void run() {
         try {
-            EmailConfiguration emailConfig = plugin.getConfigManager().getConfiguration().getEmailConfiguration();
+            EmailConfiguration emailConfig = plugin.getConfigManager().getConfig().getEmailConfiguration();
 
             //connect to host and send message
             if (!transport.isConnected()) {
@@ -38,10 +36,10 @@ public class SendEmailTask implements Runnable {
             }
 
             transport.sendMessage(email, email.getAllRecipients());
-            player.sendMessage(Texts.of(TextColors.DARK_GREEN, "Email sent"));
+            player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getEmailSentMessage());
         } catch (Exception ex) {
             plugin.getLogger().error("Error sending email", ex);
-            player.sendMessage(Texts.of(TextColors.DARK_RED, "Error executing command. See console"));
+            player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getUnexpectedErrorMessage());
         }
     }
 }

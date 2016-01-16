@@ -1,19 +1,18 @@
 package com.github.games647.flexiblelogin.commands;
 
 import com.google.common.collect.Lists;
-
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.RegisterTask;
 
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandContext;
-import org.spongepowered.api.util.command.spec.CommandExecutor;
-
 import java.util.Collection;
 import java.util.List;
+
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.entity.living.player.Player;
 
 public class RegisterCommand implements CommandExecutor {
 
@@ -26,16 +25,16 @@ public class RegisterCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getPlayersOnlyRegisterMessage());
+            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyRegisterMessage());
             return CommandResult.success();
         }
 
         //If the server is using TOTP, no password is required
         if (!args.hasAny("password")) {
-            if (plugin.getConfigManager().getConfiguration().getHashAlgo().equals("totp")) {
+            if (plugin.getConfigManager().getConfig().getHashAlgo().equals("totp")) {
                 startTask(source, "");
             } else {
-                source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getTotpNotEnabledMessage());
+                source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getTotpNotEnabledMessage());
             }
 
             return CommandResult.success();
@@ -48,7 +47,7 @@ public class RegisterCommand implements CommandExecutor {
             //Check if the first two passwords are equal to prevent typos
             startTask(source, password);
         } else {
-            source.sendMessage(plugin.getConfigManager().getConfiguration().getTextConfiguration().getUnequalPasswordsMessage());
+            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getUnequalPasswordsMessage());
         }
 
         return CommandResult.success();

@@ -4,8 +4,6 @@ import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
 
 public class LoginTask implements Runnable {
 
@@ -25,20 +23,20 @@ public class LoginTask implements Runnable {
     public void run() {
         Account account = plugin.getDatabase().loadAccount(player);
         if (account == null) {
-            player.sendMessage(Texts.of(TextColors.DARK_RED, "Your account doesn't exist"));
+            player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAccountDoesNotExistMessage());
             return;
         }
 
         try {
             if (account.checkPassword(plugin, userInput)) {
                 account.setLoggedIn(true);
-                player.sendMessage(Texts.of(TextColors.DARK_GREEN, "Logged in"));
+                player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getLoggedInMessage());
             } else {
-                player.sendMessage(Texts.of(TextColors.DARK_RED, "Incorrect password"));
+                player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getIncorrectPasswordMessage());
             }
         } catch (Exception ex) {
             plugin.getLogger().error("Unexpected error while password checking", ex);
-            player.sendMessage(Texts.of(TextColors.DARK_RED, "Error executing command. See console"));
+            player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getUnexpectedErrorMessage());
         }
     }
 }
