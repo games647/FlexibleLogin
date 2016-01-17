@@ -36,13 +36,13 @@ public class RegisterTask implements Runnable {
                     sendTotpHint(hashedPassword);
                 }
 
-                player.sendMessage(Text.of(TextColors.DARK_GREEN, "Account created"));
+                player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAccountCreated());
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash", ex);
-                player.sendMessage(Text.of(TextColors.DARK_RED, "Error executing command. See console"));
+                player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getErrorCommandMessage());
             }
         } else {
-            player.sendMessage(Text.of(TextColors.DARK_RED, "Your account already exists"));
+            player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAccountAlreadyExists());
         }
     }
 
@@ -51,18 +51,18 @@ public class RegisterTask implements Runnable {
         String host = plugin.getGame().getServer().getBoundAddress().get().getAddress().getCanonicalHostName();
         try {
             URL barcodeUrl = new URL(TOTP.getQRBarcodeURL(player.getName(), host, secretCode));
-            player.sendMessage(Text.builder("SecretKey genereted: ")
-                    .color(TextColors.DARK_GREEN)
+            player.sendMessage(Text.builder()
+                    .append(plugin.getConfigManager().getConfig().getTextConfig().getKeyGenerated())
                     .build());
             player.sendMessage(Text.builder(secretCode)
                     .color(TextColors.GOLD)
-                    .append(Text.of(TextColors.DARK_BLUE, " or "))
-                    .append(Text.builder("Click here to scan the QR-Code")
-                            .color(TextColors.GOLD)
+                    .append(Text.of(TextColors.DARK_BLUE, " / "))
+                    .append(Text.builder()
+                            .append(plugin.getConfigManager().getConfig().getTextConfig().getScanQr())
                             .onClick(TextActions.openUrl(barcodeUrl))
                             .build())
                     .build());
-        }catch (MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             plugin.getLogger().error("Malformed totp url link", ex);
         }
     }

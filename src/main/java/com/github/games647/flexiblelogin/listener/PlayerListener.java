@@ -7,7 +7,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 public class PlayerListener {
 
@@ -24,12 +23,11 @@ public class PlayerListener {
         Player player = playerJoinEvent.getTargetEntity();
         if (!player.getName().matches(VALID_USERNAME)) {
             //validate invalid characters
-            player.kick(Text.of(TextColors.DARK_RED
-                    , "Invalid username - Choose characters a-z,A-Z,0-9 or _ and a length between 2 and 16"));
+            player.kick(plugin.getConfigManager().getConfig().getTextConfig().getInvalidUsername());
             playerJoinEvent.setMessage(Text.EMPTY);
         }
 
-        player.sendMessage(Text.of(TextColors.DARK_AQUA, "Type /register or /login to login in"));
+        player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getNotLoggedInMessage());
     }
 
     @Listener

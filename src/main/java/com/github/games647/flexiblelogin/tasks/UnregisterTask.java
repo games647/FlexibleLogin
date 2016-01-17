@@ -5,8 +5,6 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import java.util.UUID;
 
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 public class UnregisterTask implements Runnable {
 
@@ -39,9 +37,10 @@ public class UnregisterTask implements Runnable {
         }
 
         if (accountFound) {
-            src.sendMessage(Text.of(TextColors.DARK_GREEN, "Deleted account of: " + accountIndentifer));
+            src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig()
+                    .getAccountDeleted(accountIndentifer.toString()));
         } else {
-            src.sendMessage(Text.of(TextColors.DARK_RED, "User account not found"));
+            src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAccountNotFound());
         }
     }
 }
