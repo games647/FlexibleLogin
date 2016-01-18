@@ -34,6 +34,12 @@ import org.spongepowered.api.text.Text;
 @Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.3.3")
 public class FlexibleLogin {
 
+    private static FlexibleLogin instance;
+
+    public static FlexibleLogin getInstance() {
+        return instance;
+    }
+
     private final PluginContainer pluginContainer;
     private final Logger logger;
     private final Game game;
@@ -54,6 +60,8 @@ public class FlexibleLogin {
 
     @Inject
     public FlexibleLogin(Logger logger, PluginContainer pluginContainer, Game game) {
+        instance = this;
+
         this.logger = logger;
         this.pluginContainer = pluginContainer;
         this.game = game;
