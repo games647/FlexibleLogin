@@ -21,11 +21,7 @@ import org.spongepowered.api.event.message.MessageChannelEvent;
 
 public class PreventListener {
 
-    private final FlexibleLogin plugin;
-
-    public PreventListener(FlexibleLogin plugin) {
-        this.plugin = plugin;
-    }
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Listener
     public void onPlayerMove(DisplaceEntityEvent.TargetPlayer playerMoveEvent) {

@@ -12,11 +12,7 @@ public class PlayerListener {
 
     private static final String VALID_USERNAME = "^\\w{2,16}$";
 
-    private final FlexibleLogin plugin;
-
-    public PlayerListener(FlexibleLogin plugin) {
-        this.plugin = plugin;
-    }
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join playerJoinEvent) {

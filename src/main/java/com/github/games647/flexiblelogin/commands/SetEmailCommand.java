@@ -15,11 +15,7 @@ public class SetEmailCommand implements CommandExecutor {
 
     private static final String EMAIL_REGEX = "^[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$";
 
-    private final FlexibleLogin plugin;
-
-    public SetEmailCommand(FlexibleLogin plugin) {
-        this.plugin = plugin;
-    }
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
@@ -36,7 +32,7 @@ public class SetEmailCommand implements CommandExecutor {
                 src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getEmailSetMessage());
                 plugin.getGame().getScheduler().createTaskBuilder()
                         .async()
-                        .execute(new SaveTask(plugin, account))
+                        .execute(new SaveTask(account))
                         .submit(plugin);
             }
 

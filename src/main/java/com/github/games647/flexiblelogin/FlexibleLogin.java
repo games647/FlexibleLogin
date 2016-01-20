@@ -71,10 +71,10 @@ public class FlexibleLogin {
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
         logger.info("Loading {} v{}", pluginContainer.getName(), pluginContainer.getVersion());
 
-        configuration = new Settings(configManager, defaultConfigFile, this);
+        configuration = new Settings(configManager, defaultConfigFile);
         configuration.load();
 
-        database = new Database(this);
+        database = new Database();
         database.createTable();
 
         if (configuration.getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
@@ -91,12 +91,12 @@ public class FlexibleLogin {
         CommandManager commandDispatcher = game.getCommandManager();
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new LoginCommand(this))
+                .executor(new LoginCommand())
                 .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("password"))))
                 .build(), "login");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new RegisterCommand(this))
+                .executor(new RegisterCommand())
                 .arguments(
                         GenericArguments
                         .optional(GenericArguments
@@ -105,41 +105,28 @@ public class FlexibleLogin {
                 .build(), "register");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new LogoutCommand(this))
+                .executor(new LogoutCommand())
                 .build(), "logout");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new UnregisterCommand(this))
+                .executor(new UnregisterCommand())
                 .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("account"))))
                 .permission(pluginContainer.getName() + ".admin")
                 .build(), "unregister");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new SetEmailCommand(this))
+                .executor(new SetEmailCommand())
                 .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("email"))))
                 .build(), "setemail");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new UnregisterCommand(this))
+                .executor(new UnregisterCommand())
                 .build(), "forgotpassword");
 
         //register events
-        game.getEventManager().registerListeners(this, new PlayerListener(this));
-        game.getEventManager().registerListeners(this, new PreventListener(this));
+        game.getEventManager().registerListeners(this, new PlayerListener());
+        game.getEventManager().registerListeners(this, new PreventListener());
     }
-
-//    @Subscribe
-//    public void onPostInit(PostInitializationEvent postInitEvent) {
-//        //inter-plugin communication + Plugins providing an API should be ready to accept basic requests.
-//    }
-//    @Listener
-//    public void onServerStart(GameAboutToStartServerEvent serverAboutToStartEvent) {
-//        //The server instance exists, but worlds are not yet loaded.
-//    }
-//    @Subscribe
-//    public void onServerStopping(ServerStoppingEvent serverStoppingEvent) {
-//        //This state occurs immediately before the final tick, before the worlds are saved.
-//    }
 
     public Settings getConfigManager() {
         return configuration;

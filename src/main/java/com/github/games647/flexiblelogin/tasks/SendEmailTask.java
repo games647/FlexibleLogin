@@ -10,14 +10,13 @@ import org.spongepowered.api.entity.living.player.Player;
 
 public class SendEmailTask implements Runnable {
 
-    private final FlexibleLogin plugin;
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
     private final Transport transport;
     private final MimeMessage email;
 
     private final Player player;
 
-    public SendEmailTask(FlexibleLogin plugin, Player player, Transport transport, MimeMessage email) {
-        this.plugin = plugin;
+    public SendEmailTask(Player player, Transport transport, MimeMessage email) {
         this.transport = transport;
         this.email = email;
 

@@ -12,11 +12,7 @@ import org.spongepowered.api.entity.living.player.Player;
 
 public class LogoutCommand implements CommandExecutor {
 
-    private final FlexibleLogin plugin;
-
-    public LogoutCommand(FlexibleLogin plugin) {
-        this.plugin = plugin;
-    }
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {

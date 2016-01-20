@@ -28,7 +28,7 @@ public class Database {
 
     private static final String USERS_TABLE = "users";
 
-    private final FlexibleLogin plugin;
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
     //this cache is thread-safe
     private final Cache<UUID, Account> cache;
 
@@ -38,8 +38,7 @@ public class Database {
 
     private SqlService sql;
 
-    public Database(FlexibleLogin plugin) {
-        this.plugin = plugin;
+    public Database() {
         SQLConfiguration sqlConfig = plugin.getConfigManager().getConfig().getSqlConfiguration();
 
         if (sqlConfig.getType() == SQLType.MYSQL) {

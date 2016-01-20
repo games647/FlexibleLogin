@@ -16,11 +16,7 @@ import org.spongepowered.api.entity.living.player.Player;
 
 public class RegisterCommand implements CommandExecutor {
 
-    private final FlexibleLogin plugin;
-
-    public RegisterCommand(FlexibleLogin plugin) {
-        this.plugin = plugin;
-    }
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
@@ -57,7 +53,7 @@ public class RegisterCommand implements CommandExecutor {
         plugin.getGame().getScheduler().createTaskBuilder()
                 //we are executing a SQL Query which is blocking
                 .async()
-                .execute(new RegisterTask(plugin, (Player) source, password))
+                .execute(new RegisterTask((Player) source, password))
                 .name("Register Query")
                 .submit(plugin);
     }

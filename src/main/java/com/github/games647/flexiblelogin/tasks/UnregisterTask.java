@@ -8,20 +8,18 @@ import org.spongepowered.api.command.CommandSource;
 
 public class UnregisterTask implements Runnable {
 
-    private final FlexibleLogin plugin;
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
     private final CommandSource src;
 
     private final Object accountIndentifer;
 
-    public UnregisterTask(FlexibleLogin plugin, CommandSource src, UUID uuid) {
-        this.plugin = plugin;
+    public UnregisterTask(CommandSource src, UUID uuid) {
         this.src = src;
 
         this.accountIndentifer = uuid;
     }
 
-    public UnregisterTask(FlexibleLogin plugin, CommandSource src, String playerName) {
-        this.plugin = plugin;
+    public UnregisterTask(CommandSource src, String playerName) {
         this.src = src;
 
         this.accountIndentifer = playerName;

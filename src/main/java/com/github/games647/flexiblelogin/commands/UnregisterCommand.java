@@ -17,11 +17,7 @@ public class UnregisterCommand implements CommandExecutor {
             = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}";
     private static final String VALID_USERNAME = "^\\w{2,16}$";
 
-    private final FlexibleLogin plugin;
-
-    public UnregisterCommand(FlexibleLogin plugin) {
-        this.plugin = plugin;
-    }
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
@@ -32,7 +28,7 @@ public class UnregisterCommand implements CommandExecutor {
             plugin.getGame().getScheduler().createTaskBuilder()
                     //Async as it could run a SQL query
                     .async()
-                    .execute(new UnregisterTask(plugin, src, uuid))
+                    .execute(new UnregisterTask(src, uuid))
                     .submit(plugin);
             return CommandResult.success();
         } else if (account.matches(VALID_USERNAME)) {
@@ -40,7 +36,7 @@ public class UnregisterCommand implements CommandExecutor {
             plugin.getGame().getScheduler().createTaskBuilder()
                     //Async as it could run a SQL query
                     .async()
-                    .execute(new UnregisterTask(plugin, src, account))
+                    .execute(new UnregisterTask(src, account))
                     .submit(plugin);
             return CommandResult.success();
         }

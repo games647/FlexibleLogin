@@ -28,11 +28,7 @@ import org.spongepowered.api.text.format.TextColors;
 
 public class ForgotPasswordCommand implements CommandExecutor {
 
-    private final FlexibleLogin plugin;
-
-    public ForgotPasswordCommand(FlexibleLogin plugin) {
-        this.plugin = plugin;
-    }
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
@@ -90,14 +86,14 @@ public class ForgotPasswordCommand implements CommandExecutor {
             //send email
             plugin.getGame().getScheduler().createTaskBuilder()
                     .async()
-                    .execute(new SendEmailTask(plugin, player, transport, message))
+                    .execute(new SendEmailTask(player, transport, message))
                     .submit(plugin);
 
             //set new password here if the email sending fails fails we have still the old password
             account.setPasswordHash(plugin.getHasher().hash(newPassword));
             plugin.getGame().getScheduler().createTaskBuilder()
                     .async()
-                    .execute(new SaveTask(plugin, account))
+                    .execute(new SaveTask(account))
                     .submit(plugin);
         } catch (UnsupportedEncodingException ex) {
             //we can ignore this, because we will encode with UTF-8 which all Java platforms supports

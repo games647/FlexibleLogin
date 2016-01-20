@@ -15,15 +15,13 @@ public class Settings {
     private final ConfigurationLoader<CommentedConfigurationNode> configManager;
     private final File defaultConfigFile;
 
-    private final FlexibleLogin plugin;
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     private ObjectMapper<Config>.BoundInstance configMapper;
     private CommentedConfigurationNode rootNode;
 
-    public Settings(ConfigurationLoader<CommentedConfigurationNode> configManager
-            , File defaultConfigFile, FlexibleLogin plugin) {
+    public Settings(ConfigurationLoader<CommentedConfigurationNode> configManager, File defaultConfigFile) {
         this.configManager = configManager;
-        this.plugin = plugin;
         this.defaultConfigFile = defaultConfigFile;
 
         try {

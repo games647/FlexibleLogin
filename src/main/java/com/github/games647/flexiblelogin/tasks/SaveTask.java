@@ -5,16 +5,15 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 
 public class SaveTask implements Runnable {
 
-    private final FlexibleLogin login;
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
     private final Account account;
 
-    public SaveTask(FlexibleLogin login, Account account) {
-        this.login = login;
+    public SaveTask(Account account) {
         this.account = account;
     }
 
     @Override
     public void run() {
-        login.getDatabase().save(account);
+        plugin.getDatabase().save(account);
     }
 }

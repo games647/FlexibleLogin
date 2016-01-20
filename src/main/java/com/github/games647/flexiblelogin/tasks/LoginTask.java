@@ -7,14 +7,12 @@ import org.spongepowered.api.entity.living.player.Player;
 
 public class LoginTask implements Runnable {
 
-    private final FlexibleLogin plugin;
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     private final Player player;
     private final String userInput;
 
-    public LoginTask(FlexibleLogin plugin, Player player, String password) {
-        this.plugin = plugin;
-
+    public LoginTask(Player player, String password) {
         this.player = player;
         this.userInput = password;
     }

@@ -13,14 +13,12 @@ import org.spongepowered.api.text.format.TextColors;
 
 public class RegisterTask implements Runnable {
 
-    private final FlexibleLogin plugin;
+    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     private final Player player;
     private final String password;
 
-    public RegisterTask(FlexibleLogin plugin, Player player, String password) {
-        this.plugin = plugin;
-
+    public RegisterTask(Player player, String password) {
         this.player = player;
         this.password = password;
     }
