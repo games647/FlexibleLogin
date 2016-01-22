@@ -56,7 +56,7 @@ public class Database {
         switch (sqlConfig.getType()) {
             case SQLITE:
                 urlBuilder.append(sqlConfig.getPath()
-                            .replace("%DIR%", plugin.getConfigManager().getConfigDir().getAbsolutePath()))
+                        .replace("%DIR%", plugin.getConfigManager().getConfigDir().getAbsolutePath()))
                         .append(File.separatorChar)
                         .append("database.db");
                 break;
@@ -72,7 +72,7 @@ public class Database {
             case H2:
             default:
                 urlBuilder.append(sqlConfig.getPath()
-                            .replace("%DIR%", plugin.getConfigManager().getConfigDir().getAbsolutePath()))
+                        .replace("%DIR%", plugin.getConfigManager().getConfigDir().getAbsolutePath()))
                         .append(File.separatorChar)
                         .append("database");
                 break;
@@ -88,7 +88,7 @@ public class Database {
     public Connection getConnection() throws SQLException {
         if (sql == null) {
             //lazy binding
-            sql = plugin.getGame().getServiceManager().provide(SqlService.class).get();
+            sql = plugin.getGame().getServiceManager().provideUnchecked(SqlService.class);
         }
 
         return sql.getDataSource(jdbcUrl).getConnection();
@@ -279,7 +279,7 @@ public class Database {
         }
     }
 
-    public void closeQuietly(Connection conn) {
+    private void closeQuietly(Connection conn) {
         if (conn != null) {
             try {
                 //this closes automatically the statement and resultset
@@ -308,7 +308,8 @@ public class Database {
             byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
             byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
 
-            statement.setObject(1, Bytes.concat(mostBytes, leastBytes));
+            statement.setObject(4, Bytes.concat(mostBytes, leastBytes));
+            statement.execute();
         } catch (SQLException ex) {
             plugin.getLogger().error("Error updating user account", ex);
         } finally {

@@ -1,5 +1,6 @@
 package com.github.games647.flexiblelogin;
 
+import com.google.common.primitives.Longs;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -39,10 +40,13 @@ public class Account {
         //uuid in binary format
         byte[] uuidBytes = resultSet.getBytes(2);
 
-        byte[] mostBits = ArrayUtils.subarray(uuidBytes, 0, 3);
-        byte[] leastBits = ArrayUtils.subarray(uuidBytes, 3, 7);
+        byte[] mostBits = ArrayUtils.subarray(uuidBytes, 0, 8);
+        byte[] leastBits = ArrayUtils.subarray(uuidBytes, 8, 16);
 
-        this.uuid = new UUID(parseMostSignificant(mostBits), parseLeastSignificant(leastBits));
+        long mostByte = Longs.fromByteArray(mostBits);
+        long leastByte = Longs.fromByteArray(leastBits);
+
+        this.uuid = new UUID(mostByte, leastByte);
         this.username = resultSet.getString(3);
         this.passwordHash = resultSet.getString(4);
 
