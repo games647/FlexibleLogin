@@ -1,5 +1,9 @@
 package com.github.games647.flexiblelogin.config;
 
+import com.google.common.collect.Lists;
+
+import java.util.List;
+
 import ninja.leaping.configurate.objectmapping.Setting;
 
 public class Config {
@@ -17,7 +21,10 @@ public class Config {
     private String hashAlgo = "bcrypt";
 
     @Setting(comment = "Should the plugin login users automatically if it's the same account from the same IP")
-    private boolean ipAutoLogin = true;
+    private boolean ipAutoLogin = false;
+
+    @Setting
+    private List<String> protectedCommands = Lists.newArrayList();
 
     public EmailConfiguration getEmailConfiguration() {
         return emailConfiguration;
@@ -37,5 +44,9 @@ public class Config {
 
     public boolean isIpAutoLogin() {
         return ipAutoLogin;
+    }
+
+    public List<String> getProtectedCommands() {
+        return protectedCommands;
     }
 }

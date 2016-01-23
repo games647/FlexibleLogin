@@ -3,10 +3,13 @@ package com.github.games647.flexiblelogin.listener;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
+import java.util.Arrays;
+
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public class PlayerListener {
 
@@ -24,6 +27,18 @@ public class PlayerListener {
         }
 
         player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getNotLoggedInMessage());
+        plugin.getGame().getScheduler().createTaskBuilder()
+                .async()
+                .execute(() -> {
+                    Account loadedAccount = plugin.getDatabase().loadAccount(player);
+                    byte[] newIp = player.getConnection().getAddress().getAddress().getAddress();
+                    if (plugin.getConfigManager().getConfig().isIpAutoLogin()
+                            && Arrays.equals(loadedAccount.getIp(), newIp)) {
+                        player.sendMessage(Text.of(TextColors.DARK_GREEN, "Auto logged in"));
+                        loadedAccount.setLoggedIn(true);
+                    }
+                })
+                .submit(plugin);
     }
 
     @Listener

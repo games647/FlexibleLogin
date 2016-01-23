@@ -1,6 +1,9 @@
 package com.github.games647.flexiblelogin;
 
 import com.google.common.primitives.Longs;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -92,6 +95,14 @@ public class Account {
         return ip;
     }
 
+    public synchronized String getIpString() {
+        try {
+            return InetAddress.getByAddress(ip).getHostName();
+        } catch (UnknownHostException ex) {
+            return null;
+        }
+    }
+
     public synchronized Timestamp getTimestamp() {
         return timestamp;
     }
@@ -117,23 +128,5 @@ public class Account {
 
     public synchronized void setLoggedIn(boolean loggedIn) {
         this.loggedIn = loggedIn;
-    }
-
-    private long parseLeastSignificant(byte[] byteArray) {
-        long value = 0;
-        for (int i = 0; i < byteArray.length; i++) {
-            value += ((long) byteArray[i] & 0xffL) << (8 * i);
-        }
-
-        return value;
-    }
-
-    private long parseMostSignificant(byte[] byteArray) {
-        long value = 0;
-        for (byte aByte : byteArray) {
-            value = (value << 8) + (aByte & 0xff);
-        }
-
-        return value;
     }
 }

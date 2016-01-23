@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>FlexibleLogin</name>
-    <version>0.3.3</version>
+    <version>0.4</version>
     <description>Second Auth plugin for Sponge minecraft servers</description>
     <url>https://github.com/games647/FlexibleLogin</url>
 
@@ -92,12 +92,6 @@
         </plugins>
 
         <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <!--Replace variables-->
-                <filtering>true</filtering>
-            </resource>
-
             <!--Add the license to jar in order to see it in the final jar-->
             <resource>
                 <directory>${basedir}</directory>

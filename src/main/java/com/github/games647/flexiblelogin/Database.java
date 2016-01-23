@@ -271,7 +271,8 @@ public class Database {
             prepareStatement.execute();
 
             //if successfull
-            cache.put(uuid, new Account(uuid, player.getName(), password, ip));
+            Account account = new Account(uuid, player.getName(), password, ip);
+            cache.put(uuid, account);
         } catch (SQLException sqlEx) {
             plugin.getLogger().error("Error registering account", sqlEx);
         } finally {

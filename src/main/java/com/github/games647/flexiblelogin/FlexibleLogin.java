@@ -31,7 +31,7 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
-@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.3.3")
+@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.4")
 public class FlexibleLogin {
 
     private static FlexibleLogin instance;

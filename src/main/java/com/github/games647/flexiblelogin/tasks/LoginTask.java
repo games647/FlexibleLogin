@@ -28,6 +28,10 @@ public class LoginTask implements Runnable {
         try {
             if (account.checkPassword(plugin, userInput)) {
                 account.setLoggedIn(true);
+                //update the ip
+                byte[] playerIp = player.getConnection().getAddress().getAddress().getAddress();
+                account.setIp(playerIp);
+
                 player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getLoggedIn());
             } else {
                 player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getIncorrectPassword());
