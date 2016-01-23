@@ -74,3 +74,5 @@
 ##### 0.4
 
 + Implement ip auto login
++ Added command only protection
++ Added permission .registerRequired

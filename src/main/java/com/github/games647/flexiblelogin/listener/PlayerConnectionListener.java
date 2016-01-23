@@ -9,9 +9,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
-public class PlayerListener {
+public class PlayerConnectionListener {
 
     private static final String VALID_USERNAME = "^\\w{2,16}$";
 
@@ -26,7 +25,6 @@ public class PlayerListener {
             playerJoinEvent.setMessage(Text.EMPTY);
         }
 
-        player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getNotLoggedInMessage());
         plugin.getGame().getScheduler().createTaskBuilder()
                 .async()
                 .execute(() -> {
@@ -34,8 +32,12 @@ public class PlayerListener {
                     byte[] newIp = player.getConnection().getAddress().getAddress().getAddress();
                     if (plugin.getConfigManager().getConfig().isIpAutoLogin()
                             && Arrays.equals(loadedAccount.getIp(), newIp)) {
-                        player.sendMessage(Text.of(TextColors.DARK_GREEN, "Auto logged in"));
+                        player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getIpAutoLogin());
                         loadedAccount.setLoggedIn(true);
+                    } else if (!plugin.getConfigManager().getConfig().isCommandOnlyProtection()
+                            || (loadedAccount == null
+                                && player.hasPermission(plugin.getContainer().getId() + ".registerRequired"))) {
+                        player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getNotLoggedInMessage());
                     }
                 })
                 .submit(plugin);

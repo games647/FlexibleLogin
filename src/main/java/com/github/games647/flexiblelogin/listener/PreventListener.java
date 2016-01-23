@@ -3,6 +3,7 @@ package com.github.games647.flexiblelogin.listener;
 import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.spongepowered.api.entity.living.player.Player;
@@ -49,7 +50,19 @@ public class PreventListener {
                 return;
             }
 
-            checkLoginStatus(commandEvent, playerOptional.get());
+            if (plugin.getConfigManager().getConfig().isCommandOnlyProtection()) {
+                Player player = playerOptional.get();
+
+                List<String> protectedCommands = plugin.getConfigManager().getConfig().getProtectedCommands();
+                if ((protectedCommands.isEmpty() || protectedCommands.contains(command))) {
+                    if (!plugin.getDatabase().isLoggedin(player)) {
+                        player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getProtectedCommand());
+                        commandEvent.setCancelled(true);
+                    }
+                }
+            } else {
+                checkLoginStatus(commandEvent, playerOptional.get());
+            }
         }
     }
 
@@ -101,7 +114,13 @@ public class PreventListener {
     }
 
     private void checkLoginStatus(Cancellable event, Player player) {
-        if (!plugin.getDatabase().isLoggedin(player)) {
+        if (plugin.getConfigManager().getConfig().isCommandOnlyProtection()) {
+            //check if the user is already registered
+            if (plugin.getDatabase().getAccountIfPresent(player) == null
+                && player.hasPermission(plugin.getContainer().getId() + ".registerRequired")) {
+                event.setCancelled(true);
+            }
+        } else if (!plugin.getDatabase().isLoggedin(player)) {
             event.setCancelled(true);
         }
     }

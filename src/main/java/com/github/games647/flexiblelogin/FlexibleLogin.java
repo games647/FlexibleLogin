@@ -9,7 +9,7 @@ import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;
 import com.github.games647.flexiblelogin.hasher.Hasher;
 import com.github.games647.flexiblelogin.hasher.TOTP;
-import com.github.games647.flexiblelogin.listener.PlayerListener;
+import com.github.games647.flexiblelogin.listener.PlayerConnectionListener;
 import com.github.games647.flexiblelogin.listener.PreventListener;
 import com.google.inject.Inject;
 
@@ -124,7 +124,7 @@ public class FlexibleLogin {
                 .build(), "forgotpassword");
 
         //register events
-        game.getEventManager().registerListeners(this, new PlayerListener());
+        game.getEventManager().registerListeners(this, new PlayerConnectionListener());
         game.getEventManager().registerListeners(this, new PreventListener());
     }
 

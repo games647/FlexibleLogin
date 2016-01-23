@@ -23,8 +23,12 @@ public class Config {
     @Setting(comment = "Should the plugin login users automatically if it's the same account from the same IP")
     private boolean ipAutoLogin = false;
 
-    @Setting
-    private List<String> protectedCommands = Lists.newArrayList();
+    @Setting(comment = "Should only the specified commands be protected from unauthorized access")
+    private boolean commandOnlyProtection = false;
+
+    @Setting(comment = "If command only protection is enabled, these commands are protected. If the list is empty"
+            + " all commands are protected")
+    private List<String> protectedCommands = Lists.newArrayList("op", "pex");
 
     public EmailConfiguration getEmailConfiguration() {
         return emailConfiguration;
@@ -44,6 +48,10 @@ public class Config {
 
     public boolean isIpAutoLogin() {
         return ipAutoLogin;
+    }
+
+    public boolean isCommandOnlyProtection() {
+        return commandOnlyProtection;
     }
 
     public List<String> getProtectedCommands() {

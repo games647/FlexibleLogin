@@ -76,18 +76,28 @@ public class TextConfiguration {
     @Setting(comment = "When a player registered using TOTP and the code can be scanned by clicking on it")
     private String scanQr = "§6Click here to scan the QR-Code";
 
+    @Setting(comment = "When the user tries to execute a protected command if command only protection is enabled")
+    private String protectedCommand = "§4This command is protected. Please login";
+
+    @Setting(comment = "When the player is auto logged in by using the same ip as the last login")
+    private String ipAutoLogin = "§2Auto logged in";
+
     public Text getAccountAlreadyExists() {
         return fromString(accountAlreadyExists);
     }
+
     public Text getInvalidUsername() {
         return fromString(invalidUsername);
     }
+
     public Text getAccountCreated() {
         return fromString(accountCreated);
     }
+
     public Text getKeyGenerated() {
         return fromString(keyGenerated);
     }
+
     public Text getScanQr() {
         return fromString(scanQr);
     }
@@ -158,6 +168,14 @@ public class TextConfiguration {
 
     public Text getAccountDeleted(String account) {
         return fromString(String.format(accountDeleted, account));
+    }
+
+    public Text getProtectedCommand() {
+        return fromString(protectedCommand);
+    }
+
+    public Text getIpAutoLogin() {
+        return fromString(ipAutoLogin);
     }
 
     private Text fromString(String textString) {

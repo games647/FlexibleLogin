@@ -19,11 +19,14 @@ Tested against:
     /register - Generates your secret code for TOTP
     /login <password/code> - Login using your password or time based code
     /logout - Logs you out
-    /flexiblelogin - Displays plugin name and version
+    /setemail - Sets your email address
+    /forgotpassword - Sends a recovery email to the email address
+    /unregister <uuid/name> - delete an account
 
 ###Permissions
 
-    None
+    flexiblelogin.admin - Permission to delete accocunts
+    flexiblelogin.registerRequired - Users are required to register an account if command only protection is enabled
 
 ###Config
 
