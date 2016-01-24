@@ -124,14 +124,14 @@ public class Database {
                 if (plugin.getConfigManager().getConfig().getSqlConfiguration().getType() == SQLType.SQLITE) {
                     Statement statement = conn.createStatement();
                     statement.execute("CREATE TABLE " + USERS_TABLE + " ( "
-                            + "`UserID` INT UNSIGNED NOT NULL , "
+                            + "`UserID` INTEGER PRIMARY KEY AUTOINCREMENT, "
                             + "`UUID` BINARY(16) NOT NULL , "
                             + "`Username` VARCHAR(32) NOT NULL , "
                             + "`Password` VARCHAR(64) NOT NULL , "
                             + "`IP` BINARY(32) NOT NULL , "
                             + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
                             + "`Email` VARCHAR(64) DEFAULT NULL , "
-                            + "PRIMARY KEY (`UserID`) , UNIQUE (`UUID`) "
+                            + "UNIQUE (`UUID`) "
                             + ")");
                     statement.close();
                 } else {
@@ -255,23 +255,28 @@ public class Database {
         try {
             conn = getConnection();
             PreparedStatement prepareStatement = conn.prepareStatement("INSERT INTO " + USERS_TABLE
-                    + " (UUID, Username, Password, IP) VALUES (?,?,?,?)");
+                    + " (UUID, Username, Password, IP, Email, LastLogin) VALUES (?,?,?,?,?,?)");
+
 
             UUID uuid = player.getUniqueId();
             byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
             byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
 
+            byte[] ip = player.getConnection().getAddress().getAddress().getAddress();
+            Account account = new Account(uuid, player.getName(), password, ip);
+
             prepareStatement.setObject(1, Bytes.concat(mostBytes, leastBytes));
             prepareStatement.setString(2, player.getName());
             prepareStatement.setString(3, password);
 
-            byte[] ip = player.getConnection().getAddress().getAddress().getAddress();
             prepareStatement.setObject(4, ip);
+
+            prepareStatement.setString(5, account.getEmail());
+            prepareStatement.setTimestamp(6, account.getTimestamp());
 
             prepareStatement.execute();
 
             //if successfull
-            Account account = new Account(uuid, player.getName(), password, ip);
             cache.put(uuid, account);
         } catch (SQLException sqlEx) {
             plugin.getLogger().error("Error registering account", sqlEx);
@@ -297,19 +302,22 @@ public class Database {
             conn = getConnection();
 
             PreparedStatement statement = conn.prepareStatement("UPDATE " + USERS_TABLE
-                    + " SET Username=?, Password=?, IP=?"
+                    + " SET Username=?, Password=?, IP=?, LastLogin=?, Email=?"
                     + " WHERE UUID=?");
             //username is now changeable by Mojang - so keep it up to date
             statement.setString(1, account.getUsername());
             statement.setString(2, account.getPassword());
             statement.setObject(3, account.getIp());
 
+            statement.setTimestamp(4, account.getTimestamp());
+            statement.setString(5, account.getEmail());
+
             UUID uuid = account.getUuid();
 
             byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
             byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
 
-            statement.setObject(4, Bytes.concat(mostBytes, leastBytes));
+            statement.setObject(6, Bytes.concat(mostBytes, leastBytes));
             statement.execute();
         } catch (SQLException ex) {
             plugin.getLogger().error("Error updating user account", ex);

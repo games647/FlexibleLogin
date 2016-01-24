@@ -1,9 +1,9 @@
 package com.github.games647.flexiblelogin;
 
 import com.google.common.primitives.Longs;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -33,7 +33,7 @@ public class Account {
         this.passwordHash = password;
 
         this.ip = ip;
-        this.timestamp = null;
+        this.timestamp = new Timestamp(System.currentTimeMillis());
 
         this.loggedIn = true;
     }
