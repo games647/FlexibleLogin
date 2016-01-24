@@ -76,3 +76,11 @@
 + Implement ip auto login
 + Added command only protection
 + Added permission .registerRequired
+
+##### 0.4.1
+
++ Fixes SQLite database setup (Fixes #9)
+
+##### 0.4.2
+
++ Fixes not logged in message (Fixes #10)

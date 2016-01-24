@@ -2,6 +2,7 @@ package com.github.games647.flexiblelogin.listener;
 
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.config.Config;
 
 import java.util.Arrays;
 
@@ -30,14 +31,16 @@ public class PlayerConnectionListener {
                 .execute(() -> {
                     Account loadedAccount = plugin.getDatabase().loadAccount(player);
                     byte[] newIp = player.getConnection().getAddress().getAddress().getAddress();
-                    if (plugin.getConfigManager().getConfig().isIpAutoLogin()
-                            && Arrays.equals(loadedAccount.getIp(), newIp)) {
-                        player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getIpAutoLogin());
+
+                    Config config = plugin.getConfigManager().getConfig();
+                    if (loadedAccount == null) {
+                        if (!config.isCommandOnlyProtection()
+                                && player.hasPermission(plugin.getContainer().getId() + ".registerRequired")) {
+                            player.sendMessage(config.getTextConfig().getNotLoggedInMessage());
+                        }
+                    } else if (config.isIpAutoLogin() && Arrays.equals(loadedAccount.getIp(), newIp)) {
+                        player.sendMessage(config.getTextConfig().getIpAutoLogin());
                         loadedAccount.setLoggedIn(true);
-                    } else if (!plugin.getConfigManager().getConfig().isCommandOnlyProtection()
-                            || (loadedAccount == null
-                                && player.hasPermission(plugin.getContainer().getId() + ".registerRequired"))) {
-                        player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getNotLoggedInMessage());
                     }
                 })
                 .submit(plugin);
