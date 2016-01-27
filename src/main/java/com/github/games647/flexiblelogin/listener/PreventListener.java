@@ -5,6 +5,7 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import java.util.List;
 import java.util.Optional;
+import org.spongepowered.api.entity.Entity;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
@@ -104,6 +105,12 @@ public class PreventListener {
     @Listener
     public void onEntityInteract(InteractEntityEvent interactEntityEvent) {
         checkLoginStatus(interactEntityEvent, interactEntityEvent);
+
+        Entity targetEntity = interactEntityEvent.getTargetEntity();
+        //check only if the event isn't already cancelled by the first call
+        if (!interactEntityEvent.isCancelled() && targetEntity instanceof Player) {
+            checkLoginStatus(interactEntityEvent, (Player) interactEntityEvent.getTargetEntity());
+        }
     }
 
     private void checkLoginStatus(Cancellable event, Event causeEvent) {
