@@ -18,6 +18,16 @@ public class PlayerConnectionListener {
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Listener
+    public void onPlayerQuit(ClientConnectionEvent.Disconnect playerQuitEvent) {
+        Player player = playerQuitEvent.getTargetEntity();
+        Account account = plugin.getDatabase().getAccountIfPresent(player);
+        if (account != null) {
+            //account is loaded -> mark the player as logout as it could remain in the cache
+            account.setLoggedIn(false);
+        }
+    }
+
+    @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join playerJoinEvent) {
         Player player = playerJoinEvent.getTargetEntity();
         if (!player.getName().matches(VALID_USERNAME)) {
@@ -34,25 +44,24 @@ public class PlayerConnectionListener {
 
                     Config config = plugin.getConfigManager().getConfig();
                     if (loadedAccount == null) {
-                        if (!config.isCommandOnlyProtection()
-                                && player.hasPermission(plugin.getContainer().getId() + ".registerRequired")) {
+                        if (config.isCommandOnlyProtection()) {
+                            if (player.hasPermission(plugin.getContainer().getId() + ".registerRequired")) {
+                                //command only protection but have to register
+                                player.sendMessage(config.getTextConfig().getNotLoggedInMessage());
+                            }
+                        } else {
+                            //no account
                             player.sendMessage(config.getTextConfig().getNotLoggedInMessage());
                         }
                     } else if (config.isIpAutoLogin() && Arrays.equals(loadedAccount.getIp(), newIp)) {
+                        //user will be auto logged in
                         player.sendMessage(config.getTextConfig().getIpAutoLogin());
                         loadedAccount.setLoggedIn(true);
+                    } else {
+                        //user has an account but isn't logged in
+                        player.sendMessage(config.getTextConfig().getNotLoggedInMessage());
                     }
                 })
                 .submit(plugin);
-    }
-
-    @Listener
-    public void onPlayerQuit(ClientConnectionEvent.Disconnect playerQuitEvent) {
-        Player player = playerQuitEvent.getTargetEntity();
-        Account account = plugin.getDatabase().getAccountIfPresent(player);
-        if (account != null) {
-            //account is loaded -> mark the player as logout as it could remain in the cache
-            account.setLoggedIn(false);
-        }
     }
 }
