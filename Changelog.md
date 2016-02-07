@@ -84,3 +84,15 @@
 ##### 0.4.2
 
 + Fixes not logged in message (Fixes #10)
+
+##### 0.4.3
+
++ Protect players from attack damage
++ Fixed not logged in message for non existing accounts
+
+##### 0.4.4
+
++ Prevent players from all damage if they are not logged in
++ Try to players safely on login
++ Simplify and optimize prevent listener
++ Add Updatifier support

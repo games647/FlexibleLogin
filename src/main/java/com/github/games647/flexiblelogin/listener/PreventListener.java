@@ -4,18 +4,16 @@ import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import java.util.List;
-import java.util.Optional;
-import org.spongepowered.api.entity.Entity;
 
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
-import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
+import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
-import org.spongepowered.api.event.entity.InteractEntityEvent;
+import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
@@ -26,7 +24,7 @@ public class PreventListener {
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Listener
-    public void onPlayerMove(DisplaceEntityEvent.TargetPlayer playerMoveEvent) {
+    public void onPlayerMove(DisplaceEntityEvent.Move.TargetPlayer playerMoveEvent) {
         Vector3d oldLocation = playerMoveEvent.getFromTransform().getPosition();
         Vector3d newLocation = playerMoveEvent.getToTransform().getPosition();
         if ((oldLocation.getFloorX()!= newLocation.getFloorX()
@@ -36,87 +34,65 @@ public class PreventListener {
     }
 
     @Listener
-    public void onChat(MessageChannelEvent.Chat chatEvent) {
-        checkLoginStatus(chatEvent, chatEvent);
+    public void onChat(MessageChannelEvent.Chat chatEvent, @First Player player) {
+        checkLoginStatus(chatEvent, player);
     }
 
     @Listener
-    public void onCommand(SendCommandEvent commandEvent) {
-        Optional<Player> playerOptional = commandEvent.getCause().first(Player.class);
-        if (playerOptional.isPresent()) {
-            String command = commandEvent.getCommand();
-            //do not blacklist our own commands
-            if ("register".equals(command) || "login".equals(command)
-                    || "forgotpassword".equals(command)) {
-                return;
-            }
+    public void onCommand(SendCommandEvent commandEvent, @First Player player) {
+        String command = commandEvent.getCommand();
+        //do not blacklist our own commands
+        if ("register".equals(command) || "login".equals(command)
+                || "forgotpassword".equals(command)) {
+            return;
+        }
 
-            if (plugin.getConfigManager().getConfig().isCommandOnlyProtection()) {
-                Player player = playerOptional.get();
-
-                List<String> protectedCommands = plugin.getConfigManager().getConfig().getProtectedCommands();
-                if ((protectedCommands.isEmpty() || protectedCommands.contains(command))) {
-                    if (!plugin.getDatabase().isLoggedin(player)) {
-                        player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getProtectedCommand());
-                        commandEvent.setCancelled(true);
-                    }
+        if (plugin.getConfigManager().getConfig().isCommandOnlyProtection()) {
+            List<String> protectedCommands = plugin.getConfigManager().getConfig().getProtectedCommands();
+            if ((protectedCommands.isEmpty() || protectedCommands.contains(command))) {
+                if (!plugin.getDatabase().isLoggedin(player)) {
+                    player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getProtectedCommand());
+                    commandEvent.setCancelled(true);
                 }
-            } else {
-                checkLoginStatus(commandEvent, playerOptional.get());
             }
+        } else {
+            checkLoginStatus(commandEvent, player);
         }
     }
 
     @Listener
-    public void onPlayerItemDrop(DropItemEvent dropItemEvent) {
-        checkLoginStatus(dropItemEvent, dropItemEvent);
+    public void onPlayerItemDrop(DropItemEvent.Dispense dropItemEvent, @First Player player) {
+        checkLoginStatus(dropItemEvent, player);
     }
 
     @Listener
-    public void onItemConsume(UseItemStackEvent itemConsumeEvent) {
-        checkLoginStatus(itemConsumeEvent, itemConsumeEvent);
+    public void onItemConsume(UseItemStackEvent.Start itemConsumeEvent, @First Player player) {
+        checkLoginStatus(itemConsumeEvent, player);
     }
 
     @Listener
-    public void onBlockBreak(ChangeBlockEvent.Break breakBlockEvent) {
-        checkLoginStatus(breakBlockEvent, breakBlockEvent);
+    public void onInventoryChange(ChangeInventoryEvent breakBlockEvent, @First Player player) {
+        checkLoginStatus(breakBlockEvent, player);
     }
 
     @Listener
-    public void onInventoryChange(ChangeInventoryEvent breakBlockEvent) {
-        checkLoginStatus(breakBlockEvent, breakBlockEvent);
+    public void onBlockInteract(InteractBlockEvent interactBlockEvent, @First Player player) {
+        checkLoginStatus(interactBlockEvent, player);
     }
 
     @Listener
-    public void onBlockPlace(ChangeBlockEvent.Place blockPlaceEvent) {
-        checkLoginStatus(blockPlaceEvent, blockPlaceEvent);
+    public void onPlayerDamage(DamageEntityEvent damageEntityEvent, @First Player player) {
+        //checks the cause
+        checkLoginStatus(damageEntityEvent, player);
     }
 
     @Listener
-    public void onBlockChange(ChangeBlockEvent changeBlockEvent) {
-        checkLoginStatus(changeBlockEvent, changeBlockEvent);
-    }
-
-    @Listener
-    public void onBlockInteract(InteractBlockEvent interactBlockEvent) {
-        checkLoginStatus(interactBlockEvent, interactBlockEvent);
-    }
-
-    @Listener
-    public void onEntityInteract(InteractEntityEvent interactEntityEvent) {
-        checkLoginStatus(interactEntityEvent, interactEntityEvent);
-
-        Entity targetEntity = interactEntityEvent.getTargetEntity();
+    public void onDamagePlayer(DamageEntityEvent damageEntityEvent) {
+        //check the target
+        Entity targetEntity = damageEntityEvent.getTargetEntity();
         //check only if the event isn't already cancelled by the first call
-        if (!interactEntityEvent.isCancelled() && targetEntity instanceof Player) {
-            checkLoginStatus(interactEntityEvent, (Player) interactEntityEvent.getTargetEntity());
-        }
-    }
-
-    private void checkLoginStatus(Cancellable event, Event causeEvent) {
-        Optional<Player> playerOptional = causeEvent.getCause().first(Player.class);
-        if (playerOptional.isPresent()) {
-            checkLoginStatus(event, playerOptional.get());
+        if (targetEntity instanceof Player) {
+            checkLoginStatus(damageEntityEvent, (Player) damageEntityEvent.getTargetEntity());
         }
     }
 

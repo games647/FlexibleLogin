@@ -36,6 +36,8 @@ public class PlayerConnectionListener {
             playerJoinEvent.setMessage(Text.EMPTY);
         }
 
+        player.setLocationSafely(player.getLocation());
+
         plugin.getGame().getScheduler().createTaskBuilder()
                 .async()
                 .execute(() -> {

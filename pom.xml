@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>FlexibleLogin</name>
-    <version>0.4.3</version>
+    <version>0.4.4</version>
     <description>Second Auth plugin for Sponge minecraft servers</description>
     <url>https://github.com/games647/FlexibleLogin</url>
 
@@ -108,6 +108,10 @@
             <id>sponge-repo</id>
             <url>http://repo.spongepowered.org/maven</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -127,6 +131,12 @@
             <version>1.5.4</version>
             <type>jar</type>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.Flibio</groupId>
+            <artifactId>Updatifier</artifactId>
+            <version>v1.0.0</version>
         </dependency>
     </dependencies>
 </project>
