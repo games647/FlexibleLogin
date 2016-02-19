@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.github.games647.flexiblelogin.listener;
 
 import com.github.games647.flexiblelogin.Account;
@@ -87,7 +86,23 @@ public class PlayerConnectionListener {
                         //user has an account but isn't logged in
                         player.sendMessage(config.getTextConfig().getNotLoggedInMessage());
                     }
+
+                    scheduleTimeoutTask(player);
                 })
                 .submit(plugin);
+    }
+
+    private void scheduleTimeoutTask(Player player) {
+        Account account = plugin.getDatabase().getAccountIfPresent(player);
+        Config config = plugin.getConfigManager().getConfig();
+        if (!config.isCommandOnlyProtection() && account != null && !account.isLoggedIn()) {
+            plugin.getGame().getScheduler().createTaskBuilder()
+                    .execute(() -> {
+                        if (!account.isLoggedIn()) {
+                            player.kick(config.getTextConfig().getTimeoutReason());
+                        }
+                    })
+                    .submit(plugin);
+        }
     }
 }

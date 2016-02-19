@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.github.games647.flexiblelogin.config;
 
 import org.spongepowered.api.text.Text;
@@ -105,6 +104,9 @@ public class TextConfiguration {
 
     @Setting(comment = "When the player is auto logged in by using the same ip as the last login")
     private String ipAutoLogin = "§2Auto logged in";
+
+    @Setting(comment = "Kick message if the player doesn't logged during the configured time out seconds")
+    private String timeoutReason = "§4Login timeout";
 
     public Text getAccountAlreadyExists() {
         return fromString(accountAlreadyExists);
@@ -200,6 +202,10 @@ public class TextConfiguration {
 
     public Text getIpAutoLogin() {
         return fromString(ipAutoLogin);
+    }
+
+    public Text getTimeoutReason() {
+        return fromString(timeoutReason);
     }
 
     private Text fromString(String textString) {

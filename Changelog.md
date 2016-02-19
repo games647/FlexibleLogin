@@ -96,3 +96,8 @@
 + Try to players safely on login
 + Simplify and optimize prevent listener
 + Add Updatifier support
+
+##### 0.5
+
++ Moved Bcrypt to a maven maven dependency
++ Added timeout for logins

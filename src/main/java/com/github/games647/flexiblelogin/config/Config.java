@@ -50,6 +50,9 @@ public class Config {
     @Setting(comment = "Should only the specified commands be protected from unauthorized access")
     private boolean commandOnlyProtection = false;
 
+    @Setting(comment = "Number of seconds a player has time to login or will be kicked.-1 deactivates this features")
+    private int timeoutLogin = 60;
+
     @Setting(comment = "If command only protection is enabled, these commands are protected. If the list is empty"
             + " all commands are protected")
     private List<String> protectedCommands = Lists.newArrayList("op", "pex");
@@ -76,6 +79,10 @@ public class Config {
 
     public boolean isCommandOnlyProtection() {
         return commandOnlyProtection;
+    }
+
+    public int getTimeoutLogin() {
+        return timeoutLogin;
     }
 
     public List<String> getProtectedCommands() {

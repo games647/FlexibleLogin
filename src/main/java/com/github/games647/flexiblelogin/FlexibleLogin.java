@@ -57,8 +57,8 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
-@Updatifier(repoOwner = "games647", repoName = "FlexibleLogin", version = "0.4.3")
-@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.4.3")
+@Updatifier(repoOwner = "games647", repoName = "FlexibleLogin", version = "0.5")
+@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.5")
 public class FlexibleLogin {
 
     private static FlexibleLogin instance;
