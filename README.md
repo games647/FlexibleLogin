@@ -26,7 +26,11 @@ Tested against:
 ###Permissions
 
     flexiblelogin.admin - Permission to delete accocunts
-    flexiblelogin.registerRequired - Users are required to register an account if command only protection is enabled
+    flexiblelogin.command.login - Use the /login command
+    flexiblelogin.command.logout - Use the /logout command
+    flexiblelogin.command.register - Use the /register command
+    flexiblelogin.command.email - Use the /setemail command
+    flexiblelogin.command.forgot - Use the /forgot command
 
 ###Config
 
