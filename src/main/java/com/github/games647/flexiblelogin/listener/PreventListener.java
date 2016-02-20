@@ -121,6 +121,11 @@ public class PreventListener {
     }
 
     private void checkLoginStatus(Cancellable event, Player player) {
+        if (plugin.getConfigManager().getConfig().isBypassPermission()
+                && player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
+            return;
+        }
+
         if (plugin.getConfigManager().getConfig().isCommandOnlyProtection()) {
             //check if the user is already registered
             if (plugin.getDatabase().getAccountIfPresent(player) == null

@@ -31,6 +31,7 @@ Tested against:
     flexiblelogin.command.register - Use the /register command
     flexiblelogin.command.email - Use the /setemail command
     flexiblelogin.command.forgot - Use the /forgot command
+    flexiblelogin.bypass - Users who have this permission can skip authentication
 
 ###Config
 

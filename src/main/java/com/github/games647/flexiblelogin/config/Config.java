@@ -56,6 +56,9 @@ public class Config {
     @Setting(comment = "Should the plugin save the login status to the database")
     private boolean updateLoginStatus = false;
 
+    @Setting(comment = "Do you allow your users to skip authentication with the bypass permission")
+    private boolean bypassPermission = false;
+
     @Setting(comment = "If command only protection is enabled, these commands are protected. If the list is empty"
             + " all commands are protected")
     private List<String> protectedCommands = Lists.newArrayList("op", "pex");
@@ -90,6 +93,10 @@ public class Config {
 
     public boolean isUpdateLoginStatus() {
         return updateLoginStatus;
+    }
+
+    public boolean isBypassPermission() {
+        return bypassPermission;
     }
 
     public List<String> getProtectedCommands() {

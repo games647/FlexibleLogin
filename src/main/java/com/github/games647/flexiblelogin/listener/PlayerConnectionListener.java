@@ -70,33 +70,43 @@ public class PlayerConnectionListener {
 
         plugin.getGame().getScheduler().createTaskBuilder()
                 .async()
-                .execute(() -> {
-                    Account loadedAccount = plugin.getDatabase().loadAccount(player);
-                    byte[] newIp = player.getConnection().getAddress().getAddress().getAddress();
-
-                    Config config = plugin.getConfigManager().getConfig();
-                    if (loadedAccount == null) {
-                        if (config.isCommandOnlyProtection()) {
-                            if (player.hasPermission(plugin.getContainer().getId() + ".registerRequired")) {
-                                //command only protection but have to register
-                                player.sendMessage(config.getTextConfig().getNotLoggedInMessage());
-                            }
-                        } else {
-                            //no account
-                            player.sendMessage(config.getTextConfig().getNotLoggedInMessage());
-                        }
-                    } else if (config.isIpAutoLogin() && Arrays.equals(loadedAccount.getIp(), newIp)) {
-                        //user will be auto logged in
-                        player.sendMessage(config.getTextConfig().getIpAutoLogin());
-                        loadedAccount.setLoggedIn(true);
-                    } else {
-                        //user has an account but isn't logged in
-                        player.sendMessage(config.getTextConfig().getNotLoggedInMessage());
-                    }
-
-                    scheduleTimeoutTask(player);
-                })
+                .execute(() -> onAccountLoaded(player))
                 .submit(plugin);
+    }
+
+    private void onAccountLoaded(Player player) {
+        Account loadedAccount = plugin.getDatabase().loadAccount(player);
+        byte[] newIp = player.getConnection().getAddress().getAddress().getAddress();
+
+        Config config = plugin.getConfigManager().getConfig();
+        if (loadedAccount == null) {
+            if (config.isCommandOnlyProtection()) {
+                if (player.hasPermission(plugin.getContainer().getId() + ".registerRequired")) {
+                    //command only protection but have to register
+                    sendNotLoggedInMessage(player);
+                }
+            } else {
+                //no account
+                sendNotLoggedInMessage(player);
+            }
+        } else if (config.isIpAutoLogin() && Arrays.equals(loadedAccount.getIp(), newIp)) {
+            //user will be auto logged in
+            player.sendMessage(config.getTextConfig().getIpAutoLogin());
+            loadedAccount.setLoggedIn(true);
+        } else {
+            //user has an account but isn't logged in
+            sendNotLoggedInMessage(player);
+        }
+
+        scheduleTimeoutTask(player);
+    }
+
+    private void sendNotLoggedInMessage(Player player) {
+        //send the message if the player only needs to login
+        if (!plugin.getConfigManager().getConfig().isBypassPermission()
+                || !player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
+            player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getNotLoggedInMessage());
+        }
     }
 
     private void scheduleTimeoutTask(Player player) {
