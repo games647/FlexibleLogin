@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.github.games647.flexiblelogin.tasks;
 
+import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.hasher.TOTP;
 
@@ -52,13 +52,17 @@ public class RegisterTask implements Runnable {
         if (plugin.getDatabase().loadAccount(player) == null) {
             try {
                 String hashedPassword = plugin.getHasher().hash(password);
-                plugin.getDatabase().createAccount(player, hashedPassword);
+                Account createdAccount = plugin.getDatabase().createAccount(player, hashedPassword);
                 //thread-safe, because it's immutable after config load
                 if (plugin.getConfigManager().getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
                     sendTotpHint(hashedPassword);
                 }
 
                 player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAccountCreated());
+                createdAccount.setLoggedIn(true);
+                if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
+                    plugin.getDatabase().flushLoginStatus(createdAccount, true);
+                }
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash", ex);
                 player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getErrorCommandMessage());

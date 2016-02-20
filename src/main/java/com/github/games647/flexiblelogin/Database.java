@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.config.SQLConfiguration;
@@ -50,7 +49,7 @@ import org.spongepowered.api.service.sql.SqlService;
 @ThreadSafe
 public class Database {
 
-    private static final String USERS_TABLE = "users";
+    public static final String USERS_TABLE = "flexiblelogin_users";
 
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
     //this cache is thread-safe
@@ -132,6 +131,9 @@ public class Database {
         try {
             conn = getConnection();
 
+            DatabaseMigration migration = new DatabaseMigration(plugin, sql.getDataSource(jdbcUrl));
+            migration.migrateName();
+
             boolean tableExists = false;
             try {
                 //check if the table already exists
@@ -155,6 +157,7 @@ public class Database {
                             + "`IP` BINARY(32) NOT NULL , "
                             + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
                             + "`Email` VARCHAR(64) DEFAULT NULL , "
+                            + "`LoggedIn` BOOLEAN DEFAULT 0, "
                             + "UNIQUE (`UUID`) "
                             + ")");
                     statement.close();
@@ -168,6 +171,7 @@ public class Database {
                             + "`IP` BINARY(32) NOT NULL , "
                             + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
                             + "`Email` VARCHAR(64) DEFAULT NULL , "
+                            + "`LoggedIn` BOOLEAN DEFAULT 0, "
                             + "PRIMARY KEY (`UserID`) , UNIQUE (`UUID`) "
                             + ")");
                     statement.close();
@@ -274,7 +278,7 @@ public class Database {
         return loadedAccount;
     }
 
-    public void createAccount(Player player, String password) {
+    public Account createAccount(Player player, String password) {
         Connection conn = null;
         try {
             conn = getConnection();
@@ -302,11 +306,14 @@ public class Database {
 
             //if successfull
             cache.put(uuid, account);
+            return account;
         } catch (SQLException sqlEx) {
             plugin.getLogger().error("Error registering account", sqlEx);
         } finally {
             closeQuietly(conn);
         }
+
+        return null;
     }
 
     private void closeQuietly(Connection conn) {
@@ -317,6 +324,49 @@ public class Database {
             } catch (SQLException ex) {
                 //ingore
             }
+        }
+    }
+
+    public void flushLoginStatus(Account account, boolean loggedIn) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            PreparedStatement prepareStatement = conn.prepareStatement("UPDATE " + USERS_TABLE
+                    + " SET LoggedIn=? WHERE UUID=?");
+
+            prepareStatement.setInt(1, loggedIn ? 1 : 0);
+
+            UUID uuid = account.getUuid();
+            byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
+            byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
+
+            prepareStatement.setObject(2, Bytes.concat(mostBytes, leastBytes));
+
+            prepareStatement.execute();
+        } catch (SQLException ex) {
+            plugin.getLogger().error("Error updating login status", ex);
+        } finally {
+            closeQuietly(conn);
+        }
+    }
+
+    public void close() {
+        //clear cache
+        cache.invalidateAll();
+
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            Statement statement = conn.createStatement();
+
+            //set all player accounts existing in the database to unlogged
+            statement.execute("UPDATE " + USERS_TABLE + " SET LoggedIn=0");
+        } catch (SQLException ex) {
+            plugin.getLogger().error("Error updating user account", ex);
+        } finally {
+            closeQuietly(conn);
         }
     }
 

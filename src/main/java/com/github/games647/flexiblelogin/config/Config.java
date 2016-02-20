@@ -53,6 +53,9 @@ public class Config {
     @Setting(comment = "Number of seconds a player has time to login or will be kicked.-1 deactivates this features")
     private int timeoutLogin = 60;
 
+    @Setting(comment = "Should the plugin save the login status to the database")
+    private boolean updateLoginStatus = false;
+
     @Setting(comment = "If command only protection is enabled, these commands are protected. If the list is empty"
             + " all commands are protected")
     private List<String> protectedCommands = Lists.newArrayList("op", "pex");
@@ -83,6 +86,10 @@ public class Config {
 
     public int getTimeoutLogin() {
         return timeoutLogin;
+    }
+
+    public boolean isUpdateLoginStatus() {
+        return updateLoginStatus;
     }
 
     public List<String> getProtectedCommands() {

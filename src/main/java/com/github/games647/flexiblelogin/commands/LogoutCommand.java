@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.Account;
@@ -51,6 +50,11 @@ public class LogoutCommand implements CommandExecutor {
         } else {
             source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getSuccessfullyLoggedOutMessage());
             account.setLoggedIn(false);
+            if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
+                plugin.getGame().getScheduler().createTaskBuilder()
+                        .async().execute(() -> plugin.getDatabase().flushLoginStatus(account, false))
+                        .submit(plugin);
+            }
         }
 
         return CommandResult.success();

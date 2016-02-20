@@ -47,8 +47,7 @@ public class Account {
 
     private String email;
 
-    private transient boolean loggedIn;
-    private transient boolean changed;
+    private boolean loggedIn;
 
     //new account
     public Account(UUID uuid, String username, String password, byte[] ip) {
@@ -58,8 +57,6 @@ public class Account {
 
         this.ip = ip;
         this.timestamp = new Timestamp(System.currentTimeMillis());
-
-        this.loggedIn = true;
     }
 
     //existing account
@@ -136,12 +133,7 @@ public class Account {
     }
 
     public synchronized void setEmail(String email) {
-        this.changed = true;
         this.email = email;
-    }
-
-    public synchronized boolean isChanged() {
-        return changed;
     }
 
     //these methods have to thread-safe as they will be accessed

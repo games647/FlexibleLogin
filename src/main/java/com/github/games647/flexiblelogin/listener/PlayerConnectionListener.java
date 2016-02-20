@@ -28,6 +28,7 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Config;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -47,6 +48,12 @@ public class PlayerConnectionListener {
         if (account != null) {
             //account is loaded -> mark the player as logout as it could remain in the cache
             account.setLoggedIn(false);
+
+            if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
+                plugin.getGame().getScheduler().createTaskBuilder()
+                        .async().execute(() -> plugin.getDatabase().flushLoginStatus(account, false))
+                        .submit(plugin);
+            }
         }
     }
 
@@ -95,13 +102,15 @@ public class PlayerConnectionListener {
     private void scheduleTimeoutTask(Player player) {
         Account account = plugin.getDatabase().getAccountIfPresent(player);
         Config config = plugin.getConfigManager().getConfig();
-        if (!config.isCommandOnlyProtection() && account != null && !account.isLoggedIn()) {
+        if (!config.isCommandOnlyProtection() && config.getTimeoutLogin() != -1
+                && account != null && !account.isLoggedIn()) {
             plugin.getGame().getScheduler().createTaskBuilder()
                     .execute(() -> {
                         if (!account.isLoggedIn()) {
                             player.kick(config.getTextConfig().getTimeoutReason());
                         }
                     })
+                    .interval(config.getTimeoutLogin(), TimeUnit.SECONDS)
                     .submit(plugin);
         }
     }

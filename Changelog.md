@@ -101,3 +101,6 @@
 
 + Moved Bcrypt to a maven maven dependency
 + Added timeout for logins
++ Added permissions
++ Added loggedIn boolean column
++ Renamed table to flexiblelogin_users - the plugin will automatically convert it into the new table

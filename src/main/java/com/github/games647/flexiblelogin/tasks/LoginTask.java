@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.Account;
@@ -57,6 +56,9 @@ public class LoginTask implements Runnable {
                 account.setIp(playerIp);
 
                 player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getLoggedIn());
+                if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
+                    plugin.getDatabase().flushLoginStatus(account, true);
+                }
             } else {
                 player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getIncorrectPassword());
             }
