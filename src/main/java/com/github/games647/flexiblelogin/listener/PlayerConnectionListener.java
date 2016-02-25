@@ -120,7 +120,7 @@ public class PlayerConnectionListener {
                             player.kick(config.getTextConfig().getTimeoutReason());
                         }
                     })
-                    .interval(config.getTimeoutLogin(), TimeUnit.SECONDS)
+                    .delay(config.getTimeoutLogin(), TimeUnit.SECONDS)
                     .submit(plugin);
         }
     }
