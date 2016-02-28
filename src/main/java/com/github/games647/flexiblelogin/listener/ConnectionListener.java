@@ -35,7 +35,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 
-public class PlayerConnectionListener {
+public class ConnectionListener {
 
     private static final String VALID_USERNAME = "^\\w{2,16}$";
 
@@ -45,6 +45,9 @@ public class PlayerConnectionListener {
     public void onPlayerQuit(ClientConnectionEvent.Disconnect playerQuitEvent) {
         Player player = playerQuitEvent.getTargetEntity();
         Account account = plugin.getDatabase().getAccountIfPresent(player);
+
+        plugin.getProtectionManager().unprotect(player);
+
         if (account != null) {
             //account is loaded -> mark the player as logout as it could remain in the cache
             account.setLoggedIn(false);
@@ -66,7 +69,7 @@ public class PlayerConnectionListener {
             playerJoinEvent.setMessage(Text.EMPTY);
         }
 
-        player.setLocationSafely(player.getLocation());
+        plugin.getProtectionManager().protect(player);
 
         plugin.getGame().getScheduler().createTaskBuilder()
                 .async()

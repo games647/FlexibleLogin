@@ -32,7 +32,7 @@
     <packaging>jar</packaging>
 
     <name>FlexibleLogin</name>
-    <version>0.5.1</version>
+    <version>0.6</version>
     <description>Second Auth plugin for Sponge minecraft servers</description>
     <url>https://github.com/games647/FlexibleLogin</url>
 
@@ -143,7 +143,6 @@
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
             <version>3.1.0-SNAPSHOT</version>
-            <type>jar</type>
             <scope>provided</scope>
         </dependency>
 
@@ -158,13 +157,12 @@
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
             <version>1.5.5</version>
-            <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>com.github.Flibio</groupId>
             <artifactId>Updatifier</artifactId>
-            <version>v1.2.0</version>
+            <version>v1.3.0</version>
         </dependency>
     </dependencies>
 </project>

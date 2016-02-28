@@ -106,7 +106,6 @@ public class PreventListener {
 
     @Listener
     public void onPlayerDamage(DamageEntityEvent damageEntityEvent, @First Player player) {
-        //checks the cause
         checkLoginStatus(damageEntityEvent, player);
     }
 

@@ -32,7 +32,7 @@ import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;
 import com.github.games647.flexiblelogin.hasher.Hasher;
 import com.github.games647.flexiblelogin.hasher.TOTP;
-import com.github.games647.flexiblelogin.listener.PlayerConnectionListener;
+import com.github.games647.flexiblelogin.listener.ConnectionListener;
 import com.github.games647.flexiblelogin.listener.PreventListener;
 import com.google.inject.Inject;
 
@@ -57,8 +57,8 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
-@Updatifier(repoOwner = "games647", repoName = "FlexibleLogin", version = "0.5.1")
-@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.5.1")
+@Updatifier(repoOwner = "games647", repoName = "FlexibleLogin", version = "0.6")
+@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.6")
 public class FlexibleLogin {
 
     private static FlexibleLogin instance;
@@ -82,6 +82,7 @@ public class FlexibleLogin {
 
     private Settings configuration;
     private Database database;
+    private ProtectionManager protectionManager;
 
     private Hasher hasher;
 
@@ -103,6 +104,8 @@ public class FlexibleLogin {
 
         database = new Database();
         database.createTable();
+
+        protectionManager = new ProtectionManager();
 
         if (configuration.getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
             hasher = new TOTP();
@@ -156,7 +159,7 @@ public class FlexibleLogin {
                 .build(), "forgotpassword", "forgot");
 
         //register events
-        game.getEventManager().registerListeners(this, new PlayerConnectionListener());
+        game.getEventManager().registerListeners(this, new ConnectionListener());
         game.getEventManager().registerListeners(this, new PreventListener());
     }
 
@@ -164,6 +167,8 @@ public class FlexibleLogin {
     public void onDisable(GameStoppedServerEvent gameStoppedEvent) {
         //run this task sync in order let it finish before the process ends
         database.close();
+
+        game.getServer().getOnlinePlayers().stream().forEach(protectionManager::unprotect);
     }
 
     public Settings getConfigManager() {
@@ -184,6 +189,10 @@ public class FlexibleLogin {
 
     public Database getDatabase() {
         return database;
+    }
+
+    public ProtectionManager getProtectionManager() {
+        return protectionManager;
     }
 
     public Hasher getHasher() {

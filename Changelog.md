@@ -104,3 +104,11 @@
 + Added permissions
 + Added loggedIn boolean column
 + Renamed table to flexiblelogin_users - the plugin will automatically convert it into the new table
+
+##### 0.5.1
+
+* Fixed timeout kicks not scheduled correctly
+
+##### 0.6
+
+* Added teleport to spawn for unlogged players

@@ -31,7 +31,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 @ConfigSerializable
-public class TextConfiguration {
+public class TextConfig {
 
     @Setting(comment = "When a non-player (i.e. Console, Command Block) tries to do a player only action.")
     private String playersOnly = "§4Only players can do this!";

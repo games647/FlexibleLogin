@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.github.games647.flexiblelogin.config;
 
 import com.google.common.collect.Lists;
@@ -39,7 +38,7 @@ public class Config {
     private EmailConfiguration emailConfiguration = new EmailConfiguration();
 
     @Setting(comment = "Text configuration for custom messages in chat")
-    private TextConfiguration textConfiguration = new TextConfiguration();
+    private TextConfig textConfiguration = new TextConfig();
 
     @Setting(comment = "Algorithms for hashing user passwords. You can also choose totp")
     private String hashAlgo = "bcrypt";
@@ -59,6 +58,9 @@ public class Config {
     @Setting(comment = "Do you allow your users to skip authentication with the bypass permission")
     private boolean bypassPermission = false;
 
+    @Setting
+    private SpawnTeleportConfig teleportConfig = new SpawnTeleportConfig();
+
     @Setting(comment = "If command only protection is enabled, these commands are protected. If the list is empty"
             + " all commands are protected")
     private List<String> protectedCommands = Lists.newArrayList("op", "pex");
@@ -71,7 +73,7 @@ public class Config {
         return sqlConfiguration;
     }
 
-    public TextConfiguration getTextConfig() {
+    public TextConfig getTextConfig() {
         return textConfiguration;
     }
 
@@ -97,6 +99,10 @@ public class Config {
 
     public boolean isBypassPermission() {
         return bypassPermission;
+    }
+
+    public SpawnTeleportConfig getTeleportConfig() {
+        return teleportConfig;
     }
 
     public List<String> getProtectedCommands() {

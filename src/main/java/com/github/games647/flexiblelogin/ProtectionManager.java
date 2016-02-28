@@ -21,39 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.commands;
+package com.github.games647.flexiblelogin;
 
-import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.tasks.LoginTask;
+import com.github.games647.flexiblelogin.config.SpawnTeleportConfig;
+import com.google.common.collect.Maps;
 
-import org.spongepowered.api.command.CommandException;
-import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
+import java.util.Map;
+import java.util.UUID;
+
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
-public class LoginCommand implements CommandExecutor {
+public class ProtectionManager {
 
+    private final Map<UUID, Location<World>> oldLocations = Maps.newHashMap();
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
-    @Override
-    public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
-        if (!(source instanceof Player)) {
-            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyActionMessage());
-            return CommandResult.empty();
+    public void protect(Player player) {
+        SpawnTeleportConfig teleportConfig = plugin.getConfigManager().getConfig().getTeleportConfig();
+        if (teleportConfig.isEnabled()) {
+            Location<World> spawnLocation = teleportConfig.getSpawnLocation();
+            if (spawnLocation != null) {
+                oldLocations.put(player.getUniqueId(), player.getLocation());
+                player.setLocationSafely(spawnLocation);
+            }
+        } else {
+            //sometimes players stuck in a wall
+            player.setLocationSafely(player.getLocation());
         }
+    }
 
-        //the arg isn't optional. We can be sure there is value
-        String password = args.<String>getOne("password").get();
-
-        plugin.getGame().getScheduler().createTaskBuilder()
-                //we are executing a SQL Query which is blocking
-                .async()
-                .execute(new LoginTask((Player) source, password))
-                .name("Login Query")
-                .submit(plugin);
-
-        return CommandResult.success();
+    public void unprotect(Player player) {
+        Location<World> oldLocation = oldLocations.remove(player.getUniqueId());
+        if (oldLocation != null) {
+            player.setLocationSafely(oldLocation);
+        }
     }
 }
