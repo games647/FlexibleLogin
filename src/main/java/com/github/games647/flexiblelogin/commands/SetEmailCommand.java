@@ -29,6 +29,7 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.SaveTask;
 
 import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -46,6 +47,11 @@ public class SetEmailCommand implements CommandExecutor {
         if (!(src instanceof Player)) {
             src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyActionMessage());
             return CommandResult.empty();
+        }
+
+        if (plugin.getConfigManager().getConfig().isPlayerPermissions()
+                && !src.hasPermission(plugin.getContainer().getId() + ".command.email")) {
+            throw new CommandPermissionException();
         }
 
         String email = args.<String>getOne("email").get();

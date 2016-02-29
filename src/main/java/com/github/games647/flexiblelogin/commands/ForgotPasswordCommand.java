@@ -42,6 +42,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -59,6 +60,11 @@ public class ForgotPasswordCommand implements CommandExecutor {
         if (!(src instanceof Player)) {
             src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyActionMessage());
             return CommandResult.success();
+        }
+
+        if (plugin.getConfigManager().getConfig().isPlayerPermissions()
+                && !src.hasPermission(plugin.getContainer().getId() + ".command.forgot")) {
+            throw new CommandPermissionException();
         }
 
         Player player = (Player) src;

@@ -52,6 +52,9 @@ public class Config {
     @Setting(comment = "Number of seconds a player has time to login or will be kicked.-1 deactivates this features")
     private int timeoutLogin = 60;
 
+    @Setting(comment = "Should this plugin check for player permissions")
+    private boolean playerPermissions;
+
     @Setting(comment = "Should the plugin save the login status to the database")
     private boolean updateLoginStatus = false;
 
@@ -95,6 +98,10 @@ public class Config {
 
     public boolean isUpdateLoginStatus() {
         return updateLoginStatus;
+    }
+
+    public boolean isPlayerPermissions() {
+        return playerPermissions;
     }
 
     public boolean isBypassPermission() {

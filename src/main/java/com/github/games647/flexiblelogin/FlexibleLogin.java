@@ -123,7 +123,6 @@ public class FlexibleLogin {
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new LoginCommand())
                 .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("password"))))
-                .permission(pluginContainer.getId() + ".command.login")
                 .build(), "login");
 
         commandDispatcher.register(this, CommandSpec.builder()
@@ -133,12 +132,10 @@ public class FlexibleLogin {
                         .optional(GenericArguments
                                 .repeated(GenericArguments
                                         .string(Text.of("password")), 2)))
-                .permission(pluginContainer.getId() + ".command.register")
                 .build(), "register");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new LogoutCommand())
-                .permission(pluginContainer.getId() + ".command.logout")
                 .build(), "logout");
 
         commandDispatcher.register(this, CommandSpec.builder()
@@ -150,12 +147,10 @@ public class FlexibleLogin {
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new SetEmailCommand())
                 .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("email"))))
-                .permission(pluginContainer.getId() + ".command.email")
                 .build(), "setemail", "email");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new UnregisterCommand())
-                .permission(pluginContainer.getId() + ".command.forgot")
                 .build(), "forgotpassword", "forgot");
 
         //register events

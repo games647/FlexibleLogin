@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -46,6 +47,11 @@ public class RegisterCommand implements CommandExecutor {
         if (!(source instanceof Player)) {
             source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyActionMessage());
             return CommandResult.success();
+        }
+
+        if (plugin.getConfigManager().getConfig().isPlayerPermissions()
+                && !source.hasPermission(plugin.getContainer().getId() + ".command.register")) {
+            throw new CommandPermissionException();
         }
 
         //If the server is using TOTP, no password is required

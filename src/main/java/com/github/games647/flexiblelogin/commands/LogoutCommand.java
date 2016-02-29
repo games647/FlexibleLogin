@@ -27,6 +27,7 @@ import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -42,6 +43,11 @@ public class LogoutCommand implements CommandExecutor {
         if (!(source instanceof Player)) {
             source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyActionMessage());
             return CommandResult.success();
+        }
+
+        if (plugin.getConfigManager().getConfig().isPlayerPermissions()
+                && !source.hasPermission(plugin.getContainer().getId() + ".command.logout")) {
+            throw new CommandPermissionException();
         }
 
         Account account = plugin.getDatabase().getAccountIfPresent((Player) source);
