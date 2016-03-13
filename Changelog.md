@@ -112,3 +112,4 @@
 ##### 0.6
 
 * Added teleport to spawn for unlogged players
+* Make permissions optional
