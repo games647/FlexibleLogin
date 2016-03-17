@@ -47,7 +47,7 @@ public class Config {
     private boolean ipAutoLogin = false;
 
     @Setting(comment = "Should only the specified commands be protected from unauthorized access")
-    private boolean commandOnlyProtection = false;
+    private boolean commandOnlyProtection;
 
     @Setting(comment = "Number of seconds a player has time to login or will be kicked.-1 deactivates this features")
     private int timeoutLogin = 60;
@@ -56,10 +56,10 @@ public class Config {
     private boolean playerPermissions;
 
     @Setting(comment = "Should the plugin save the login status to the database")
-    private boolean updateLoginStatus = false;
+    private boolean updateLoginStatus;
 
     @Setting(comment = "Do you allow your users to skip authentication with the bypass permission")
-    private boolean bypassPermission = false;
+    private boolean bypassPermission;
 
     @Setting
     private SpawnTeleportConfig teleportConfig = new SpawnTeleportConfig();

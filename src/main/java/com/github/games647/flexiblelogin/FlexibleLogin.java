@@ -23,6 +23,7 @@
  */
 package com.github.games647.flexiblelogin;
 
+import com.github.games647.flexiblelogin.commands.ChangePasswordCommand;
 import com.github.games647.flexiblelogin.commands.LoginCommand;
 import com.github.games647.flexiblelogin.commands.LogoutCommand;
 import com.github.games647.flexiblelogin.commands.RegisterCommand;
@@ -57,8 +58,8 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
-@Updatifier(repoOwner = "games647", repoName = "FlexibleLogin", version = "0.6.1")
-@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.6.1"
+@Updatifier(repoOwner = "games647", repoName = "FlexibleLogin", version = "0.7")
+@Plugin(id = "com.github.games647.flexiblelogin", name = "FlexibleLogin", version = "0.7"
         , url = "https://github.com/games647/FlexibleLogin"
         , description = "A Sponge minecraft server plugin for second authentication.")
 public class FlexibleLogin {
@@ -129,12 +130,18 @@ public class FlexibleLogin {
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new RegisterCommand())
-                .arguments(
-                        GenericArguments
+                .arguments(GenericArguments
                         .optional(GenericArguments
                                 .repeated(GenericArguments
                                         .string(Text.of("password")), 2)))
                 .build(), "register");
+
+        commandDispatcher.register(this, CommandSpec.builder()
+                .executor(new ChangePasswordCommand())
+                .arguments(GenericArguments
+                        .repeated(GenericArguments
+                                .string(Text.of("password")), 2))
+                .build(), "changepassword", "changepw");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new LogoutCommand())

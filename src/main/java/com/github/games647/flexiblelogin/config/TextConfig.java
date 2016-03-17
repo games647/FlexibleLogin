@@ -108,6 +108,9 @@ public class TextConfig {
     @Setting(comment = "Kick message if the player doesn't logged during the configured time out seconds")
     private String timeoutReason = "§4Login timeout";
 
+    @Setting(comment = "Message if the player changed his account password successfully")
+    private String changePassword = "§2Successfull changed password";
+
     public Text getAccountAlreadyExists() {
         return fromString(accountAlreadyExists);
     }
@@ -206,6 +209,10 @@ public class TextConfig {
 
     public Text getTimeoutReason() {
         return fromString(timeoutReason);
+    }
+
+    public Text getChangePasswordMessage() {
+        return fromString(changePassword);
     }
 
     private Text fromString(String textString) {

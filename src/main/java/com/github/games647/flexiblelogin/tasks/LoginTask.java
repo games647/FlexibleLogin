@@ -59,9 +59,8 @@ public class LoginTask implements Runnable {
                 if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
                     plugin.getDatabase().flushLoginStatus(account, true);
                 }
-                
+
                 plugin.getGame().getScheduler().createTaskBuilder()
-                        .async()
                         .execute(() -> plugin.getProtectionManager().unprotect(player))
                         .submit(plugin);
             } else {

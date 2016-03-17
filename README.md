@@ -17,6 +17,7 @@ Tested against:
 
     /register <password> <password> - Registers using a specific password
     /register - Generates your secret code for TOTP
+    /changepassword <password> <password> - Changes your current password
     /login <password/code> - Login using your password or time based code
     /logout - Logs you out
     /setemail - Sets your email address
@@ -28,6 +29,7 @@ Tested against:
     flexiblelogin.admin - Permission to delete accocunts
     flexiblelogin.command.login - Use the /login command
     flexiblelogin.command.logout - Use the /logout command
+    flexiblelogin.command.changepw - Use the /changepassword command
     flexiblelogin.command.register - Use the /register command
     flexiblelogin.command.email - Use the /setemail command
     flexiblelogin.command.forgot - Use the /forgot command
@@ -35,10 +37,40 @@ Tested against:
 
 ###Config
 
+    # Do you allow your users to skip authentication with the bypass permission
+    bypassPermission=false
+    # Should only the specified commands be protected from unauthorized access
+    commandOnlyProtection=false
+    # Email configuration for password recovery
+    emailConfiguration {
+        # Username for the account you want to the email from
+        account=""
+        # Is password recovery using an email allowed
+        enabled=false
+        # Mail server
+        host="smtp.gmail.com"
+        # Password for the account you want to the email from
+        password=""
+        # SMTP Port for outgoing messages
+        port=465
+        # Displays as sender in the email client
+        senderName="Your minecraft server name"
+        # Email subject/title
+        subject="Your new Password"
+        # Email contents. You can use HTML here
+        text="New password for %player% on Minecraft server %server%: %password%"
+    }
     # Algorithms for hashing user passwords. You can also choose totp
-    hashAlgo=totp
+    hashAlgo=bcrypt
     # Should the plugin login users automatically if it's the same account from the same IP
-    ipAutoLogin=true
+    ipAutoLogin=false
+    # Should this plugin check for player permissions
+    playerPermissions=false
+    # If command only protection is enabled, these commands are protected. If the list is empty all commands are protected
+    protectedCommands=[
+        op,
+        pex
+    ]
     # Database configuration
     sqlConfiguration {
         # Database name
@@ -54,6 +86,25 @@ Tested against:
         # Username to login the database system
         username=""
     }
+    teleportConfig {
+        coordX=0
+        coordY=0
+        coordZ=0
+        # Should the plugin use the default spawn from the world you specify below
+        defaultSpawn=false
+        enabled=false
+        # Spawn world or let it empty to use the default world specified in the server properties
+        worldName=""
+    }
+    # Text configuration for custom messages in chat
+    textConfiguration {
+        [...]
+    }
+    # Number of seconds a player has time to login or will be kicked.-1 deactivates this features
+    timeoutLogin=60
+    # Should the plugin save the login status to the database
+    updateLoginStatus=false
+
 
 ### Links
 

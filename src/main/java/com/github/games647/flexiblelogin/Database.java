@@ -370,7 +370,7 @@ public class Database {
         }
     }
 
-    public void save(Account account) {
+    public boolean save(Account account) {
         Connection conn = null;
         try {
             conn = getConnection();
@@ -393,8 +393,12 @@ public class Database {
 
             statement.setObject(6, Bytes.concat(mostBytes, leastBytes));
             statement.execute();
+
+            return true;
         } catch (SQLException ex) {
             plugin.getLogger().error("Error updating user account", ex);
+
+            return false;
         } finally {
             closeQuietly(conn);
         }

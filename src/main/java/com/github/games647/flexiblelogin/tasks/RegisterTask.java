@@ -65,7 +65,6 @@ public class RegisterTask implements Runnable {
                 }
 
                 plugin.getGame().getScheduler().createTaskBuilder()
-                        .async()
                         .execute(() -> plugin.getProtectionManager().unprotect(player))
                         .submit(plugin);
             } catch (Exception ex) {
