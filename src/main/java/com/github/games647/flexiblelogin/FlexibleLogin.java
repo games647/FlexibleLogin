@@ -58,8 +58,8 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
-@Updatifier(repoOwner = "games647", repoName = "FlexibleLogin", version = "0.7")
-@Plugin(id = "com.github.games647.flexiblelogin", name = "FlexibleLogin", version = "0.7"
+@Updatifier(repoOwner = "games647", repoName = "FlexibleLogin", version = "0.8")
+@Plugin(id = "com.github.games647.flexiblelogin", name = "FlexibleLogin", version = "0.8"
         , url = "https://github.com/games647/FlexibleLogin"
         , description = "A Sponge minecraft server plugin for second authentication.")
 public class FlexibleLogin {

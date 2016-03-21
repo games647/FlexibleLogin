@@ -26,6 +26,7 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
@@ -56,11 +57,18 @@ public class LogoutCommand implements CommandExecutor {
         } else {
             source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getSuccessfullyLoggedOutMessage());
             account.setLoggedIn(false);
-            if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
-                plugin.getGame().getScheduler().createTaskBuilder()
-                        .async().execute(() -> plugin.getDatabase().flushLoginStatus(account, false))
-                        .submit(plugin);
-            }
+            account.setIp(ArrayUtils.EMPTY_BYTE_ARRAY);
+
+            plugin.getGame().getScheduler().createTaskBuilder()
+                    .async()
+                    .execute(() -> {
+                        //flushes the ip update
+                        plugin.getDatabase().save(account);
+                        if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
+                            plugin.getDatabase().flushLoginStatus(account, false);
+                        }
+                    })
+                    .submit(plugin);
         }
 
         return CommandResult.success();

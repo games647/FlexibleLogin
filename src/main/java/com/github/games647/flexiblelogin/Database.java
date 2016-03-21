@@ -285,7 +285,6 @@ public class Database {
             PreparedStatement prepareStatement = conn.prepareStatement("INSERT INTO " + USERS_TABLE
                     + " (UUID, Username, Password, IP, Email, LastLogin) VALUES (?,?,?,?,?,?)");
 
-
             UUID uuid = player.getUniqueId();
             byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
             byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());

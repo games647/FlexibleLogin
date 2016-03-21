@@ -56,13 +56,15 @@ public class LoginTask implements Runnable {
                 account.setIp(playerIp);
 
                 player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getLoggedIn());
-                if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
-                    plugin.getDatabase().flushLoginStatus(account, true);
-                }
-
                 plugin.getGame().getScheduler().createTaskBuilder()
                         .execute(() -> plugin.getProtectionManager().unprotect(player))
                         .submit(plugin);
+
+                //flushes the ip update
+                plugin.getDatabase().save(account);
+                if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
+                    plugin.getDatabase().flushLoginStatus(account, true);
+                }
             } else {
                 player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getIncorrectPassword());
             }
