@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.Account;
@@ -34,7 +33,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Properties;
 
-import javax.mail.Message;
+import javax.mail.Message.RecipientType;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -101,7 +100,7 @@ public class ForgotPasswordCommand implements CommandExecutor {
             String senderEmail = emailConfig.getAccount();
             //sender email with an alias
             message.setFrom(new InternetAddress(senderEmail, emailConfig.getSenderName()));
-            message.setRecipient(Message.RecipientType.TO, new InternetAddress(email, src.getName()));
+            message.setRecipient(RecipientType.TO, new InternetAddress(email, src.getName()));
             message.setSubject(replaceVariables(emailConfig.getSubject(), player, newPassword));
 
             //current time

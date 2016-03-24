@@ -111,6 +111,9 @@ public class TextConfig {
     @Setting(comment = "Message if the player changed his account password successfully")
     private String changePassword = "§2Successfull changed password";
 
+    @Setting(comment = "Message if the player has to register with a longer password")
+    private String tooShortPassword = "§2Your password is too short";
+
     public Text getAccountAlreadyExists() {
         return fromString(accountAlreadyExists);
     }
@@ -213,6 +216,10 @@ public class TextConfig {
 
     public Text getChangePasswordMessage() {
         return fromString(changePassword);
+    }
+
+    public Text getTooShortPasswordMessage() {
+        return fromString(tooShortPassword);
     }
 
     private Text fromString(String textString) {

@@ -49,6 +49,9 @@ public class Config {
     @Setting(comment = "Should only the specified commands be protected from unauthorized access")
     private boolean commandOnlyProtection;
 
+    @Setting(comment = "The user should use a strong password")
+    private int minPasswordLength = 4;
+
     @Setting(comment = "Number of seconds a player has time to login or will be kicked.-1 deactivates this features")
     private int timeoutLogin = 60;
 
@@ -86,6 +89,10 @@ public class Config {
 
     public boolean isIpAutoLogin() {
         return ipAutoLogin;
+    }
+
+    public int getMinPasswordLength() {
+        return minPasswordLength;
     }
 
     public boolean isCommandOnlyProtection() {

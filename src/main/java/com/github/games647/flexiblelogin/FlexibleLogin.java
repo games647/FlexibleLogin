@@ -100,8 +100,6 @@ public class FlexibleLogin {
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
-        logger.info("Loading {} v{}", pluginContainer.getName(), pluginContainer.getVersion());
-
         configuration = new Settings(configManager, defaultConfigFile);
         configuration.load();
 

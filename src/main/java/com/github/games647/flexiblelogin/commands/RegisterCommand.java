@@ -69,8 +69,12 @@ public class RegisterCommand implements CommandExecutor {
         List<String> indexPasswords = Lists.newArrayList(passwords);
         String password = indexPasswords.get(0);
         if (password.equals(indexPasswords.get(1))) {
-            //Check if the first two passwords are equal to prevent typos
-            startTask(source, password);
+            if (password.length() >= plugin.getConfigManager().getConfig().getMinPasswordLength()) {
+                //Check if the first two passwords are equal to prevent typos
+                startTask(source, password);
+            } else {
+                source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getTooShortPasswordMessage());
+            }
         } else {
             source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getUnequalPasswordsMessage());
         }
