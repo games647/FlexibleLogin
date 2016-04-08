@@ -47,7 +47,7 @@ public class LogoutCommand implements CommandExecutor {
         }
 
         if (plugin.getConfigManager().getConfig().isPlayerPermissions()
-                && !source.hasPermission(plugin.getContainer().getId() + ".command.logout")) {
+                && !source.hasPermission(plugin.getContainer().getUnqualifiedId() + ".command.logout")) {
             throw new CommandPermissionException();
         }
 

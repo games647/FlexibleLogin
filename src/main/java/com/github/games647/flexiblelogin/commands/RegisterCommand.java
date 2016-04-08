@@ -50,7 +50,7 @@ public class RegisterCommand implements CommandExecutor {
         }
 
         if (plugin.getConfigManager().getConfig().isPlayerPermissions()
-                && !source.hasPermission(plugin.getContainer().getId() + ".command.register")) {
+                && !source.hasPermission(plugin.getContainer().getUnqualifiedId() + ".command.register")) {
             throw new CommandPermissionException();
         }
 
