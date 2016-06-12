@@ -84,7 +84,7 @@ public class ConnectionListener {
         Config config = plugin.getConfigManager().getConfig();
         if (loadedAccount == null) {
             if (config.isCommandOnlyProtection()) {
-                if (player.hasPermission(plugin.getContainer().getUnqualifiedId() + ".registerRequired")) {
+                if (player.hasPermission(plugin.getContainer().getId() + ".registerRequired")) {
                     //command only protection but have to register
                     sendNotLoggedInMessage(player);
                 }
@@ -107,7 +107,7 @@ public class ConnectionListener {
     private void sendNotLoggedInMessage(Player player) {
         //send the message if the player only needs to login
         if (!plugin.getConfigManager().getConfig().isBypassPermission()
-                || !player.hasPermission(plugin.getContainer().getUnqualifiedId() + ".bypass")) {
+                || !player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
             player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getNotLoggedInMessage());
         }
     }

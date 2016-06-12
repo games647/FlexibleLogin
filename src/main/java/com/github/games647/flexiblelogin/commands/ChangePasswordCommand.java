@@ -50,7 +50,7 @@ public class ChangePasswordCommand implements CommandExecutor {
         }
 
         if (plugin.getConfigManager().getConfig().isPlayerPermissions()
-                && !source.hasPermission(plugin.getContainer().getUnqualifiedId()+ ".command.changepw")) {
+                && !source.hasPermission(plugin.getContainer().getId() + ".command.changepw")) {
             throw new CommandPermissionException();
         }
 

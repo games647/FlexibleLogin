@@ -27,6 +27,7 @@ import com.github.games647.flexiblelogin.config.SpawnTeleportConfig;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.spongepowered.api.entity.living.player.Player;
@@ -44,18 +45,27 @@ public class ProtectionManager {
             Location<World> spawnLocation = teleportConfig.getSpawnLocation();
             if (spawnLocation != null) {
                 oldLocations.put(player.getUniqueId(), player.getLocation());
-                player.setLocationSafely(spawnLocation);
+                Optional<Location<World>> safeLoc = plugin.getGame().getTeleportHelper().getSafeLocation(spawnLocation);
+                if (safeLoc.isPresent()) {
+                    player.setLocation(safeLoc.get());
+                }
             }
         } else {
+            Location<World> oldLoc = player.getLocation();
+
             //sometimes players stuck in a wall
-            player.setLocationSafely(player.getLocation());
+            Optional<Location<World>> safeLoc = plugin.getGame().getTeleportHelper().getSafeLocation(oldLoc);
+            if (safeLoc.isPresent()) {
+                player.setLocation(safeLoc.get());
+            }
         }
     }
 
     public void unprotect(Player player) {
         Location<World> oldLocation = oldLocations.remove(player.getUniqueId());
-        if (oldLocation != null) {
-            player.setLocationSafely(oldLocation);
+        Optional<Location<World>> safeLoc = plugin.getGame().getTeleportHelper().getSafeLocation(oldLocation);
+        if (safeLoc.isPresent()) {
+            player.setLocation(safeLoc.get());
         }
     }
 }

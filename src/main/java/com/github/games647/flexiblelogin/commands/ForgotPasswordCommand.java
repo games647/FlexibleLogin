@@ -62,7 +62,7 @@ public class ForgotPasswordCommand implements CommandExecutor {
         }
 
         if (plugin.getConfigManager().getConfig().isPlayerPermissions()
-                && !src.hasPermission(plugin.getContainer().getUnqualifiedId() + ".command.forgot")) {
+                && !src.hasPermission(plugin.getContainer().getId() + ".command.forgot")) {
             throw new CommandPermissionException();
         }
 

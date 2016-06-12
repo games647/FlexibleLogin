@@ -50,7 +50,7 @@ public class SetEmailCommand implements CommandExecutor {
         }
 
         if (plugin.getConfigManager().getConfig().isPlayerPermissions()
-                && !src.hasPermission(plugin.getContainer().getUnqualifiedId() + ".command.email")) {
+                && !src.hasPermission(plugin.getContainer().getId() + ".command.email")) {
             throw new CommandPermissionException();
         }
 

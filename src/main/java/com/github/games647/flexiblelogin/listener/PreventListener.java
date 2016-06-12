@@ -27,6 +27,8 @@ package com.github.games647.flexiblelogin.listener;
 import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
+import java.util.List;
+
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
@@ -34,26 +36,24 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
-import org.spongepowered.api.event.entity.DisplaceEntityEvent;
+import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 
-import java.util.List;
-
 public class PreventListener {
 
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Listener
-    public void onPlayerMove(DisplaceEntityEvent.Move.TargetPlayer playerMoveEvent) {
+    public void onPlayerMove(MoveEntityEvent playerMoveEvent, @First Player player) {
         Vector3d oldLocation = playerMoveEvent.getFromTransform().getPosition();
         Vector3d newLocation = playerMoveEvent.getToTransform().getPosition();
         if ((oldLocation.getFloorX()!= newLocation.getFloorX()
                 || oldLocation.getFloorZ()!= newLocation.getFloorZ())) {
-            checkLoginStatus(playerMoveEvent, playerMoveEvent.getTargetEntity());
+            checkLoginStatus(playerMoveEvent, player);
         }
     }
 
@@ -121,14 +121,14 @@ public class PreventListener {
 
     private void checkLoginStatus(Cancellable event, Player player) {
         if (plugin.getConfigManager().getConfig().isBypassPermission()
-                && player.hasPermission(plugin.getContainer().getUnqualifiedId() + ".bypass")) {
+                && player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
             return;
         }
 
         if (plugin.getConfigManager().getConfig().isCommandOnlyProtection()) {
             //check if the user is already registered
             if (plugin.getDatabase().getAccountIfPresent(player) == null
-                && player.hasPermission(plugin.getContainer().getUnqualifiedId() + ".registerRequired")) {
+                && player.hasPermission(plugin.getContainer().getId()+ ".registerRequired")) {
                 event.setCancelled(true);
             }
         } else if (!plugin.getDatabase().isLoggedin(player)) {

@@ -46,7 +46,7 @@ public class LoginCommand implements CommandExecutor {
         }
 
         if (plugin.getConfigManager().getConfig().isPlayerPermissions()
-                && !source.hasPermission(plugin.getContainer().getUnqualifiedId() + ".command.login")) {
+                && !source.hasPermission(plugin.getContainer().getId() + ".command.login")) {
             throw new CommandPermissionException();
         }
 
