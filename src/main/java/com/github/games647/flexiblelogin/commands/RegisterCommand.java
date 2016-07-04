@@ -45,7 +45,7 @@ public class RegisterCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyActionMessage());
+            source.sendMessage(plugin.getConfigManager().getConfig().getText().getPlayersOnlyActionMessage());
             return CommandResult.success();
         }
 
@@ -59,7 +59,7 @@ public class RegisterCommand implements CommandExecutor {
             if (plugin.getConfigManager().getConfig().getHashAlgo().equals("totp")) {
                 startTask(source, "");
             } else {
-                source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getTotpNotEnabledMessage());
+                source.sendMessage(plugin.getConfigManager().getConfig().getText().getTotpNotEnabledMessage());
             }
 
             return CommandResult.success();
@@ -73,10 +73,10 @@ public class RegisterCommand implements CommandExecutor {
                 //Check if the first two passwords are equal to prevent typos
                 startTask(source, password);
             } else {
-                source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getTooShortPasswordMessage());
+                source.sendMessage(plugin.getConfigManager().getConfig().getText().getTooShortPasswordMessage());
             }
         } else {
-            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getUnequalPasswordsMessage());
+            source.sendMessage(plugin.getConfigManager().getConfig().getText().getUnequalPasswordsMessage());
         }
 
         return CommandResult.success();

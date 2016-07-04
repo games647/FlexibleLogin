@@ -35,18 +35,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.sql.SqlService;
 
-@ThreadSafe
 public class Database {
 
     public static final String USERS_TABLE = "flexiblelogin_users";
@@ -73,15 +69,14 @@ public class Database {
             this.password = "";
         }
 
+        String storagePath = sqlConfig.getPath()
+                .replace("%DIR%", plugin.getConfigManager().getConfigDir().getAbsolutePath());
+
         StringBuilder urlBuilder = new StringBuilder("jdbc:")
-                .append(sqlConfig.getType().name().toLowerCase())
-                .append("://");
+                .append(sqlConfig.getType().name().toLowerCase()).append("://");
         switch (sqlConfig.getType()) {
             case SQLITE:
-                urlBuilder.append(sqlConfig.getPath()
-                        .replace("%DIR%", plugin.getConfigManager().getConfigDir().getAbsolutePath()))
-                        .append(File.separatorChar)
-                        .append("database.db");
+                urlBuilder.append(storagePath).append(File.separatorChar).append("database.db");
                 break;
             case MYSQL:
                 //jdbc:<engine>://[<username>[:<password>]@]<host>/<database> - copied from sponge doc
@@ -94,18 +89,12 @@ public class Database {
                 break;
             case H2:
             default:
-                urlBuilder.append(sqlConfig.getPath()
-                        .replace("%DIR%", plugin.getConfigManager().getConfigDir().getAbsolutePath()))
-                        .append(File.separatorChar)
-                        .append("database");
+                urlBuilder.append(storagePath).append(File.separatorChar).append("database");
                 break;
         }
 
         this.jdbcUrl = urlBuilder.toString();
-        cache = CacheBuilder.newBuilder()
-                .expireAfterAccess(30, TimeUnit.MINUTES)
-                .maximumSize(1024)
-                .build();
+        cache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).maximumSize(1024).build();
     }
 
     public Connection getConnection() throws SQLException {
@@ -127,60 +116,12 @@ public class Database {
     }
 
     public void createTable() {
-        Connection conn = null;
         try {
-            conn = getConnection();
-
             DatabaseMigration migration = new DatabaseMigration(plugin, sql.getDataSource(jdbcUrl));
             migration.migrateName();
-
-            boolean tableExists = false;
-            try {
-                //check if the table already exists
-                Statement statement = conn.createStatement();
-                statement.execute("SELECT 1 FROM " + USERS_TABLE);
-                statement.close();
-
-                tableExists = true;
-            } catch (SQLException sqlEx) {
-                plugin.getLogger().debug("Table doesn't exist", sqlEx);
-            }
-
-            if (!tableExists) {
-                if (plugin.getConfigManager().getConfig().getSqlConfiguration().getType() == SQLType.SQLITE) {
-                    Statement statement = conn.createStatement();
-                    statement.execute("CREATE TABLE " + USERS_TABLE + " ( "
-                            + "`UserID` INTEGER PRIMARY KEY AUTOINCREMENT, "
-                            + "`UUID` BINARY(16) NOT NULL , "
-                            + "`Username` VARCHAR(32) NOT NULL , "
-                            + "`Password` VARCHAR(64) NOT NULL , "
-                            + "`IP` BINARY(32) NOT NULL , "
-                            + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
-                            + "`Email` VARCHAR(64) DEFAULT NULL , "
-                            + "`LoggedIn` BOOLEAN DEFAULT 0, "
-                            + "UNIQUE (`UUID`) "
-                            + ")");
-                    statement.close();
-                } else {
-                    Statement statement = conn.createStatement();
-                    statement.execute("CREATE TABLE " + USERS_TABLE + " ( "
-                            + "`UserID` INT UNSIGNED NOT NULL AUTO_INCREMENT , "
-                            + "`UUID` BINARY(16) NOT NULL , "
-                            + "`Username` VARCHAR(32) NOT NULL , "
-                            + "`Password` VARCHAR(64) NOT NULL , "
-                            + "`IP` BINARY(32) NOT NULL , "
-                            + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
-                            + "`Email` VARCHAR(64) DEFAULT NULL , "
-                            + "`LoggedIn` BOOLEAN DEFAULT 0, "
-                            + "PRIMARY KEY (`UserID`) , UNIQUE (`UUID`) "
-                            + ")");
-                    statement.close();
-            	}
-            }
-        } catch (SQLException ex) {
-            plugin.getLogger().error("Error creating database table", ex);
-        } finally {
-            closeQuietly(conn);
+            migration.createTable();
+        } catch (SQLException sqlEx) {
+            plugin.getLogger().error("Error creating database table", sqlEx);
         }
     }
 
@@ -242,10 +183,6 @@ public class Database {
         return false;
     }
 
-    /**
-     * @param player
-     * @return null if the player doesn't exist
-     */
     public Account loadAccount(Player player) {
         return loadAccount(player.getUniqueId());
     }
@@ -276,6 +213,28 @@ public class Database {
         }
 
         return loadedAccount;
+    }
+
+    public Account loadAccount(String playerName) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            PreparedStatement statement = conn.prepareStatement("SELECT * FROM " + USERS_TABLE + " WHERE Username=?");
+            statement.setString(1, playerName);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Account loadedAccount = new Account(resultSet);
+                return loadedAccount;
+            }
+        } catch (SQLException sqlEx) {
+            plugin.getLogger().error("Error loading account", sqlEx);
+        } finally {
+            closeQuietly(conn);
+        }
+
+        return null;
     }
 
     public Account createAccount(Player player, String password) {
@@ -315,7 +274,7 @@ public class Database {
         return null;
     }
 
-    private void closeQuietly(Connection conn) {
+    protected void closeQuietly(Connection conn) {
         if (conn != null) {
             try {
                 //this closes automatically the statement and resultset
@@ -358,10 +317,8 @@ public class Database {
         try {
             conn = getConnection();
 
-            Statement statement = conn.createStatement();
-
             //set all player accounts existing in the database to unlogged
-            statement.execute("UPDATE " + USERS_TABLE + " SET LoggedIn=0");
+            conn.createStatement().execute("UPDATE " + USERS_TABLE + " SET LoggedIn=0");
         } catch (SQLException ex) {
             plugin.getLogger().error("Error updating user account", ex);
         } finally {
@@ -375,8 +332,7 @@ public class Database {
             conn = getConnection();
 
             PreparedStatement statement = conn.prepareStatement("UPDATE " + USERS_TABLE
-                    + " SET Username=?, Password=?, IP=?, LastLogin=?, Email=?"
-                    + " WHERE UUID=?");
+                    + " SET Username=?, Password=?, IP=?, LastLogin=?, Email=? WHERE UUID=?");
             //username is now changeable by Mojang - so keep it up to date
             statement.setString(1, account.getUsername());
             statement.setString(2, account.getPassword());
@@ -392,11 +348,9 @@ public class Database {
 
             statement.setObject(6, Bytes.concat(mostBytes, leastBytes));
             statement.execute();
-
             return true;
         } catch (SQLException ex) {
             plugin.getLogger().error("Error updating user account", ex);
-
             return false;
         } finally {
             closeQuietly(conn);

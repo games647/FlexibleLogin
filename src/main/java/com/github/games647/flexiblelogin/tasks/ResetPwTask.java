@@ -24,45 +24,52 @@
 
 package com.github.games647.flexiblelogin.tasks;
 
+import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import java.util.UUID;
 
 import org.spongepowered.api.command.CommandSource;
 
-public class UnregisterTask implements Runnable {
+public class ResetPwTask implements Runnable {
 
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+
     private final CommandSource src;
-
     private final Object accountIndentifer;
+    private final String password;
 
-    public UnregisterTask(CommandSource src, UUID uuid) {
+    public ResetPwTask(CommandSource src, UUID uuid, String password) {
         this.src = src;
-
         this.accountIndentifer = uuid;
+        this.password = password;
     }
 
-    public UnregisterTask(CommandSource src, String playerName) {
+    public ResetPwTask(CommandSource src, String playerName, String password) {
         this.src = src;
-
         this.accountIndentifer = playerName;
+        this.password = password;
     }
 
     @Override
     public void run() {
-        boolean accountFound;
+        Account account = null;
         if (accountIndentifer instanceof String) {
-            accountFound = plugin.getDatabase().deleteAccount((String) accountIndentifer);
+            account = plugin.getDatabase().loadAccount((String) accountIndentifer);
         } else {
-            accountFound = plugin.getDatabase().deleteAccount((UUID) accountIndentifer);
+            account = plugin.getDatabase().loadAccount((UUID) accountIndentifer);
         }
 
-        if (accountFound) {
-            src.sendMessage(plugin.getConfigManager().getConfig().getText()
-                    .getAccountDeleted(accountIndentifer.toString()));
-        } else {
+        if (account == null) {
             src.sendMessage(plugin.getConfigManager().getConfig().getText().getAccountNotFound());
+        } else {
+            try {
+                account.setPasswordHash(plugin.getHasher().hash(password));
+                src.sendMessage(plugin.getConfigManager().getConfig().getText().getChangePasswordMessage());
+            } catch (Exception ex) {
+                plugin.getLogger().error("Error creating hash", ex);
+                src.sendMessage(plugin.getConfigManager().getConfig().getText().getErrorCommandMessage());
+            }
         }
     }
 }

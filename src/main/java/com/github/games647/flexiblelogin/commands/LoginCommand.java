@@ -41,7 +41,7 @@ public class LoginCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyActionMessage());
+            source.sendMessage(plugin.getConfigManager().getConfig().getText().getPlayersOnlyActionMessage());
             return CommandResult.empty();
         }
 

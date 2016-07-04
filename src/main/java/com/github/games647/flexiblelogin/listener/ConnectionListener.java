@@ -66,7 +66,7 @@ public class ConnectionListener {
         Player player = playerJoinEvent.getTargetEntity();
         if (!player.getName().matches(VALID_USERNAME)) {
             //validate invalid characters
-            player.kick(plugin.getConfigManager().getConfig().getTextConfig().getInvalidUsername());
+            player.kick(plugin.getConfigManager().getConfig().getText().getInvalidUsername());
             playerJoinEvent.setMessage(Text.EMPTY);
         }
 
@@ -95,7 +95,7 @@ public class ConnectionListener {
             }
         } else if (config.isIpAutoLogin() && Arrays.equals(loadedAccount.getIp(), newIp)) {
             //user will be auto logged in
-            player.sendMessage(config.getTextConfig().getIpAutoLogin());
+            player.sendMessage(config.getText().getIpAutoLogin());
             loadedAccount.setLoggedIn(true);
         } else {
             //user has an account but isn't logged in
@@ -123,7 +123,7 @@ public class ConnectionListener {
             plugin.getGame().getScheduler().createTaskBuilder()
                     .execute(() -> {
                         if (!account.isLoggedIn()) {
-                            player.kick(config.getTextConfig().getTimeoutReason());
+                            player.kick(config.getText().getTimeoutReason());
                         }
                     })
                     .delay(config.getTimeoutLogin(), TimeUnit.SECONDS)

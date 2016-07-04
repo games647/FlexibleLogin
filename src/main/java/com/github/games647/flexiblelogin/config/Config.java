@@ -79,7 +79,7 @@ public class Config {
         return sqlConfiguration;
     }
 
-    public TextConfig getTextConfig() {
+    public TextConfig getText() {
         return textConfiguration;
     }
 

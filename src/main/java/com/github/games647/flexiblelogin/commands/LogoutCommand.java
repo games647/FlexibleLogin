@@ -42,7 +42,7 @@ public class LogoutCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyActionMessage());
+            source.sendMessage(plugin.getConfigManager().getConfig().getText().getPlayersOnlyActionMessage());
             return CommandResult.success();
         }
 
@@ -53,9 +53,9 @@ public class LogoutCommand implements CommandExecutor {
 
         Account account = plugin.getDatabase().getAccountIfPresent((Player) source);
         if (account == null || !account.isLoggedIn()) {
-            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getNotLoggedInMessage());
+            source.sendMessage(plugin.getConfigManager().getConfig().getText().getNotLoggedInMessage());
         } else {
-            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getSuccessfullyLoggedOutMessage());
+            source.sendMessage(plugin.getConfigManager().getConfig().getText().getSuccessfullyLoggedOutMessage());
             account.setLoggedIn(false);
             account.setIp(ArrayUtils.EMPTY_BYTE_ARRAY);
 

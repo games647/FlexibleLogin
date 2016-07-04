@@ -45,7 +45,7 @@ public class ChangePasswordCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getPlayersOnlyActionMessage());
+            source.sendMessage(plugin.getConfigManager().getConfig().getText().getPlayersOnlyActionMessage());
             return CommandResult.empty();
         }
 
@@ -56,7 +56,7 @@ public class ChangePasswordCommand implements CommandExecutor {
 
         Account account = plugin.getDatabase().getAccountIfPresent((Player) source);
         if (account == null || !account.isLoggedIn()) {
-            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getNotLoggedInMessage());
+            source.sendMessage(plugin.getConfigManager().getConfig().getText().getNotLoggedInMessage());
             return CommandResult.empty();
         }
 
@@ -75,20 +75,20 @@ public class ChangePasswordCommand implements CommandExecutor {
                             boolean success = plugin.getDatabase().save(account);
                             if (success) {
                                 source.sendMessage(plugin.getConfigManager().getConfig()
-                                        .getTextConfig().getChangePasswordMessage());
+                                        .getText().getChangePasswordMessage());
                             } else {
                                 source.sendMessage(plugin.getConfigManager().getConfig()
-                                        .getTextConfig().getErrorCommandMessage());
+                                        .getText().getErrorCommandMessage());
                             }
                         })
                         .name("Register Query")
                         .submit(plugin);
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash on change password", ex);
-                source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getErrorCommandMessage());
+                source.sendMessage(plugin.getConfigManager().getConfig().getText().getErrorCommandMessage());
             }
         } else {
-            source.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getUnequalPasswordsMessage());
+            source.sendMessage(plugin.getConfigManager().getConfig().getText().getUnequalPasswordsMessage());
         }
 
         return CommandResult.success();

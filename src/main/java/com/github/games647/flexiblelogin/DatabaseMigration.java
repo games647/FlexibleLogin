@@ -23,6 +23,8 @@
  */
 package com.github.games647.flexiblelogin;
 
+import static com.github.games647.flexiblelogin.Database.USERS_TABLE;
+import com.github.games647.flexiblelogin.config.SQLType;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -39,6 +41,61 @@ public class DatabaseMigration {
     public DatabaseMigration(FlexibleLogin plugin, DataSource dataSource) {
         this.plugin = plugin;
         this.dataSource = dataSource;
+    }
+
+    public void createTable() {
+        Connection conn = null;
+        try {
+            conn = plugin.getDatabase().getConnection();
+
+            boolean tableExists = false;
+            try {
+                //check if the table already exists
+                Statement statement = conn.createStatement();
+                statement.execute("SELECT 1 FROM " + USERS_TABLE);
+                statement.close();
+
+                tableExists = true;
+            } catch (SQLException sqlEx) {
+                plugin.getLogger().debug("Table doesn't exist", sqlEx);
+            }
+
+            if (!tableExists) {
+                if (plugin.getConfigManager().getConfig().getSqlConfiguration().getType() == SQLType.SQLITE) {
+                    Statement statement = conn.createStatement();
+                    statement.execute("CREATE TABLE " + USERS_TABLE + " ( "
+                            + "`UserID` INTEGER PRIMARY KEY AUTOINCREMENT, "
+                            + "`UUID` BINARY(16) NOT NULL , "
+                            + "`Username` VARCHAR(32) NOT NULL , "
+                            + "`Password` VARCHAR(64) NOT NULL , "
+                            + "`IP` BINARY(32) NOT NULL , "
+                            + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
+                            + "`Email` VARCHAR(64) DEFAULT NULL , "
+                            + "`LoggedIn` BOOLEAN DEFAULT 0, "
+                            + "UNIQUE (`UUID`) "
+                            + ")");
+                    statement.close();
+                } else {
+                    Statement statement = conn.createStatement();
+                    statement.execute("CREATE TABLE " + USERS_TABLE + " ( "
+                            + "`UserID` INT UNSIGNED NOT NULL AUTO_INCREMENT , "
+                            + "`UUID` BINARY(16) NOT NULL , "
+                            + "`Username` VARCHAR(32) NOT NULL , "
+                            + "`Password` VARCHAR(64) NOT NULL , "
+                            + "`IP` BINARY(32) NOT NULL , "
+                            + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
+                            + "`Email` VARCHAR(64) DEFAULT NULL , "
+                            + "`LoggedIn` BOOLEAN DEFAULT 0, "
+                            + "PRIMARY KEY (`UserID`) , UNIQUE (`UUID`) "
+                            + ")");
+                    statement.close();
+            	}
+            }
+        } catch (SQLException ex) {
+
+        } finally {
+            plugin.getDatabase().closeQuietly(conn);
+        }
     }
 
     public void migrateName() {

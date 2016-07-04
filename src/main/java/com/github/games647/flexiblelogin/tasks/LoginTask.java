@@ -44,7 +44,7 @@ public class LoginTask implements Runnable {
     public void run() {
         Account account = plugin.getDatabase().loadAccount(player);
         if (account == null) {
-            player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAccountNotFound());
+            player.sendMessage(plugin.getConfigManager().getConfig().getText().getAccountNotFound());
             return;
         }
 
@@ -55,7 +55,7 @@ public class LoginTask implements Runnable {
                 byte[] playerIp = player.getConnection().getAddress().getAddress().getAddress();
                 account.setIp(playerIp);
 
-                player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getLoggedIn());
+                player.sendMessage(plugin.getConfigManager().getConfig().getText().getLoggedIn());
                 plugin.getGame().getScheduler().createTaskBuilder()
                         .execute(() -> plugin.getProtectionManager().unprotect(player))
                         .submit(plugin);
@@ -66,11 +66,11 @@ public class LoginTask implements Runnable {
                     plugin.getDatabase().flushLoginStatus(account, true);
                 }
             } else {
-                player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getIncorrectPassword());
+                player.sendMessage(plugin.getConfigManager().getConfig().getText().getIncorrectPassword());
             }
         } catch (Exception ex) {
             plugin.getLogger().error("Unexpected error while password checking", ex);
-            player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getErrorCommandMessage());
+            player.sendMessage(plugin.getConfigManager().getConfig().getText().getErrorCommandMessage());
         }
     }
 }

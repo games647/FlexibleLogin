@@ -65,7 +65,7 @@ public class UnregisterCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        src.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getUnregisteringFailedMessage());
+        src.sendMessage(plugin.getConfigManager().getConfig().getText().getUnregisteringFailedMessage());
 
         return CommandResult.success();
     }

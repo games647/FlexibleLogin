@@ -27,6 +27,7 @@ import com.github.games647.flexiblelogin.commands.ChangePasswordCommand;
 import com.github.games647.flexiblelogin.commands.LoginCommand;
 import com.github.games647.flexiblelogin.commands.LogoutCommand;
 import com.github.games647.flexiblelogin.commands.RegisterCommand;
+import com.github.games647.flexiblelogin.commands.ResetPasswordCommand;
 import com.github.games647.flexiblelogin.commands.SetEmailCommand;
 import com.github.games647.flexiblelogin.commands.UnregisterCommand;
 import com.github.games647.flexiblelogin.config.Settings;
@@ -150,6 +151,14 @@ public class FlexibleLogin {
                 .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("account"))))
                 .permission(pluginContainer.getName() + ".admin")
                 .build(), "unregister");
+
+        commandDispatcher.register(this, CommandSpec.builder()
+                .executor(new ResetPasswordCommand())
+                .arguments(
+                        GenericArguments.onlyOne(GenericArguments.string(Text.of("account")))
+                        , GenericArguments.string(Text.of("password")))
+                .permission(pluginContainer.getName() + ".admin")
+                .build(), "resetpassword", "resetpw");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new SetEmailCommand())

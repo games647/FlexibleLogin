@@ -62,7 +62,7 @@ public class RegisterTask implements Runnable {
                     sendTotpHint(hashedPassword);
                 }
 
-                player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAccountCreated());
+                player.sendMessage(plugin.getConfigManager().getConfig().getText().getAccountCreated());
                 createdAccount.setLoggedIn(true);
                 if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
                     plugin.getDatabase().flushLoginStatus(createdAccount, true);
@@ -73,10 +73,10 @@ public class RegisterTask implements Runnable {
                         .submit(plugin);
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash", ex);
-                player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getErrorCommandMessage());
+                player.sendMessage(plugin.getConfigManager().getConfig().getText().getErrorCommandMessage());
             }
         } else {
-            player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getAccountAlreadyExists());
+            player.sendMessage(plugin.getConfigManager().getConfig().getText().getAccountAlreadyExists());
         }
     }
 
@@ -86,13 +86,13 @@ public class RegisterTask implements Runnable {
         try {
             URL barcodeUrl = new URL(TOTP.getQRBarcodeURL(player.getName(), host, secretCode));
             player.sendMessage(Text.builder()
-                    .append(plugin.getConfigManager().getConfig().getTextConfig().getKeyGenerated())
+                    .append(plugin.getConfigManager().getConfig().getText().getKeyGenerated())
                     .build());
             player.sendMessage(Text.builder(secretCode)
                     .color(TextColors.GOLD)
                     .append(Text.of(TextColors.DARK_BLUE, " / "))
                     .append(Text.builder()
-                            .append(plugin.getConfigManager().getConfig().getTextConfig().getScanQr())
+                            .append(plugin.getConfigManager().getConfig().getText().getScanQr())
                             .onClick(TextActions.openUrl(barcodeUrl))
                             .build())
                     .build());
