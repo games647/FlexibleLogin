@@ -26,6 +26,7 @@ package com.github.games647.flexiblelogin.listener;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Config;
+import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -108,7 +109,9 @@ public class ConnectionListener {
         //send the message if the player only needs to login
         if (!plugin.getConfigManager().getConfig().isBypassPermission()
                 || !player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
-            player.sendMessage(plugin.getConfigManager().getConfig().getTextConfig().getNotLoggedInMessage());
+            plugin.getGame().getScheduler().createTaskBuilder()
+                    .execute(new LoginMessageTask(player))
+                    .interval(2, TimeUnit.SECONDS).submit(plugin);
         }
     }
 

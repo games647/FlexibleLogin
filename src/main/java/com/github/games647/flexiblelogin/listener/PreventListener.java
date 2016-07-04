@@ -51,8 +51,8 @@ public class PreventListener {
     public void onPlayerMove(MoveEntityEvent playerMoveEvent, @First Player player) {
         Vector3d oldLocation = playerMoveEvent.getFromTransform().getPosition();
         Vector3d newLocation = playerMoveEvent.getToTransform().getPosition();
-        if ((oldLocation.getFloorX()!= newLocation.getFloorX()
-                || oldLocation.getFloorZ()!= newLocation.getFloorZ())) {
+        if ((oldLocation.getFloorX() != newLocation.getFloorX()
+                || oldLocation.getFloorZ() != newLocation.getFloorZ())) {
             checkLoginStatus(playerMoveEvent, player);
         }
     }

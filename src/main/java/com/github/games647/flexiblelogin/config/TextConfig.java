@@ -52,7 +52,10 @@ public class TextConfig {
     private String loggedOut = "§2Logged out.";
 
     @Setting(comment = "When the player is not logged in of his/her account.")
-    private String notLoggedIn = "§4Not logged in. Type /register or /login to login in";
+    private String notLoggedIn = "§4Not logged in. Type /login to login in";
+
+    @Setting(comment = "When the player is not logged in of his/her account.")
+    private String notRegistered = "§4Not registered. Type /register to register";
 
     @Setting(comment = "When totp is not enabled.")
     private String totpNotEnabled = "§4Totp is not enabled. You have to enter two passwords.";
@@ -172,6 +175,10 @@ public class TextConfig {
 
     public Text getSuccessfullyLoggedOutMessage() {
         return fromString(loggedOut);
+    }
+
+    public Text getNotRegisteredMessage() {
+        return fromString(notLoggedIn);
     }
 
     public Text getNotLoggedInMessage() {
