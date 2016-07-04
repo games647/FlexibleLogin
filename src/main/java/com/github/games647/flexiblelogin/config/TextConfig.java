@@ -117,6 +117,9 @@ public class TextConfig {
     @Setting(comment = "Message if the player has to register with a longer password")
     private String tooShortPassword = "§2Your password is too short";
 
+    @Setting(comment = "User reached max attempts")
+    private String maxAttempts = "§2You entered too many times a wrong password";
+
     public Text getAccountAlreadyExists() {
         return fromString(accountAlreadyExists);
     }
@@ -227,6 +230,10 @@ public class TextConfig {
 
     public Text getTooShortPasswordMessage() {
         return fromString(tooShortPassword);
+    }
+
+    public Text getMaxAttemptsMessage() {
+        return fromString(maxAttempts);
     }
 
     private Text fromString(String textString) {

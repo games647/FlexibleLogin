@@ -64,6 +64,12 @@ public class Config {
     @Setting(comment = "Do you allow your users to skip authentication with the bypass permission")
     private boolean bypassPermission;
 
+    @Setting(comment = "How many login attempts are allowed until everything is blocked")
+    private int maxAttempts = 3;
+
+    @Setting(comment = "How seconds the user should wait after the user tried to make too many attempts")
+    private int waitTime = 300;
+
     @Setting
     private SpawnTeleportConfig teleportConfig = new SpawnTeleportConfig();
 
@@ -121,5 +127,13 @@ public class Config {
 
     public List<String> getProtectedCommands() {
         return protectedCommands;
+    }
+
+    public int getMaxAttempts() {
+        return maxAttempts;
+    }
+
+    public int getWaitTime() {
+        return waitTime;
     }
 }

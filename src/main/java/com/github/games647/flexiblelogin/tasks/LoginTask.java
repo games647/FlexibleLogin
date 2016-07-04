@@ -25,6 +25,7 @@ package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -49,7 +50,17 @@ public class LoginTask implements Runnable {
         }
 
         try {
+            Integer attempts = plugin.getAttempts().get(player.getConnection());
+            if (attempts != null && attempts > plugin.getConfigManager().getConfig().getMaxAttempts()) {
+                player.sendMessage(plugin.getConfigManager().getConfig().getText().getMaxAttemptsMessage());
+                plugin.getGame().getScheduler().createTaskBuilder()
+                        .delay(plugin.getConfigManager().getConfig().getWaitTime(), TimeUnit.SECONDS)
+                        .execute(() -> plugin.getAttempts().remove(player.getConnection())).submit(plugin);
+                return;
+            }
+
             if (account.checkPassword(plugin, userInput)) {
+                plugin.getAttempts().remove(player.getUniqueId());
                 account.setLoggedIn(true);
                 //update the ip
                 byte[] playerIp = player.getConnection().getAddress().getAddress().getAddress();
@@ -66,6 +77,13 @@ public class LoginTask implements Runnable {
                     plugin.getDatabase().flushLoginStatus(account, true);
                 }
             } else {
+                if (attempts == null) {
+                    attempts = 0;
+                }
+
+                attempts++;
+                plugin.getAttempts().put(player.getConnection(), attempts);
+
                 player.sendMessage(plugin.getConfigManager().getConfig().getText().getIncorrectPassword());
             }
         } catch (Exception ex) {

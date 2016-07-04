@@ -36,11 +36,11 @@ import com.github.games647.flexiblelogin.hasher.Hasher;
 import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.github.games647.flexiblelogin.listener.ConnectionListener;
 import com.github.games647.flexiblelogin.listener.PreventListener;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
 import java.io.File;
-
-import me.flibio.updatifier.Updatifier;
+import java.util.Map;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -55,11 +55,11 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
+import org.spongepowered.api.network.PlayerConnection;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
-@Updatifier(repoOwner = "games647", repoName = "FlexibleLogin", version = "0.8")
 @Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.8"
         , url = "https://github.com/games647/FlexibleLogin"
         , description = "A Sponge minecraft server plugin for second authentication.")
@@ -83,6 +83,8 @@ public class FlexibleLogin {
     @Inject
     @DefaultConfig(sharedRoot = false)
     private ConfigurationLoader<CommentedConfigurationNode> configManager;
+
+    private Map<PlayerConnection, Integer> attempts = Maps.newConcurrentMap();
 
     private Settings configuration;
     private Database database;
@@ -200,6 +202,10 @@ public class FlexibleLogin {
 
     public Database getDatabase() {
         return database;
+    }
+
+    public Map<PlayerConnection, Integer> getAttempts() {
+        return attempts;
     }
 
     public ProtectionManager getProtectionManager() {

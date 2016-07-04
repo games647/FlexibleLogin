@@ -156,11 +156,5 @@
             <artifactId>javax.mail</artifactId>
             <version>1.5.5</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.github.Flibio</groupId>
-            <artifactId>Updatifier</artifactId>
-            <version>v1.3.0</version>
-        </dependency>
     </dependencies>
 </project>
