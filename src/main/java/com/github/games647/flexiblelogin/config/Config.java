@@ -70,6 +70,9 @@ public class Config {
     @Setting(comment = "How seconds the user should wait after the user tried to make too many attempts")
     private int waitTime = 300;
 
+    @Setting(comment = "How many accounts are allowed per ip-addres. Use 0 to disable it")
+    private int maxIpReg = 0;
+
     @Setting
     private SpawnTeleportConfig teleportConfig = new SpawnTeleportConfig();
 
@@ -135,5 +138,9 @@ public class Config {
 
     public int getWaitTime() {
         return waitTime;
+    }
+
+    public int getMaxIpReg() {
+        return maxIpReg;
     }
 }

@@ -237,6 +237,27 @@ public class Database {
         return null;
     }
 
+    public int getRegistrationsCount(byte[] ip) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            PreparedStatement statement = conn.prepareStatement("SELECT COUNT(*) FROM " + USERS_TABLE + " WHERE IP=?");
+            statement.setBytes(1, ip);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        } catch (SQLException sqlEx) {
+            plugin.getLogger().error("Error loading count of registrations", sqlEx);
+        } finally {
+            closeQuietly(conn);
+        }
+
+        return -1;
+    }
+
     public Account createAccount(Player player, String password) {
         Connection conn = null;
         try {

@@ -50,6 +50,13 @@ public class RegisterTask implements Runnable {
     @Override
     public void run() {
         if (plugin.getDatabase().loadAccount(player) == null) {
+            byte[] ipAddress = player.getConnection().getAddress().getAddress().getAddress();
+            int regByIp = plugin.getDatabase().getRegistrationsCount(ipAddress);
+            if (regByIp > plugin.getConfigManager().getConfig().getMaxIpReg()) {
+                player.sendMessage(plugin.getConfigManager().getConfig().getText().getMaxIpRegMessage());
+                return;
+            }
+
             try {
                 String hashedPassword = plugin.getHasher().hash(password);
                 Account createdAccount = plugin.getDatabase().createAccount(player, hashedPassword);

@@ -120,6 +120,9 @@ public class TextConfig {
     @Setting(comment = "User reached max attempts")
     private String maxAttempts = "§2You entered too many times a wrong password";
 
+    @Setting(comment = "User reached the max ip registrations")
+    private String maxIpReg = "§2You reached the max amount of registrations for this ip-address";
+
     public Text getAccountAlreadyExists() {
         return fromString(accountAlreadyExists);
     }
@@ -234,6 +237,10 @@ public class TextConfig {
 
     public Text getMaxAttemptsMessage() {
         return fromString(maxAttempts);
+    }
+
+    public Text getMaxIpRegMessage() {
+        return fromString(maxIpReg);
     }
 
     private Text fromString(String textString) {
