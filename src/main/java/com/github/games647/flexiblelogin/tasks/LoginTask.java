@@ -26,6 +26,7 @@ package com.github.games647.flexiblelogin.tasks;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import java.util.concurrent.TimeUnit;
+import org.spongepowered.api.command.source.ConsoleSource;
 
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -53,6 +54,12 @@ public class LoginTask implements Runnable {
             Integer attempts = plugin.getAttempts().get(player.getConnection());
             if (attempts != null && attempts > plugin.getConfigManager().getConfig().getMaxAttempts()) {
                 player.sendMessage(plugin.getConfigManager().getConfig().getText().getMaxAttemptsMessage());
+                String lockCommand = plugin.getConfigManager().getConfig().getLockCommand();
+                if (lockCommand != null && !lockCommand.isEmpty()) {
+                    ConsoleSource console = plugin.getGame().getServer().getConsole();
+                    plugin.getGame().getCommandManager().process(console, lockCommand);
+                }
+
                 plugin.getGame().getScheduler().createTaskBuilder()
                         .delay(plugin.getConfigManager().getConfig().getWaitTime(), TimeUnit.SECONDS)
                         .execute(() -> plugin.getAttempts().remove(player.getConnection())).submit(plugin);

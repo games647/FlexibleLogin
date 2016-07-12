@@ -70,6 +70,9 @@ public class Config {
     @Setting(comment = "How seconds the user should wait after the user tried to make too many attempts")
     private int waitTime = 300;
 
+    @Setting(comment = "Custom command that should run after the user tried to make too many attempts")
+    private String lockCommand = "";
+
     @Setting(comment = "How many accounts are allowed per ip-addres. Use 0 to disable it")
     private int maxIpReg = 0;
 
@@ -142,5 +145,9 @@ public class Config {
 
     public int getMaxIpReg() {
         return maxIpReg;
+    }
+
+    public String getLockCommand() {
+        return lockCommand;
     }
 }
