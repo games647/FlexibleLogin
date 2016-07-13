@@ -29,21 +29,18 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.sql.DataSource;
 
 public class DatabaseMigration {
 
     private static final String OLD_TABLE_NAME = "users";
 
     private final FlexibleLogin plugin;
-    private final DataSource dataSource;
 
-    public DatabaseMigration(FlexibleLogin plugin, DataSource dataSource) {
+    public DatabaseMigration(FlexibleLogin plugin) {
         this.plugin = plugin;
-        this.dataSource = dataSource;
     }
 
-    public void createTable() {
+    public void createTable() throws SQLException {
         Connection conn = null;
         try {
             conn = plugin.getDatabase().getConnection();
@@ -91,8 +88,6 @@ public class DatabaseMigration {
                     statement.close();
             	}
             }
-        } catch (SQLException ex) {
-
         } finally {
             plugin.getDatabase().closeQuietly(conn);
         }
@@ -101,7 +96,7 @@ public class DatabaseMigration {
     public void migrateName() {
         Connection conn = null;
         try {
-            conn = dataSource.getConnection();
+            conn = plugin.getDatabase().getConnection();
 
             boolean tableExists = false;
             try {

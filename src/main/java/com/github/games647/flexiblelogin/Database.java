@@ -117,7 +117,7 @@ public class Database {
 
     public void createTable() {
         try {
-            DatabaseMigration migration = new DatabaseMigration(plugin, sql.getDataSource(jdbcUrl));
+            DatabaseMigration migration = new DatabaseMigration(plugin);
             migration.migrateName();
             migration.createTable();
         } catch (SQLException sqlEx) {

@@ -184,7 +184,7 @@ public class TextConfig {
     }
 
     public Text getNotRegisteredMessage() {
-        return fromString(notLoggedIn);
+        return fromString(notRegistered);
     }
 
     public Text getNotLoggedInMessage() {
