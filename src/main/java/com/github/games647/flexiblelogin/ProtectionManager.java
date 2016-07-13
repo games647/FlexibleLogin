@@ -63,6 +63,10 @@ public class ProtectionManager {
 
     public void unprotect(Player player) {
         Location<World> oldLocation = oldLocations.remove(player.getUniqueId());
+        if (oldLocation == null) {
+            return;
+        }
+
         Optional<Location<World>> safeLoc = plugin.getGame().getTeleportHelper().getSafeLocation(oldLocation);
         if (safeLoc.isPresent()) {
             player.setLocation(safeLoc.get());
