@@ -59,10 +59,10 @@ public class UnregisterTask implements Runnable {
         }
 
         if (accountFound) {
-            src.sendMessage(plugin.getConfigManager().getConfig().getText()
+            src.sendMessage(plugin.getConfigManager().getTextConfig()
                     .getAccountDeleted(accountIndentifer.toString()));
         } else {
-            src.sendMessage(plugin.getConfigManager().getConfig().getText().getAccountNotFound());
+            src.sendMessage(plugin.getConfigManager().getTextConfig().getAccountNotFound());
         }
     }
 }

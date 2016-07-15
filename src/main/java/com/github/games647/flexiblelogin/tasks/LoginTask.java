@@ -46,14 +46,14 @@ public class LoginTask implements Runnable {
     public void run() {
         Account account = plugin.getDatabase().loadAccount(player);
         if (account == null) {
-            player.sendMessage(plugin.getConfigManager().getConfig().getText().getAccountNotFound());
+            player.sendMessage(plugin.getConfigManager().getTextConfig().getAccountNotFound());
             return;
         }
 
         try {
             Integer attempts = plugin.getAttempts().get(player.getConnection());
             if (attempts != null && attempts > plugin.getConfigManager().getConfig().getMaxAttempts()) {
-                player.sendMessage(plugin.getConfigManager().getConfig().getText().getMaxAttemptsMessage());
+                player.sendMessage(plugin.getConfigManager().getTextConfig().getMaxAttemptsMessage());
                 String lockCommand = plugin.getConfigManager().getConfig().getLockCommand();
                 if (lockCommand != null && !lockCommand.isEmpty()) {
                     ConsoleSource console = plugin.getGame().getServer().getConsole();
@@ -73,7 +73,7 @@ public class LoginTask implements Runnable {
                 byte[] playerIp = player.getConnection().getAddress().getAddress().getAddress();
                 account.setIp(playerIp);
 
-                player.sendMessage(plugin.getConfigManager().getConfig().getText().getLoggedIn());
+                player.sendMessage(plugin.getConfigManager().getTextConfig().getLoggedIn());
                 plugin.getGame().getScheduler().createTaskBuilder()
                         .execute(() -> plugin.getProtectionManager().unprotect(player))
                         .submit(plugin);
@@ -91,11 +91,11 @@ public class LoginTask implements Runnable {
                 attempts++;
                 plugin.getAttempts().put(player.getConnection(), attempts);
 
-                player.sendMessage(plugin.getConfigManager().getConfig().getText().getIncorrectPassword());
+                player.sendMessage(plugin.getConfigManager().getTextConfig().getIncorrectPassword());
             }
         } catch (Exception ex) {
             plugin.getLogger().error("Unexpected error while password checking", ex);
-            player.sendMessage(plugin.getConfigManager().getConfig().getText().getErrorCommandMessage());
+            player.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
         }
     }
 }

@@ -53,7 +53,7 @@ public class RegisterTask implements Runnable {
             byte[] ipAddress = player.getConnection().getAddress().getAddress().getAddress();
             int regByIp = plugin.getDatabase().getRegistrationsCount(ipAddress);
             if (regByIp > plugin.getConfigManager().getConfig().getMaxIpReg()) {
-                player.sendMessage(plugin.getConfigManager().getConfig().getText().getMaxIpRegMessage());
+                player.sendMessage(plugin.getConfigManager().getTextConfig().getMaxIpRegMessage());
                 return;
             }
 
@@ -69,7 +69,7 @@ public class RegisterTask implements Runnable {
                     sendTotpHint(hashedPassword);
                 }
 
-                player.sendMessage(plugin.getConfigManager().getConfig().getText().getAccountCreated());
+                player.sendMessage(plugin.getConfigManager().getTextConfig().getAccountCreated());
                 createdAccount.setLoggedIn(true);
                 if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
                     plugin.getDatabase().flushLoginStatus(createdAccount, true);
@@ -80,10 +80,10 @@ public class RegisterTask implements Runnable {
                         .submit(plugin);
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash", ex);
-                player.sendMessage(plugin.getConfigManager().getConfig().getText().getErrorCommandMessage());
+                player.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
             }
         } else {
-            player.sendMessage(plugin.getConfigManager().getConfig().getText().getAccountAlreadyExists());
+            player.sendMessage(plugin.getConfigManager().getTextConfig().getAccountAlreadyExists());
         }
     }
 
@@ -93,13 +93,13 @@ public class RegisterTask implements Runnable {
         try {
             URL barcodeUrl = new URL(TOTP.getQRBarcodeURL(player.getName(), host, secretCode));
             player.sendMessage(Text.builder()
-                    .append(plugin.getConfigManager().getConfig().getText().getKeyGenerated())
+                    .append(plugin.getConfigManager().getTextConfig().getKeyGenerated())
                     .build());
             player.sendMessage(Text.builder(secretCode)
                     .color(TextColors.GOLD)
                     .append(Text.of(TextColors.DARK_BLUE, " / "))
                     .append(Text.builder()
-                            .append(plugin.getConfigManager().getConfig().getText().getScanQr())
+                            .append(plugin.getConfigManager().getTextConfig().getScanQr())
                             .onClick(TextActions.openUrl(barcodeUrl))
                             .build())
                     .build());

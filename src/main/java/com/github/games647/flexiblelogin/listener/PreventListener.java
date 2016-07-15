@@ -75,7 +75,7 @@ public class PreventListener {
             List<String> protectedCommands = plugin.getConfigManager().getConfig().getProtectedCommands();
             if ((protectedCommands.isEmpty() || protectedCommands.contains(command))) {
                 if (!plugin.getDatabase().isLoggedin(player)) {
-                    player.sendMessage(plugin.getConfigManager().getConfig().getText().getProtectedCommand());
+                    player.sendMessage(plugin.getConfigManager().getTextConfig().getProtectedCommand());
                     commandEvent.setCancelled(true);
                 }
             }

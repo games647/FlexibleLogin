@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -42,7 +43,7 @@ public class Settings {
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     private ObjectMapper<Config>.BoundInstance configMapper;
-    private CommentedConfigurationNode rootNode;
+    private ObjectMapper<TextConfig>.BoundInstance textMapper;
 
     public Settings(ConfigurationLoader<CommentedConfigurationNode> configManager, File defaultConfigFile) {
         this.configManager = configManager;
@@ -50,6 +51,7 @@ public class Settings {
 
         try {
             configMapper = ObjectMapper.forClass(Config.class).bindToNew();
+            textMapper = ObjectMapper.forClass(TextConfig.class).bindToNew();
         } catch (ObjectMappingException objMappingExc) {
             plugin.getLogger().error("Invalid plugin structure", objMappingExc);
         }
@@ -66,34 +68,30 @@ public class Settings {
             }
         }
 
-        rootNode = configManager.createEmptyNode();
-        if (configMapper != null) {
+        loadMapper(configMapper, configManager);
+
+        File textFile = new File(getConfigDir(), "messages");
+        HoconConfigurationLoader textLoader = HoconConfigurationLoader.builder().setFile(textFile).build();
+        loadMapper(textMapper, textLoader);
+    }
+
+    public void loadMapper(ObjectMapper<?>.BoundInstance mapper
+            , ConfigurationLoader<CommentedConfigurationNode> loader) {
+        CommentedConfigurationNode rootNode = loader.createEmptyNode();
+        if (mapper != null) {
             try {
-                rootNode = configManager.load();
+                rootNode = loader.load();
 
                 //load the config into the object
-                configMapper.populate(rootNode);
+                mapper.populate(rootNode);
 
                 //add missing default values
-                configMapper.serialize(rootNode);
-                configManager.save(rootNode);
+                mapper.serialize(rootNode);
+                loader.save(rootNode);
             } catch (ObjectMappingException objMappingExc) {
                 plugin.getLogger().error("Error loading the configuration", objMappingExc);
             } catch (IOException ioExc) {
                 plugin.getLogger().error("Error saving the default configuration", ioExc);
-            }
-        }
-    }
-
-    public void save() {
-        if (configMapper != null && rootNode != null) {
-            try {
-                configMapper.serialize(rootNode);
-                configManager.save(rootNode);
-            } catch (ObjectMappingException objMappingExc) {
-                plugin.getLogger().error("Error serialize the configuration", objMappingExc);
-            } catch (IOException ioExc) {
-                plugin.getLogger().error("Error saving the configuration", ioExc);
             }
         }
     }
@@ -104,6 +102,14 @@ public class Settings {
         }
 
         return configMapper.getInstance();
+    }
+
+    public TextConfig getTextConfig() {
+        if (textMapper == null) {
+            return null;
+        }
+
+        return textMapper.getInstance();
     }
 
     public File getConfigDir() {

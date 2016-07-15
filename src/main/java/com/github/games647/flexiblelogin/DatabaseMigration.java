@@ -23,12 +23,10 @@
  */
 package com.github.games647.flexiblelogin;
 
-import static com.github.games647.flexiblelogin.Database.USERS_TABLE;
 import com.github.games647.flexiblelogin.config.SQLType;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 
 public class DatabaseMigration {
 
@@ -49,7 +47,7 @@ public class DatabaseMigration {
             try {
                 //check if the table already exists
                 Statement statement = conn.createStatement();
-                statement.execute("SELECT 1 FROM " + USERS_TABLE);
+                statement.execute("SELECT 1 FROM " + Database.USERS_TABLE);
                 statement.close();
 
                 tableExists = true;
@@ -60,7 +58,7 @@ public class DatabaseMigration {
             if (!tableExists) {
                 if (plugin.getConfigManager().getConfig().getSqlConfiguration().getType() == SQLType.SQLITE) {
                     Statement statement = conn.createStatement();
-                    statement.execute("CREATE TABLE " + USERS_TABLE + " ( "
+                    statement.execute("CREATE TABLE " + Database.USERS_TABLE + " ( "
                             + "`UserID` INTEGER PRIMARY KEY AUTOINCREMENT, "
                             + "`UUID` BINARY(16) NOT NULL , "
                             + "`Username` VARCHAR(32) NOT NULL , "
@@ -74,7 +72,7 @@ public class DatabaseMigration {
                     statement.close();
                 } else {
                     Statement statement = conn.createStatement();
-                    statement.execute("CREATE TABLE " + USERS_TABLE + " ( "
+                    statement.execute("CREATE TABLE " + Database.USERS_TABLE + " ( "
                             + "`UserID` INT UNSIGNED NOT NULL AUTO_INCREMENT , "
                             + "`UUID` BINARY(16) NOT NULL , "
                             + "`Username` VARCHAR(32) NOT NULL , "

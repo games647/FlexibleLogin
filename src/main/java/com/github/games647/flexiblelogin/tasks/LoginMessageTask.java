@@ -26,9 +26,9 @@ public class LoginMessageTask implements Consumer<Task> {
         }
 
         if (account == null) {
-            player.sendMessage(plugin.getConfigManager().getConfig().getText().getNotRegisteredMessage());
+            player.sendMessage(plugin.getConfigManager().getTextConfig().getNotRegisteredMessage());
         } else {
-            player.sendMessage(plugin.getConfigManager().getConfig().getText().getNotLoggedInMessage());
+            player.sendMessage(plugin.getConfigManager().getTextConfig().getNotLoggedInMessage());
         }
     }
 }

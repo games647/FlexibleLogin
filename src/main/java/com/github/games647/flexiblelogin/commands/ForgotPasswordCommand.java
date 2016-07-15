@@ -57,7 +57,7 @@ public class ForgotPasswordCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(plugin.getConfigManager().getConfig().getText().getPlayersOnlyActionMessage());
+            src.sendMessage(plugin.getConfigManager().getTextConfig().getPlayersOnlyActionMessage());
             return CommandResult.success();
         }
 
@@ -69,16 +69,16 @@ public class ForgotPasswordCommand implements CommandExecutor {
         Player player = (Player) src;
         Account account = plugin.getDatabase().getAccountIfPresent(player);
         if (account == null) {
-            src.sendMessage(plugin.getConfigManager().getConfig().getText().getAccountNotLoadedMessage());
+            src.sendMessage(plugin.getConfigManager().getTextConfig().getAccountNotLoadedMessage());
             return CommandResult.success();
         } else if (account.isLoggedIn()) {
-            src.sendMessage(plugin.getConfigManager().getConfig().getText().getAlreadyLoggedInMessage());
+            src.sendMessage(plugin.getConfigManager().getTextConfig().getAlreadyLoggedInMessage());
             return CommandResult.success();
         }
 
         String email = account.getEmail();
         if (email == null || email.isEmpty()) {
-            src.sendMessage(plugin.getConfigManager().getConfig().getText().getUncommittedEmailAddressMessage());
+            src.sendMessage(plugin.getConfigManager().getTextConfig().getUncommittedEmailAddressMessage());
             return CommandResult.success();
         }
 
@@ -129,7 +129,7 @@ public class ForgotPasswordCommand implements CommandExecutor {
         } catch (Exception ex) {
             plugin.getLogger().error("Error executing command", ex);
             src.sendMessage(Text.of(TextColors.DARK_RED
-                    , plugin.getConfigManager().getConfig().getText().getErrorCommandMessage()));
+                    , plugin.getConfigManager().getTextConfig().getErrorCommandMessage()));
         }
 
         return CommandResult.success();

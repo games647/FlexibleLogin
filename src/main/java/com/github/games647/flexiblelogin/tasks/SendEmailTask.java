@@ -59,10 +59,10 @@ public class SendEmailTask implements Runnable {
             }
 
             transport.sendMessage(email, email.getAllRecipients());
-            player.sendMessage(plugin.getConfigManager().getConfig().getText().getMailSent());
+            player.sendMessage(plugin.getConfigManager().getTextConfig().getMailSent());
         } catch (Exception ex) {
             plugin.getLogger().error("Error sending email", ex);
-            player.sendMessage(plugin.getConfigManager().getConfig().getText().getErrorCommandMessage());
+            player.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
         }
     }
 }

@@ -67,14 +67,14 @@ public class ResetPasswordCommand implements CommandExecutor {
         if (player.isPresent()) {
             Account account = plugin.getDatabase().getAccountIfPresent(player.get());
             if (account == null) {
-                src.sendMessage(plugin.getConfigManager().getConfig().getText().getAccountNotFound());
+                src.sendMessage(plugin.getConfigManager().getTextConfig().getAccountNotFound());
             } else {
                 try {
                     account.setPasswordHash(plugin.getHasher().hash(password));
-                    src.sendMessage(plugin.getConfigManager().getConfig().getText().getChangePasswordMessage());
+                    src.sendMessage(plugin.getConfigManager().getTextConfig().getChangePasswordMessage());
                 } catch (Exception ex) {
                     plugin.getLogger().error("Error creating hash", ex);
-                    src.sendMessage(plugin.getConfigManager().getConfig().getText().getErrorCommandMessage());
+                    src.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
                 }
             }
         } else {
@@ -94,14 +94,14 @@ public class ResetPasswordCommand implements CommandExecutor {
         if (player.isPresent()) {
             Account account = plugin.getDatabase().getAccountIfPresent(player.get());
             if (account == null) {
-                src.sendMessage(plugin.getConfigManager().getConfig().getText().getAccountNotFound());
+                src.sendMessage(plugin.getConfigManager().getTextConfig().getAccountNotFound());
             } else {
                 try {
                     account.setPasswordHash(plugin.getHasher().hash(password));
-                    src.sendMessage(plugin.getConfigManager().getConfig().getText().getChangePasswordMessage());
+                    src.sendMessage(plugin.getConfigManager().getTextConfig().getChangePasswordMessage());
                 } catch (Exception ex) {
                     plugin.getLogger().error("Error creating hash", ex);
-                    src.sendMessage(plugin.getConfigManager().getConfig().getText().getErrorCommandMessage());
+                    src.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
                 }
             }
         } else {
