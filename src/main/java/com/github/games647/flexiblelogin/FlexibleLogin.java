@@ -27,6 +27,7 @@ import com.github.games647.flexiblelogin.commands.ChangePasswordCommand;
 import com.github.games647.flexiblelogin.commands.LoginCommand;
 import com.github.games647.flexiblelogin.commands.LogoutCommand;
 import com.github.games647.flexiblelogin.commands.RegisterCommand;
+import com.github.games647.flexiblelogin.commands.ReloadCommand;
 import com.github.games647.flexiblelogin.commands.ResetPasswordCommand;
 import com.github.games647.flexiblelogin.commands.SetEmailCommand;
 import com.github.games647.flexiblelogin.commands.UnregisterCommand;
@@ -149,6 +150,14 @@ public class FlexibleLogin {
                 .build(), "logout");
 
         commandDispatcher.register(this, CommandSpec.builder()
+                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("account"))))
+                .permission(pluginContainer.getName() + ".admin")
+                .child(CommandSpec.builder()
+                        .executor(new ReloadCommand())
+                        .build(), "reload", "rl")
+                .build(), pluginContainer.getName());
+
+        commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new UnregisterCommand())
                 .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("account"))))
                 .permission(pluginContainer.getName() + ".admin")
@@ -184,6 +193,27 @@ public class FlexibleLogin {
         game.getServer().getOnlinePlayers().stream().forEach(protectionManager::unprotect);
     }
 
+    public void onReload() {
+        //run this task sync in order let it finish before the process ends
+        database.close();
+
+        game.getServer().getOnlinePlayers().stream().forEach(protectionManager::unprotect);
+
+        configuration.load();
+        database = new Database();
+        database.createTable();
+
+        if (configuration.getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
+            hasher = new TOTP();
+        } else {
+            //use bcrypt as fallback for now
+            hasher = new BcryptHasher();
+        }
+
+        game.getServer().getOnlinePlayers().stream().forEach(protectionManager::protect);
+        game.getServer().getOnlinePlayers().stream().forEach(database::loadAccount);
+    }
+
     public Settings getConfigManager() {
         return configuration;
     }
@@ -210,6 +240,14 @@ public class FlexibleLogin {
 
     public ProtectionManager getProtectionManager() {
         return protectionManager;
+    }
+
+    public void setDatabase(Database database) {
+        this.database = database;
+    }
+
+    public void setHasher(Hasher hasher) {
+        this.hasher = hasher;
     }
 
     public Hasher getHasher() {

@@ -79,7 +79,7 @@ public class ConnectionListener {
                 .submit(plugin);
     }
 
-    private void onAccountLoaded(Player player) {
+    public void onAccountLoaded(Player player) {
         Account loadedAccount = plugin.getDatabase().loadAccount(player);
         byte[] newIp = player.getConnection().getAddress().getAddress().getAddress();
 

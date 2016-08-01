@@ -123,6 +123,9 @@ public class TextConfig {
     @Setting(comment = "User reached the max ip registrations")
     private String maxIpReg = "§2You reached the max amount of registrations for this ip-address";
 
+    @Setting(comment = "Admin reloaded the plugin")
+    private String onReload = "§4Successfull reloaded plugin";
+
     public Text getAccountAlreadyExists() {
         return fromString(accountAlreadyExists);
     }
@@ -241,6 +244,10 @@ public class TextConfig {
 
     public Text getMaxIpRegMessage() {
         return fromString(maxIpReg);
+    }
+
+    public Text getReloadMessage() {
+        return fromString(onReload);
     }
 
     private Text fromString(String textString) {
