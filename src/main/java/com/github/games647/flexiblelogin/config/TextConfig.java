@@ -126,6 +126,12 @@ public class TextConfig {
     @Setting(comment = "Admin reloaded the plugin")
     private String onReload = "§4Successfull reloaded plugin";
 
+    @Setting(comment = "Force register failed because the player is online")
+    private String forceRegisterOnline = "§2Cannot force register player. That player is online";
+
+    @Setting(comment = "Successfull force registered an account")
+    private String forceRegisterSuccess = "§4Force register success";
+
     public Text getAccountAlreadyExists() {
         return fromString(accountAlreadyExists);
     }
@@ -248,6 +254,14 @@ public class TextConfig {
 
     public Text getReloadMessage() {
         return fromString(onReload);
+    }
+
+    public Text getForceRegisterOnlineMessage() {
+        return fromString(forceRegisterOnline);
+    }
+
+    public Text getForceRegisterSuccessMessage() {
+        return fromString(forceRegisterSuccess);
     }
 
     private Text fromString(String textString) {

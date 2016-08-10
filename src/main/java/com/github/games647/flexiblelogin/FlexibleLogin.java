@@ -24,6 +24,7 @@
 package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.commands.ChangePasswordCommand;
+import com.github.games647.flexiblelogin.commands.ForceRegisterCommand;
 import com.github.games647.flexiblelogin.commands.LoginCommand;
 import com.github.games647.flexiblelogin.commands.LogoutCommand;
 import com.github.games647.flexiblelogin.commands.RegisterCommand;
@@ -146,9 +147,19 @@ public class FlexibleLogin {
                 .build(), "changepassword", "changepw");
 
         commandDispatcher.register(this, CommandSpec.builder()
+                .executor(new SetEmailCommand())
+                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("email"))))
+                .build(), "setemail", "email");
+
+        commandDispatcher.register(this, CommandSpec.builder()
+                .executor(new UnregisterCommand())
+                .build(), "forgotpassword", "forgot");
+
+        commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new LogoutCommand())
                 .build(), "logout");
 
+        //admin commands
         commandDispatcher.register(this, CommandSpec.builder()
                 .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("account"))))
                 .permission(pluginContainer.getName() + ".admin")
@@ -164,21 +175,20 @@ public class FlexibleLogin {
                 .build(), "unregister");
 
         commandDispatcher.register(this, CommandSpec.builder()
+                .executor(new ForceRegisterCommand())
+                .arguments(
+                        GenericArguments.onlyOne(GenericArguments.string(Text.of("account")))
+                        , GenericArguments.string(Text.of("password")))
+                .permission(pluginContainer.getName() + ".admin")
+                .build(), "force-register", "forceregister");
+
+        commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new ResetPasswordCommand())
                 .arguments(
                         GenericArguments.onlyOne(GenericArguments.string(Text.of("account")))
                         , GenericArguments.string(Text.of("password")))
                 .permission(pluginContainer.getName() + ".admin")
                 .build(), "resetpassword", "resetpw");
-
-        commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new SetEmailCommand())
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("email"))))
-                .build(), "setemail", "email");
-
-        commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new UnregisterCommand())
-                .build(), "forgotpassword", "forgot");
 
         //register events
         game.getEventManager().registerListeners(this, new ConnectionListener());
