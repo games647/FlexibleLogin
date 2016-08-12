@@ -57,7 +57,6 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
-import org.spongepowered.api.network.PlayerConnection;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
@@ -86,7 +85,7 @@ public class FlexibleLogin {
     @DefaultConfig(sharedRoot = false)
     private ConfigurationLoader<CommentedConfigurationNode> configManager;
 
-    private Map<PlayerConnection, Integer> attempts = Maps.newConcurrentMap();
+    private Map<String, Integer> attempts = Maps.newConcurrentMap();
 
     private Settings configuration;
     private Database database;
@@ -244,7 +243,7 @@ public class FlexibleLogin {
         return database;
     }
 
-    public Map<PlayerConnection, Integer> getAttempts() {
+    public Map<String, Integer> getAttempts() {
         return attempts;
     }
 

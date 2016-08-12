@@ -51,7 +51,7 @@ public class LoginTask implements Runnable {
         }
 
         try {
-            Integer attempts = plugin.getAttempts().get(player.getConnection());
+            Integer attempts = plugin.getAttempts().get(player.getName());
             if (attempts != null && attempts > plugin.getConfigManager().getConfig().getMaxAttempts()) {
                 player.sendMessage(plugin.getConfigManager().getTextConfig().getMaxAttemptsMessage());
                 String lockCommand = plugin.getConfigManager().getConfig().getLockCommand();
@@ -62,12 +62,12 @@ public class LoginTask implements Runnable {
 
                 plugin.getGame().getScheduler().createTaskBuilder()
                         .delay(plugin.getConfigManager().getConfig().getWaitTime(), TimeUnit.SECONDS)
-                        .execute(() -> plugin.getAttempts().remove(player.getConnection())).submit(plugin);
+                        .execute(() -> plugin.getAttempts().remove(player.getName())).submit(plugin);
                 return;
             }
 
             if (account.checkPassword(plugin, userInput)) {
-                plugin.getAttempts().remove(player.getUniqueId());
+                plugin.getAttempts().remove(player.getName());
                 account.setLoggedIn(true);
                 //update the ip
                 byte[] playerIp = player.getConnection().getAddress().getAddress().getAddress();
@@ -89,7 +89,7 @@ public class LoginTask implements Runnable {
                 }
 
                 attempts++;
-                plugin.getAttempts().put(player.getConnection(), attempts);
+                plugin.getAttempts().put(player.getName(), attempts);
 
                 player.sendMessage(plugin.getConfigManager().getTextConfig().getIncorrectPassword());
             }

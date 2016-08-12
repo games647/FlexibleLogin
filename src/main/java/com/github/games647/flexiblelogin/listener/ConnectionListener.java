@@ -50,7 +50,7 @@ public class ConnectionListener {
         plugin.getProtectionManager().unprotect(player);
 
         if (account != null) {
-            plugin.getAttempts().remove(player.getConnection());
+            plugin.getAttempts().remove(player.getName());
             //account is loaded -> mark the player as logout as it could remain in the cache
             account.setLoggedIn(false);
 
