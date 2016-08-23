@@ -70,7 +70,7 @@ public class Settings {
 
         loadMapper(configMapper, configManager);
 
-        File textFile = new File(getConfigDir(), "messages");
+        File textFile = new File(getConfigDir(), "messages.conf");
         HoconConfigurationLoader textLoader = HoconConfigurationLoader.builder().setFile(textFile).build();
         loadMapper(textMapper, textLoader);
     }
