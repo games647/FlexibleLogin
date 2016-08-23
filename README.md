@@ -24,6 +24,12 @@ Tested against:
     /forgotpassword - Sends a recovery email to the email address
     /unregister <uuid/name> - delete an account
 
+    Admin commands
+    /flexiblelogin reload - reloads the config
+    /unregister <name/uuid> - Deletes the account of a user
+    /force-register <name/uuid> <pass> - Register the user with a specific password
+    /resetpw <name> - Sets a new temp password for a new user
+
 ###Permissions
 
     flexiblelogin.admin - Permission to delete accocunts
@@ -45,7 +51,7 @@ Tested against:
     emailConfiguration {
         # Username for the account you want to the email from
         account=""
-        # Is password recovery using an email allowed
+        # Is password recovery using an email alloweds
         enabled=false
         # Mail server
         host="smtp.gmail.com"
@@ -64,6 +70,14 @@ Tested against:
     hashAlgo=bcrypt
     # Should the plugin login users automatically if it's the same account from the same IP
     ipAutoLogin=false
+    # Custom command that should run after the user tried to make too many attempts
+    lockCommand=""
+    # How many login attempts are allowed until everything is blocked
+    maxAttempts=3
+    # How many accounts are allowed per ip-addres. Use 0 to disable it
+    maxIpReg=0
+    # The user should use a strong password
+    minPasswordLength=4
     # Should this plugin check for player permissions
     playerPermissions=false
     # If command only protection is enabled, these commands are protected. If the list is empty all commands are protected
@@ -96,15 +110,12 @@ Tested against:
         # Spawn world or let it empty to use the default world specified in the server properties
         worldName=""
     }
-    # Text configuration for custom messages in chat
-    textConfiguration {
-        [...]
-    }
     # Number of seconds a player has time to login or will be kicked.-1 deactivates this features
     timeoutLogin=60
     # Should the plugin save the login status to the database
     updateLoginStatus=false
-
+    # How seconds the user should wait after the user tried to make too many attempts
+    waitTime=300
 
 ### Links
 
