@@ -26,9 +26,9 @@ Tested against:
 
     Admin commands
     /flexiblelogin reload - reloads the config
-    /unregister <name/uuid> - Deletes the account of a user
-    /force-register <name/uuid> <pass> - Register the user with a specific password
-    /resetpw <name> - Sets a new temp password for a new user
+    /flexiblelogin unregister <name/uuid> - Deletes the account of a user
+    /flexiblelogin register <name/uuid> <pass> - Register the user with a specific password
+    /flexiblelogin resetpw <name> - Sets a new temp password for a new user
 
 ###Permissions
 

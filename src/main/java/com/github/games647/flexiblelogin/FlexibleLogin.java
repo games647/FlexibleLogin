@@ -165,29 +165,23 @@ public class FlexibleLogin {
                 .child(CommandSpec.builder()
                         .executor(new ReloadCommand())
                         .build(), "reload", "rl")
+                .child(CommandSpec.builder()
+                        .executor(new UnregisterCommand())
+                        .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("account"))))
+                        .build(), "unregister")
+                .child(CommandSpec.builder()
+                        .executor(new ForceRegisterCommand())
+                        .arguments(
+                                GenericArguments.onlyOne(GenericArguments
+                                        .string(Text.of("account"))), GenericArguments.string(Text.of("password")))
+                        .build(), "register")
+                .child(CommandSpec.builder()
+                        .executor(new ResetPasswordCommand())
+                        .arguments(
+                                GenericArguments.onlyOne(GenericArguments
+                                        .string(Text.of("account"))), GenericArguments.string(Text.of("password")))
+                        .build(), "resetpw", "resetpassword")
                 .build(), pluginContainer.getName());
-
-        commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new UnregisterCommand())
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("account"))))
-                .permission(pluginContainer.getName() + ".admin")
-                .build(), "unregister");
-
-        commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new ForceRegisterCommand())
-                .arguments(
-                        GenericArguments.onlyOne(GenericArguments.string(Text.of("account")))
-                        , GenericArguments.string(Text.of("password")))
-                .permission(pluginContainer.getName() + ".admin")
-                .build(), "force-register", "forceregister");
-
-        commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new ResetPasswordCommand())
-                .arguments(
-                        GenericArguments.onlyOne(GenericArguments.string(Text.of("account")))
-                        , GenericArguments.string(Text.of("password")))
-                .permission(pluginContainer.getName() + ".admin")
-                .build(), "resetpassword", "resetpw");
 
         //register events
         game.getEventManager().registerListeners(this, new ConnectionListener());
