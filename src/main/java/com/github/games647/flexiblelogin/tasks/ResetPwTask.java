@@ -53,7 +53,7 @@ public class ResetPwTask implements Runnable {
 
     @Override
     public void run() {
-        Account account = null;
+        Account account;
         if (accountIndentifer instanceof String) {
             account = plugin.getDatabase().loadAccount((String) accountIndentifer);
         } else {

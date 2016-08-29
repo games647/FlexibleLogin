@@ -27,7 +27,6 @@ import com.github.games647.flexiblelogin.config.SpawnTeleportConfig;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.spongepowered.api.entity.living.player.Player;
@@ -45,19 +44,13 @@ public class ProtectionManager {
             Location<World> spawnLocation = teleportConfig.getSpawnLocation();
             if (spawnLocation != null) {
                 oldLocations.put(player.getUniqueId(), player.getLocation());
-                Optional<Location<World>> safeLoc = plugin.getGame().getTeleportHelper().getSafeLocation(spawnLocation);
-                if (safeLoc.isPresent()) {
-                    player.setLocation(safeLoc.get());
-                }
+                plugin.getGame().getTeleportHelper().getSafeLocation(spawnLocation).ifPresent(player::setLocation);
             }
         } else {
             Location<World> oldLoc = player.getLocation();
 
             //sometimes players stuck in a wall
-            Optional<Location<World>> safeLoc = plugin.getGame().getTeleportHelper().getSafeLocation(oldLoc);
-            if (safeLoc.isPresent()) {
-                player.setLocation(safeLoc.get());
-            }
+            plugin.getGame().getTeleportHelper().getSafeLocation(oldLoc).ifPresent(player::setLocation);
         }
     }
 
@@ -67,9 +60,6 @@ public class ProtectionManager {
             return;
         }
 
-        Optional<Location<World>> safeLoc = plugin.getGame().getTeleportHelper().getSafeLocation(oldLocation);
-        if (safeLoc.isPresent()) {
-            player.setLocation(safeLoc.get());
-        }
+        plugin.getGame().getTeleportHelper().getSafeLocation(oldLocation).ifPresent(player::setLocation);
     }
 }
