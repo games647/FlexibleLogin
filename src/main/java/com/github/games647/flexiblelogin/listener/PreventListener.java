@@ -34,6 +34,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 //import org.spongepowered.api.event.entity.DisplaceEntityEvent;
@@ -86,8 +87,10 @@ public class PreventListener {
     }
 
     @Listener
-    public void onPlayerItemDrop(DropItemEvent.Dispense dropItemEvent, @First Player player) {
-        checkLoginStatus(dropItemEvent, player);
+    public void onPlayerItemDrop(DropItemEvent.Dispense dropItemEvent, @First EntitySpawnCause spawnCause) {
+        if (spawnCause.getEntity() instanceof Player) {
+            checkLoginStatus(dropItemEvent, (Player) spawnCause.getEntity());
+        }
     }
 
     @Listener
