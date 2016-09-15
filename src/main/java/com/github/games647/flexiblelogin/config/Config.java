@@ -55,6 +55,9 @@ public class Config {
     @Setting(comment = "Should this plugin check for player permissions")
     private boolean playerPermissions;
 
+    @Setting(comment = "Teleport the player to a safe location based on the last login coordinates")
+    private boolean safeLocation;
+
     @Setting(comment = "Should the plugin save the login status to the database")
     private boolean updateLoginStatus;
 
@@ -138,6 +141,10 @@ public class Config {
 
     public int getMaxIpReg() {
         return maxIpReg;
+    }
+
+    public boolean isSafeLocation() {
+        return safeLocation;
     }
 
     public String getLockCommand() {

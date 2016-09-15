@@ -44,13 +44,21 @@ public class ProtectionManager {
             Location<World> spawnLocation = teleportConfig.getSpawnLocation();
             if (spawnLocation != null) {
                 oldLocations.put(player.getUniqueId(), player.getLocation());
-                plugin.getGame().getTeleportHelper().getSafeLocation(spawnLocation).ifPresent(player::setLocation);
+                if (plugin.getConfigManager().getConfig().isSafeLocation()) {
+                    plugin.getGame().getTeleportHelper().getSafeLocation(spawnLocation).ifPresent(player::setLocation);
+                } else {
+                    player.setLocation(spawnLocation);
+                }
             }
         } else {
             Location<World> oldLoc = player.getLocation();
 
             //sometimes players stuck in a wall
-            plugin.getGame().getTeleportHelper().getSafeLocation(oldLoc).ifPresent(player::setLocation);
+            if (plugin.getConfigManager().getConfig().isSafeLocation()) {
+                plugin.getGame().getTeleportHelper().getSafeLocation(oldLoc).ifPresent(player::setLocation);
+            } else {
+                player.setLocation(oldLoc);
+            }
         }
     }
 
@@ -60,6 +68,10 @@ public class ProtectionManager {
             return;
         }
 
-        plugin.getGame().getTeleportHelper().getSafeLocation(oldLocation).ifPresent(player::setLocation);
+        if (plugin.getConfigManager().getConfig().isSafeLocation()) {
+            plugin.getGame().getTeleportHelper().getSafeLocation(oldLocation).ifPresent(player::setLocation);
+        } else {
+            player.setLocation(oldLocation);
+        }
     }
 }
