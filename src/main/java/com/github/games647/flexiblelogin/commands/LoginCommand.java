@@ -23,6 +23,7 @@
  */
 package com.github.games647.flexiblelogin.commands;
 
+import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.LoginTask;
 
@@ -48,6 +49,11 @@ public class LoginCommand implements CommandExecutor {
         if (plugin.getConfigManager().getConfig().isPlayerPermissions()
                 && !source.hasPermission(plugin.getContainer().getId() + ".command.login")) {
             throw new CommandPermissionException();
+        }
+
+        Account account = plugin.getDatabase().getAccountIfPresent((Player) source);
+        if (account != null && account.isLoggedIn()) {
+            source.sendMessage(plugin.getConfigManager().getTextConfig().getAlreadyLoggedInMessage());
         }
 
         //the arg isn't optional. We can be sure there is value
