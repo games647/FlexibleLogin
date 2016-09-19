@@ -160,7 +160,6 @@ public class FlexibleLogin {
 
         //admin commands
         commandDispatcher.register(this, CommandSpec.builder()
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("account"))))
                 .permission(pluginContainer.getName() + ".admin")
                 .child(CommandSpec.builder()
                         .executor(new ReloadCommand())
