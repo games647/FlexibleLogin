@@ -35,8 +35,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -135,14 +133,10 @@ public class Database {
 
             int affectedRows = statement.executeUpdate();
             //remove cache entry
-            Set<Map.Entry<UUID, Account>> cacheEntries = cache.asMap().entrySet();
-            for (Map.Entry<UUID, Account> cacheEntry : cacheEntries) {
-                Account account = cacheEntry.getValue();
-                if (account.getUsername().equals(playerName)) {
-                    cache.invalidate(account.getUuid());
-                    break;
-                }
-            }
+            cache.asMap().values().stream()
+                    .filter(account -> account.getUsername().equals(playerName))
+                    .map(Account::getUuid)
+                    .forEach(cache::invalidate);
 
             cache.invalidate(playerName);
             //min one account was found
@@ -369,6 +363,7 @@ public class Database {
 
             statement.setObject(6, Bytes.concat(mostBytes, leastBytes));
             statement.execute();
+            cache.asMap().putIfAbsent(uuid, account);
             return true;
         } catch (SQLException ex) {
             plugin.getLogger().error("Error updating user account", ex);
