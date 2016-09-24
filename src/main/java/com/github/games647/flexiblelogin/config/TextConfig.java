@@ -33,7 +33,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 @ConfigSerializable
 public class TextConfig {
 
-    @Setting(comment = "You can use the Github wikifor example configurations: https://github.com/games647/FlexibleLogin/wiki "
+    @Setting(comment = "You can use the Github wiki for example configurations: https://github.com/games647/FlexibleLogin/wiki "
             + "\n"
             + "\n"
             + "When a non-player (i.e. Console, Command Block) tries to do a player only action.")
@@ -134,6 +134,9 @@ public class TextConfig {
 
     @Setting(comment = "Successfull force registered an account")
     private String forceRegisterSuccess = "§4Force register success";
+
+    @Setting(comment = "Another player with the same name tried to join the server while that player is still online")
+    private String alreadyOnline = "§2You are already online";
 
     public Text getAccountAlreadyExists() {
         return fromString(accountAlreadyExists);
@@ -265,6 +268,10 @@ public class TextConfig {
 
     public Text getForceRegisterSuccessMessage() {
         return fromString(forceRegisterSuccess);
+    }
+
+    public Text getAlreadyOnlineMessage() {
+        return fromString(alreadyOnline);
     }
 
     private Text fromString(String textString) {

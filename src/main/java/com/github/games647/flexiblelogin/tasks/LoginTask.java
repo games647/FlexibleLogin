@@ -26,6 +26,7 @@ package com.github.games647.flexiblelogin.tasks;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import java.util.concurrent.TimeUnit;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.source.ConsoleSource;
 
 import org.spongepowered.api.entity.living.player.Player;
@@ -56,11 +57,11 @@ public class LoginTask implements Runnable {
                 player.sendMessage(plugin.getConfigManager().getTextConfig().getMaxAttemptsMessage());
                 String lockCommand = plugin.getConfigManager().getConfig().getLockCommand();
                 if (lockCommand != null && !lockCommand.isEmpty()) {
-                    ConsoleSource console = plugin.getGame().getServer().getConsole();
+                    ConsoleSource console = Sponge.getServer().getConsole();
                     plugin.getGame().getCommandManager().process(console, lockCommand);
                 }
 
-                plugin.getGame().getScheduler().createTaskBuilder()
+                Sponge.getScheduler().createTaskBuilder()
                         .delay(plugin.getConfigManager().getConfig().getWaitTime(), TimeUnit.SECONDS)
                         .execute(() -> plugin.getAttempts().remove(player.getName())).submit(plugin);
                 return;
@@ -74,7 +75,7 @@ public class LoginTask implements Runnable {
                 account.setIp(playerIp);
 
                 player.sendMessage(plugin.getConfigManager().getTextConfig().getLoggedIn());
-                plugin.getGame().getScheduler().createTaskBuilder()
+                Sponge.getScheduler().createTaskBuilder()
                         .execute(() -> plugin.getProtectionManager().unprotect(player))
                         .submit(plugin);
 

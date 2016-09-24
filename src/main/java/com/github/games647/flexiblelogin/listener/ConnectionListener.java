@@ -30,11 +30,11 @@ import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import org.spongepowered.api.Sponge;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.text.Text;
 
 public class ConnectionListener {
 
@@ -55,7 +55,7 @@ public class ConnectionListener {
             account.setLoggedIn(false);
 
             if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
-                plugin.getGame().getScheduler().createTaskBuilder()
+                Sponge.getScheduler().createTaskBuilder()
                         .async().execute(() -> plugin.getDatabase().flushLoginStatus(account, false))
                         .submit(plugin);
             }
@@ -65,18 +65,25 @@ public class ConnectionListener {
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join playerJoinEvent) {
         Player player = playerJoinEvent.getTargetEntity();
-        if (!player.getName().matches(VALID_USERNAME)) {
-            //validate invalid characters
-            player.kick(plugin.getConfigManager().getTextConfig().getInvalidUsername());
-            playerJoinEvent.setMessage(Text.EMPTY);
-        }
-
         plugin.getProtectionManager().protect(player);
 
-        plugin.getGame().getScheduler().createTaskBuilder()
+        Sponge.getScheduler().createTaskBuilder()
                 .async()
                 .execute(() -> onAccountLoaded(player))
                 .submit(plugin);
+    }
+
+    @Listener
+    public void onPlayerAuth(ClientConnectionEvent.Auth playerAuthEvent) {
+        String playerName = playerAuthEvent.getProfile().getName().get();
+        if (!playerName.matches(VALID_USERNAME)) {
+            //validate invalid characters
+            playerAuthEvent.setMessage(plugin.getConfigManager().getTextConfig().getInvalidUsername());
+            playerAuthEvent.setCancelled(true);
+        } else if (Sponge.getServer().getPlayer(playerName).isPresent()) {
+            playerAuthEvent.setMessage(plugin.getConfigManager().getTextConfig().getAlreadyOnlineMessage());
+            playerAuthEvent.setCancelled(true);
+        }
     }
 
     public void onAccountLoaded(Player player) {
@@ -110,7 +117,7 @@ public class ConnectionListener {
         //send the message if the player only needs to login
         if (!plugin.getConfigManager().getConfig().isBypassPermission()
                 || !player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
-            plugin.getGame().getScheduler().createTaskBuilder()
+            Sponge.getScheduler().createTaskBuilder()
                     .execute(new LoginMessageTask(player))
                     .interval(2, TimeUnit.SECONDS).submit(plugin);
         }
@@ -121,7 +128,7 @@ public class ConnectionListener {
         Config config = plugin.getConfigManager().getConfig();
         if (!config.isCommandOnlyProtection() && config.getTimeoutLogin() != -1
                 && account != null && !account.isLoggedIn()) {
-            plugin.getGame().getScheduler().createTaskBuilder()
+            Sponge.getScheduler().createTaskBuilder()
                     .execute(() -> {
                         if (!account.isLoggedIn()) {
                             player.kick(plugin.getConfigManager().getTextConfig().getTimeoutReason());

@@ -26,6 +26,7 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.LoginTask;
+import org.spongepowered.api.Sponge;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandPermissionException;
@@ -59,7 +60,7 @@ public class LoginCommand implements CommandExecutor {
         //the arg isn't optional. We can be sure there is value
         String password = args.<String>getOne("password").get();
 
-        plugin.getGame().getScheduler().createTaskBuilder()
+        Sponge.getScheduler().createTaskBuilder()
                 //we are executing a SQL Query which is blocking
                 .async()
                 .execute(new LoginTask((Player) source, password))

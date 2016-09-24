@@ -29,6 +29,7 @@ import com.google.common.base.Charsets;
 
 import java.util.Optional;
 import java.util.UUID;
+import org.spongepowered.api.Sponge;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -62,13 +63,13 @@ public class ForceRegisterCommand implements CommandExecutor {
     }
 
     private void onNameRegister(CommandSource src, String accountId, String password) {
-        Optional<Player> player = plugin.getGame().getServer().getPlayer(accountId);
+        Optional<Player> player = Sponge.getServer().getPlayer(accountId);
         if (player.isPresent()) {
             src.sendMessage(plugin.getConfigManager().getTextConfig().getForceRegisterOnlineMessage());
         } else {
             UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + accountId).getBytes(Charsets.UTF_8));
 
-            plugin.getGame().getScheduler().createTaskBuilder()
+            Sponge.getScheduler().createTaskBuilder()
                     //Async as it could run a SQL query
                     .async()
                     .execute(new ForceRegTask(src, offlineUUID, password))
@@ -79,11 +80,11 @@ public class ForceRegisterCommand implements CommandExecutor {
     private void onUuidRegister(String accountId, CommandSource src, String password) {
         //check if the account is an UUID
         UUID uuid = UUID.fromString(accountId);
-        Optional<Player> player = plugin.getGame().getServer().getPlayer(uuid);
+        Optional<Player> player = Sponge.getServer().getPlayer(uuid);
         if (player.isPresent()) {
             src.sendMessage(plugin.getConfigManager().getTextConfig().getForceRegisterOnlineMessage());
         } else {
-            plugin.getGame().getScheduler().createTaskBuilder()
+            Sponge.getScheduler().createTaskBuilder()
                     //Async as it could run a SQL query
                     .async()
                     .execute(new ForceRegTask(src, uuid, password))

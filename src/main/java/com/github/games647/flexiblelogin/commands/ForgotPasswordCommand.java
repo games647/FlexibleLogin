@@ -40,6 +40,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
@@ -113,14 +114,14 @@ public class ForgotPasswordCommand implements CommandExecutor {
             //we only need to send the message so we use smtp
             Transport transport = session.getTransport("smtp");
             //send email
-            plugin.getGame().getScheduler().createTaskBuilder()
+            Sponge.getScheduler().createTaskBuilder()
                     .async()
                     .execute(new SendEmailTask(player, transport, message))
                     .submit(plugin);
 
             //set new password here if the email sending fails fails we have still the old password
             account.setPasswordHash(plugin.getHasher().hash(newPassword));
-            plugin.getGame().getScheduler().createTaskBuilder()
+            Sponge.getScheduler().createTaskBuilder()
                     .async()
                     .execute(new SaveTask(account))
                     .submit(plugin);
@@ -136,7 +137,7 @@ public class ForgotPasswordCommand implements CommandExecutor {
     }
 
     private String replaceVariables(String text, Player player, String newPassword) {
-        String serverName = plugin.getGame().getServer().getBoundAddress().get().getAddress().getHostAddress();
+        String serverName = Sponge.getServer().getBoundAddress().get().getAddress().getHostAddress();
         return text.replace("%player%", player.getName())
                 .replace("%server%", serverName).replace("%password%", newPassword);
     }

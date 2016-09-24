@@ -29,6 +29,7 @@ import com.github.games647.flexiblelogin.hasher.TOTP;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import org.spongepowered.api.Sponge;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -75,7 +76,7 @@ public class RegisterTask implements Runnable {
                     plugin.getDatabase().flushLoginStatus(createdAccount, true);
                 }
 
-                plugin.getGame().getScheduler().createTaskBuilder()
+                Sponge.getScheduler().createTaskBuilder()
                         .execute(() -> plugin.getProtectionManager().unprotect(player))
                         .submit(plugin);
             } catch (Exception ex) {
@@ -89,7 +90,7 @@ public class RegisterTask implements Runnable {
 
     private void sendTotpHint(String secretCode) {
         //I assume this thread-safe, because PlayerChat is also in an async task
-        String host = plugin.getGame().getServer().getBoundAddress().get().getAddress().getCanonicalHostName();
+        String host = Sponge.getServer().getBoundAddress().get().getAddress().getCanonicalHostName();
         try {
             URL barcodeUrl = new URL(TOTP.getQRBarcodeURL(player.getName(), host, secretCode));
             player.sendMessage(Text.builder()

@@ -30,6 +30,7 @@ import com.github.games647.flexiblelogin.tasks.ResetPwTask;
 
 import java.util.Optional;
 import java.util.UUID;
+import org.spongepowered.api.Sponge;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -63,7 +64,7 @@ public class ResetPasswordCommand implements CommandExecutor {
     }
 
     private void onNameReset(CommandSource src, String accountId, String password) {
-        Optional<Player> player = plugin.getGame().getServer().getPlayer(accountId);
+        Optional<Player> player = Sponge.getServer().getPlayer(accountId);
         if (player.isPresent()) {
             Account account = plugin.getDatabase().getAccountIfPresent(player.get());
             if (account == null) {
@@ -79,7 +80,7 @@ public class ResetPasswordCommand implements CommandExecutor {
             }
         } else {
             //check if the account is a valid player name
-            plugin.getGame().getScheduler().createTaskBuilder()
+            Sponge.getScheduler().createTaskBuilder()
                     //Async as it could run a SQL query
                     .async()
                     .execute(new ResetPwTask(src, accountId, password))
@@ -90,7 +91,7 @@ public class ResetPasswordCommand implements CommandExecutor {
     private void onUuidReset(String accountId, CommandSource src, String password) {
         //check if the account is an UUID
         UUID uuid = UUID.fromString(accountId);
-        Optional<Player> player = plugin.getGame().getServer().getPlayer(uuid);
+        Optional<Player> player = Sponge.getServer().getPlayer(uuid);
         if (player.isPresent()) {
             Account account = plugin.getDatabase().getAccountIfPresent(player.get());
             if (account == null) {
@@ -105,7 +106,7 @@ public class ResetPasswordCommand implements CommandExecutor {
                 }
             }
         } else {
-            plugin.getGame().getScheduler().createTaskBuilder()
+            Sponge.getScheduler().createTaskBuilder()
                     //Async as it could run a SQL query
                     .async()
                     .execute(new ResetPwTask(src, uuid, password))

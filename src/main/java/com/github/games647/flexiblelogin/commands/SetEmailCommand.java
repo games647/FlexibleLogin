@@ -27,6 +27,7 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.SaveTask;
+import org.spongepowered.api.Sponge;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandPermissionException;
@@ -60,7 +61,7 @@ public class SetEmailCommand implements CommandExecutor {
             if (account != null) {
                 account.setEmail(email);
                 src.sendMessage(plugin.getConfigManager().getTextConfig().getEmailSetMessage());
-                plugin.getGame().getScheduler().createTaskBuilder()
+                Sponge.getScheduler().createTaskBuilder()
                         .async()
                         .execute(new SaveTask(account))
                         .submit(plugin);

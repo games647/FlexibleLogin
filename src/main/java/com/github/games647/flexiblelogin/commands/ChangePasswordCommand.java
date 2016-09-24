@@ -29,6 +29,7 @@ import com.google.common.collect.Lists;
 
 import java.util.Collection;
 import java.util.List;
+import org.spongepowered.api.Sponge;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandPermissionException;
@@ -67,7 +68,7 @@ public class ChangePasswordCommand implements CommandExecutor {
             try {
                 //Check if the first two passwords are equal to prevent typos
                 String hash = plugin.getHasher().hash(password);
-                plugin.getGame().getScheduler().createTaskBuilder()
+                Sponge.getScheduler().createTaskBuilder()
                         //we are executing a SQL Query which is blocking
                         .async()
                         .execute(() -> {

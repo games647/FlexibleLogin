@@ -29,6 +29,7 @@ import com.github.games647.flexiblelogin.tasks.RegisterTask;
 
 import java.util.Collection;
 import java.util.List;
+import org.spongepowered.api.Sponge;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandPermissionException;
@@ -83,7 +84,7 @@ public class RegisterCommand implements CommandExecutor {
     }
 
     private void startTask(CommandSource source, String password) {
-        plugin.getGame().getScheduler().createTaskBuilder()
+        Sponge.getScheduler().createTaskBuilder()
                 //we are executing a SQL Query which is blocking
                 .async()
                 .execute(new RegisterTask((Player) source, password))
