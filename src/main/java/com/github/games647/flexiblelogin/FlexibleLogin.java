@@ -167,13 +167,13 @@ public class FlexibleLogin {
                 .child(CommandSpec.builder()
                         .executor(new UnregisterCommand())
                         .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("account"))))
-                        .build(), "unregister")
+                        .build(), "unregister", "unreg")
                 .child(CommandSpec.builder()
                         .executor(new ForceRegisterCommand())
                         .arguments(
                                 GenericArguments.onlyOne(GenericArguments
                                         .string(Text.of("account"))), GenericArguments.string(Text.of("password")))
-                        .build(), "register")
+                        .build(), "register", "reg")
                 .child(CommandSpec.builder()
                         .executor(new ResetPasswordCommand())
                         .arguments(
