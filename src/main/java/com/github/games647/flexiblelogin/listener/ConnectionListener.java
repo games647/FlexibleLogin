@@ -28,6 +28,7 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Config;
 import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import org.spongepowered.api.Sponge;
@@ -101,13 +102,17 @@ public class ConnectionListener {
                 //no account
                 sendNotLoggedInMessage(player);
             }
-        } else if (config.isIpAutoLogin() && Arrays.equals(loadedAccount.getIp(), newIp)) {
-            //user will be auto logged in
-            player.sendMessage(plugin.getConfigManager().getTextConfig().getIpAutoLogin());
-            loadedAccount.setLoggedIn(true);
         } else {
-            //user has an account but isn't logged in
-            sendNotLoggedInMessage(player);
+            long lastLogin = loadedAccount.getTimestamp().getTime();
+            if (config.isIpAutoLogin() && Arrays.equals(loadedAccount.getIp(), newIp)
+                    && lastLogin + 12 * 60 * 60 * 1000 < System.currentTimeMillis()) {
+				//user will be auto logged in
+				player.sendMessage(plugin.getConfigManager().getTextConfig().getIpAutoLogin());
+				loadedAccount.setLoggedIn(true);
+			} else {
+				//user has an account but isn't logged in
+				sendNotLoggedInMessage(player);
+			}
         }
 
         scheduleTimeoutTask(player);

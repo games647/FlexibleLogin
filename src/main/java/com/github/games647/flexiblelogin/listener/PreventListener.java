@@ -99,8 +99,13 @@ public class PreventListener {
     }
 
     @Listener
-    public void onInventoryChange(ChangeInventoryEvent breakBlockEvent, @First Player player) {
-        checkLoginStatus(breakBlockEvent, player);
+    public void onInventoryChange(ChangeInventoryEvent changeInventoryEvent, @First Player player) {
+        checkLoginStatus(changeInventoryEvent, player);
+    }
+
+    @Listener
+    public void onInventoryDrop(DropItemEvent.Dispense dropItemEvent, @First Player player) {
+        checkLoginStatus(dropItemEvent, player);
     }
 
     @Listener
