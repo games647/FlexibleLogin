@@ -39,6 +39,7 @@ Tested against:
     flexiblelogin.command.register - Use the /register command
     flexiblelogin.command.email - Use the /setemail command
     flexiblelogin.command.forgot - Use the /forgot command
+    flexiblelogin.no_auto_login - Players who have this permissions won't be auto logged in by the ip auto login feature
     flexiblelogin.bypass - Users who have this permission can skip authentication
 
 ###Config
