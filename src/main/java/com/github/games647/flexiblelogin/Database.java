@@ -68,7 +68,7 @@ public class Database {
         }
 
         String storagePath = sqlConfig.getPath()
-                .replace("%DIR%", plugin.getConfigManager().getConfigDir().getAbsolutePath());
+                .replace("%DIR%", plugin.getConfigManager().getConfigDir().normalize().toString());
 
         StringBuilder urlBuilder = new StringBuilder("jdbc:")
                 .append(sqlConfig.getType().name().toLowerCase()).append("://");

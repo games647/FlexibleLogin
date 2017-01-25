@@ -25,27 +25,28 @@
 package com.github.games647.flexiblelogin.config;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-
-import java.io.File;
-import java.io.IOException;
-
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class Settings {
 
     private final ConfigurationLoader<CommentedConfigurationNode> configManager;
-    private final File defaultConfigFile;
+    private final Path defaultConfigFile;
 
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     private ObjectMapper<Config>.BoundInstance configMapper;
     private ObjectMapper<TextConfig>.BoundInstance textMapper;
 
-    public Settings(ConfigurationLoader<CommentedConfigurationNode> configManager, File defaultConfigFile) {
+    public Settings(ConfigurationLoader<CommentedConfigurationNode> configManager, Path defaultConfigFile) {
         this.configManager = configManager;
         this.defaultConfigFile = defaultConfigFile;
 
@@ -58,10 +59,10 @@ public class Settings {
     }
 
     public void load() {
-        defaultConfigFile.getParentFile().mkdir();
-        if (!defaultConfigFile.exists()) {
+        if (!Files.exists(defaultConfigFile)) {
             try {
-                defaultConfigFile.createNewFile();
+                Files.createDirectory(defaultConfigFile.getParent());
+                Files.createFile(defaultConfigFile);
             } catch (IOException ioExc) {
                 plugin.getLogger().error("Error creating a new config file", ioExc);
                 return;
@@ -70,8 +71,8 @@ public class Settings {
 
         loadMapper(configMapper, configManager);
 
-        File textFile = new File(getConfigDir(), "messages.conf");
-        HoconConfigurationLoader textLoader = HoconConfigurationLoader.builder().setFile(textFile).build();
+        Path textFile = getConfigDir().resolve("messages.conf");
+        HoconConfigurationLoader textLoader = HoconConfigurationLoader.builder().setPath(textFile).build();
         loadMapper(textMapper, textLoader);
     }
 
@@ -112,7 +113,7 @@ public class Settings {
         return textMapper.getInstance();
     }
 
-    public File getConfigDir() {
-        return defaultConfigFile.getParentFile();
+    public Path getConfigDir() {
+        return defaultConfigFile.getParent();
     }
 }

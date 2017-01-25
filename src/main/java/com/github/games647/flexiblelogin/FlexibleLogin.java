@@ -23,15 +23,7 @@
  */
 package com.github.games647.flexiblelogin;
 
-import com.github.games647.flexiblelogin.commands.ChangePasswordCommand;
-import com.github.games647.flexiblelogin.commands.ForceRegisterCommand;
-import com.github.games647.flexiblelogin.commands.LoginCommand;
-import com.github.games647.flexiblelogin.commands.LogoutCommand;
-import com.github.games647.flexiblelogin.commands.RegisterCommand;
-import com.github.games647.flexiblelogin.commands.ReloadCommand;
-import com.github.games647.flexiblelogin.commands.ResetPasswordCommand;
-import com.github.games647.flexiblelogin.commands.SetEmailCommand;
-import com.github.games647.flexiblelogin.commands.UnregisterCommand;
+import com.github.games647.flexiblelogin.commands.*;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;
 import com.github.games647.flexiblelogin.hasher.Hasher;
@@ -40,13 +32,8 @@ import com.github.games647.flexiblelogin.listener.ConnectionListener;
 import com.github.games647.flexiblelogin.listener.PreventListener;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-
-import java.io.File;
-import java.util.Map;
-
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
-
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandManager;
@@ -60,6 +47,9 @@ import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
+
+import java.nio.file.Path;
+import java.util.Map;
 
 @Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.8"
         , url = "https://github.com/games647/FlexibleLogin"
@@ -79,7 +69,7 @@ public class FlexibleLogin {
     @Inject
     @DefaultConfig(sharedRoot = false)
     //We will place more than one config there (i.e. H2/SQLite database)
-    private File defaultConfigFile;
+    private Path defaultConfigFile;
 
     @Inject
     @DefaultConfig(sharedRoot = false)
