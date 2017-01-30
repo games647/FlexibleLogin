@@ -27,6 +27,7 @@ import com.github.games647.flexiblelogin.commands.*;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;
 import com.github.games647.flexiblelogin.hasher.Hasher;
+import com.github.games647.flexiblelogin.hasher.SHA512Hasher;
 import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.github.games647.flexiblelogin.listener.ConnectionListener;
 import com.github.games647.flexiblelogin.listener.PreventListener;
@@ -102,11 +103,18 @@ public class FlexibleLogin {
 
         protectionManager = new ProtectionManager();
 
-        if (configuration.getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
+        String hashAlgo = configuration.getConfig().getHashAlgo().toUpperCase();
+        switch (hashAlgo) {
+        case "totp":
             hasher = new TOTP();
-        } else {
+            break;
+        case "sha512":
+            hasher = new SHA512Hasher();
+            break;
+        default:
             //use bcrypt as fallback for now
             hasher = new BcryptHasher();
+            break;
         }
     }
 
@@ -195,11 +203,18 @@ public class FlexibleLogin {
         database = new Database();
         database.createTable();
 
-        if (configuration.getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
+        String hashAlgo = configuration.getConfig().getHashAlgo().toUpperCase();
+        switch (hashAlgo) {
+        case "totp":
             hasher = new TOTP();
-        } else {
+            break;
+        case "sha512":
+            hasher = new SHA512Hasher();
+            break;
+        default:
             //use bcrypt as fallback for now
             hasher = new BcryptHasher();
+            break;
         }
 
         game.getServer().getOnlinePlayers().stream().forEach(protectionManager::protect);
