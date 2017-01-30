@@ -27,6 +27,7 @@ import com.github.games647.flexiblelogin.commands.*;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;
 import com.github.games647.flexiblelogin.hasher.Hasher;
+import com.github.games647.flexiblelogin.hasher.SHA256Hasher;
 import com.github.games647.flexiblelogin.hasher.SHA384Hasher;
 import com.github.games647.flexiblelogin.hasher.SHA512Hasher;
 import com.github.games647.flexiblelogin.hasher.TOTP;
@@ -114,6 +115,9 @@ public class FlexibleLogin {
             break;
         case "sha384":
             hasher = new SHA384Hasher();
+            break;
+        case "sha256":
+            hasher = new SHA256Hasher();
             break;
         default:
             //use bcrypt as fallback for now
@@ -217,6 +221,9 @@ public class FlexibleLogin {
             break;
         case "sha384":
             hasher = new SHA384Hasher();
+            break;
+        case "sha256":
+            hasher = new SHA256Hasher();
             break;
         default:
             //use bcrypt as fallback for now
