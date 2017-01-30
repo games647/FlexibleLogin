@@ -108,7 +108,7 @@ public class FlexibleLogin {
 
         protectionManager = new ProtectionManager();
 
-        String hashAlgo = configuration.getConfig().getHashAlgo().toUpperCase();
+        String hashAlgo = configuration.getConfig().getHashAlgo().toLowerCase();
         switch (hashAlgo) {
         case "totp":
             hasher = new TOTP();
@@ -223,7 +223,7 @@ public class FlexibleLogin {
         database = new Database();
         database.createTable();
 
-        String hashAlgo = configuration.getConfig().getHashAlgo().toUpperCase();
+        String hashAlgo = configuration.getConfig().getHashAlgo().toLowerCase();
         switch (hashAlgo) {
         case "totp":
             hasher = new TOTP();
