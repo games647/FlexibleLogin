@@ -37,7 +37,7 @@ public class Config {
     @Setting(comment = "Email configuration for password recovery")
     private EmailConfiguration emailConfiguration = new EmailConfiguration();
 
-    @Setting(comment = "Algorithms for hashing user passwords. You can also choose totp")
+    @Setting(comment = "Algorithms for hashing user passwords. You can also choose totp,sha512,sha384,sha256,sha1,md5,md2. Default is bcrypt")
     private String hashAlgo = "bcrypt";
 
     @Setting(comment = "Should the plugin login users automatically if it's the same account from the same IP")
