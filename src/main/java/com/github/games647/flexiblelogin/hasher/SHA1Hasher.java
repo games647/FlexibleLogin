@@ -25,15 +25,15 @@ package com.github.games647.flexiblelogin.hasher;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-public class SHA256Hasher implements Hasher {
+public class SHA1Hasher implements Hasher {
 
     @Override
     public String hash(String rawPassword) throws Exception {
-        return DigestUtils.sha256Hex(rawPassword);
+        return DigestUtils.sha1Hex(rawPassword);
     }
 
     @Override
     public boolean checkPassword(String passwordHash, String userInput) throws Exception {
-        return passwordHash.equals(DigestUtils.sha256Hex(userInput));
+        return passwordHash.equals(DigestUtils.sha1Hex(userInput));
     }
 }
