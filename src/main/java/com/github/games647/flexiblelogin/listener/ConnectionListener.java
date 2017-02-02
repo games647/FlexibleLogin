@@ -45,7 +45,7 @@ public class ConnectionListener {
     @Listener
     public void onPlayerQuit(ClientConnectionEvent.Disconnect playerQuitEvent) {
         Player player = playerQuitEvent.getTargetEntity();
-        Account account = plugin.getDatabase().getAccountIfPresent(player);
+        Account account = plugin.getDatabase().remove(player);
 
         plugin.getProtectionManager().unprotect(player);
 

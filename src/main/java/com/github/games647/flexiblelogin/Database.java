@@ -25,8 +25,7 @@ package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.config.SQLConfiguration;
 import com.github.games647.flexiblelogin.config.SQLType;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Maps;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Longs;
 
@@ -35,8 +34,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.sql.SqlService;
@@ -47,7 +46,7 @@ public class Database {
 
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
     //this cache is thread-safe
-    private final Cache<UUID, Account> cache;
+    private final Map<UUID, Account> cache = Maps.newConcurrentMap();
 
     private final String jdbcUrl;
     private final String username;
@@ -92,7 +91,6 @@ public class Database {
         }
 
         this.jdbcUrl = urlBuilder.toString();
-        cache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).maximumSize(1024).build();
     }
 
     public Connection getConnection() throws SQLException {
@@ -105,7 +103,7 @@ public class Database {
     }
 
     public Account getAccountIfPresent(Player player) {
-        return cache.getIfPresent(player.getUniqueId());
+        return cache.get(player.getUniqueId());
     }
 
     public boolean isLoggedin(Player player) {
@@ -133,12 +131,11 @@ public class Database {
 
             int affectedRows = statement.executeUpdate();
             //remove cache entry
-            cache.asMap().values().stream()
+            cache.values().stream()
                     .filter(account -> account.getUsername().equals(playerName))
                     .map(Account::getUuid)
-                    .forEach(cache::invalidate);
+                    .forEach(cache::remove);
 
-            cache.invalidate(playerName);
             //min one account was found
             return affectedRows > 0;
         } catch (SQLException ex) {
@@ -164,7 +161,7 @@ public class Database {
 
             int affectedRows = statement.executeUpdate();
             //removes the account from the cache
-            cache.invalidate(uuid);
+            cache.remove(uuid);
 
             //min one account was found
             return affectedRows > 0;
@@ -181,29 +178,31 @@ public class Database {
         return loadAccount(player.getUniqueId());
     }
 
+    public Account remove(Player player) {
+        return cache.remove(player.getUniqueId());
+    }
+
     public Account loadAccount(UUID uuid) {
-        Account loadedAccount = cache.getIfPresent(uuid);
-        if (loadedAccount == null) {
-            Connection conn = null;
-            try {
-                conn = getConnection();
-                PreparedStatement prepareStatement = conn.prepareStatement("SELECT * FROM " + USERS_TABLE
-                        + " WHERE UUID=?");
-                byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
-                byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
+        Account loadedAccount = null;
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            PreparedStatement prepareStatement = conn.prepareStatement("SELECT * FROM " + USERS_TABLE
+                    + " WHERE UUID=?");
+            byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
+            byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
 
-                prepareStatement.setObject(1, Bytes.concat(mostBytes, leastBytes));
+            prepareStatement.setObject(1, Bytes.concat(mostBytes, leastBytes));
 
-                ResultSet resultSet = prepareStatement.executeQuery();
-                if (resultSet.next()) {
-                    loadedAccount = new Account(resultSet);
-                    cache.put(uuid, loadedAccount);
-                }
-            } catch (SQLException sqlEx) {
-                plugin.getLogger().error("Error loading account", sqlEx);
-            } finally {
-                closeQuietly(conn);
+            ResultSet resultSet = prepareStatement.executeQuery();
+            if (resultSet.next()) {
+                loadedAccount = new Account(resultSet);
+                cache.put(uuid, loadedAccount);
             }
+        } catch (SQLException sqlEx) {
+            plugin.getLogger().error("Error loading account", sqlEx);
+        } finally {
+            closeQuietly(conn);
         }
 
         return loadedAccount;
@@ -325,8 +324,7 @@ public class Database {
     }
 
     public void close() {
-        //clear cache
-        cache.invalidateAll();
+        cache.clear();
 
         Connection conn = null;
         try {
@@ -363,7 +361,7 @@ public class Database {
 
             statement.setObject(6, Bytes.concat(mostBytes, leastBytes));
             statement.execute();
-            cache.asMap().putIfAbsent(uuid, account);
+            cache.put(uuid, account);
             return true;
         } catch (SQLException ex) {
             plugin.getLogger().error("Error updating user account", ex);
