@@ -39,7 +39,7 @@ import org.spongepowered.api.entity.living.player.Player;
 
 public class SetEmailCommand implements CommandExecutor {
 
-    private static final String EMAIL_REGEX = "^[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$";
+    private static final String EMAIL_REGEX = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+";
 
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
