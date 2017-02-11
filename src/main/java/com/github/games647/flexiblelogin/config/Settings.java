@@ -59,7 +59,7 @@ public class Settings {
     }
 
     public void load() {
-        if (!Files.exists(defaultConfigFile)) {
+        if (Files.notExists(defaultConfigFile)) {
             try {
                 Files.createDirectory(defaultConfigFile.getParent());
                 Files.createFile(defaultConfigFile);
