@@ -118,7 +118,7 @@ public class FlexibleLogin {
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new LoginCommand())
                 .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("password"))))
-                .build(), "login", "l");
+                .build(), "login", "log");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new RegisterCommand())
