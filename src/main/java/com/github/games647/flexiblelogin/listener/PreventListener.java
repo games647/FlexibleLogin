@@ -29,6 +29,10 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import java.util.List;
 
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
@@ -67,9 +71,19 @@ public class PreventListener {
     @Listener
     public void onCommand(SendCommandEvent commandEvent, @First Player player) {
         String command = commandEvent.getCommand();
+
+        Optional<? extends CommandMapping> commandOpt = plugin.getGame().getCommandManager().get(command);
+        if (commandOpt.isPresent()) {
+            command = commandOpt.get().getPrimaryAlias();
+        }
+
         //do not blacklist our own commands
-        if ("register".equals(command) || "login".equals(command)
-                || "forgotpassword".equals(command)) {
+        if (plugin.getGame().getCommandManager()
+                .getOwnedBy(plugin.getContainer())
+                .stream()
+                .map(CommandMapping::getPrimaryAlias)
+                .collect(Collectors.toSet())
+                .contains(command)) {
             return;
         }
 
