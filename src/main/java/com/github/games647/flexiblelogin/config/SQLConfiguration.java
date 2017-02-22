@@ -48,6 +48,10 @@ public class SQLConfiguration {
     @Setting(comment = "Password in order to login")
     private String password = "";
 
+    @Setting(comment = "It's strongly recommended to enable SSL and setup a SSL certificate if the MySQL server isn't " +
+            "running on the same machine")
+    private boolean useSSL = false;
+
     public SQLType getType() {
         return type;
     }
@@ -70,5 +74,9 @@ public class SQLConfiguration {
 
     public String getPassword() {
         return password;
+    }
+
+    public boolean isUseSSL() {
+        return useSSL;
     }
 }

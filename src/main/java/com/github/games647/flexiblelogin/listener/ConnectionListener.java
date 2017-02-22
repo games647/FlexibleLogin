@@ -129,13 +129,12 @@ public class ConnectionListener {
     }
 
     private void scheduleTimeoutTask(Player player) {
-        Account account = plugin.getDatabase().getAccountIfPresent(player);
         Config config = plugin.getConfigManager().getConfig();
-        if (!config.isCommandOnlyProtection() && config.getTimeoutLogin() != -1
-                && account != null && !account.isLoggedIn()) {
+        if (!config.isCommandOnlyProtection() && config.getTimeoutLogin() != -1) {
             Sponge.getScheduler().createTaskBuilder()
                     .execute(() -> {
-                        if (!account.isLoggedIn()) {
+                        Account account = plugin.getDatabase().getAccountIfPresent(player);
+                        if (account == null || !account.isLoggedIn()) {
                             player.kick(plugin.getConfigManager().getTextConfig().getTimeoutReason());
                         }
                     })

@@ -82,7 +82,8 @@ public class Database {
                         .append(':')
                         .append(sqlConfig.getPort())
                         .append('/')
-                        .append(sqlConfig.getDatabase());
+                        .append(sqlConfig.getDatabase())
+                        .append("?useSSL").append(sqlConfig.isUseSSL());
                 break;
             case H2:
             default:

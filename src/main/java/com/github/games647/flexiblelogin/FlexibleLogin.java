@@ -32,8 +32,10 @@ import com.github.games647.flexiblelogin.listener.ConnectionListener;
 import com.github.games647.flexiblelogin.listener.PreventListener;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandManager;
@@ -51,7 +53,7 @@ import org.spongepowered.api.text.Text;
 import java.nio.file.Path;
 import java.util.Map;
 
-@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.8"
+@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.12.1"
         , url = "https://github.com/games647/FlexibleLogin"
         , description = "A Sponge minecraft server plugin for second authentication.")
 public class FlexibleLogin {
@@ -182,14 +184,14 @@ public class FlexibleLogin {
         //run this task sync in order let it finish before the process ends
         database.close();
 
-        game.getServer().getOnlinePlayers().stream().forEach(protectionManager::unprotect);
+        game.getServer().getOnlinePlayers().forEach(protectionManager::unprotect);
     }
 
     public void onReload() {
         //run this task sync in order let it finish before the process ends
         database.close();
 
-        game.getServer().getOnlinePlayers().stream().forEach(protectionManager::unprotect);
+        game.getServer().getOnlinePlayers().forEach(protectionManager::unprotect);
 
         configuration.load();
         database = new Database();
@@ -202,8 +204,8 @@ public class FlexibleLogin {
             hasher = new BcryptHasher();
         }
 
-        game.getServer().getOnlinePlayers().stream().forEach(protectionManager::protect);
-        game.getServer().getOnlinePlayers().stream().forEach(database::loadAccount);
+        game.getServer().getOnlinePlayers().forEach(protectionManager::protect);
+        game.getServer().getOnlinePlayers().forEach(database::loadAccount);
     }
 
     public Settings getConfigManager() {

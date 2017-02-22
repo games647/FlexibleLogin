@@ -61,7 +61,10 @@ public class Settings {
     public void load() {
         if (Files.notExists(defaultConfigFile)) {
             try {
-                Files.createDirectory(defaultConfigFile.getParent());
+                if (Files.notExists(defaultConfigFile.getParent())) {
+                    Files.createDirectory(defaultConfigFile.getParent());
+                }
+
                 Files.createFile(defaultConfigFile);
             } catch (IOException ioExc) {
                 plugin.getLogger().error("Error creating a new config file", ioExc);
