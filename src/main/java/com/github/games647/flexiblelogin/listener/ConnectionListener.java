@@ -27,14 +27,13 @@ import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Config;
 import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
-
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 import org.spongepowered.api.Sponge;
-
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 public class ConnectionListener {
 
@@ -130,6 +129,11 @@ public class ConnectionListener {
 
     private void scheduleTimeoutTask(Player player) {
         Config config = plugin.getConfigManager().getConfig();
+        if (plugin.getConfigManager().getConfig().isBypassPermission()
+                && player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
+            return;
+        }
+
         if (!config.isCommandOnlyProtection() && config.getTimeoutLogin() != -1) {
             Sponge.getScheduler().createTaskBuilder()
                     .execute(() -> {
