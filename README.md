@@ -1,6 +1,6 @@
 # FlexibleLogin
 
-###Description
+### Description
 
 A Sponge minecraft server plugin for second authentication. It has a built-in
 TOTP support.
@@ -13,7 +13,7 @@ Tested against:
 
 	Minecraft (Client): 1.8.8
 
-###Commands
+### Commands
 
     /register <password> <password> - Registers using a specific password
     /register - Generates your secret code for TOTP
@@ -30,7 +30,7 @@ Tested against:
     /flexiblelogin register <name/uuid> <pass> - Register the user with a specific password
     /flexiblelogin resetpw <name> - Sets a new temp password for a new user
 
-###Permissions
+### Permissions
 
     flexiblelogin.admin - Permission to delete accocunts
     flexiblelogin.command.login - Use the /login command
@@ -42,7 +42,7 @@ Tested against:
     flexiblelogin.no_auto_login - Players who have this permissions won't be auto logged in by the ip auto login feature
     flexiblelogin.bypass - Users who have this permission can skip authentication
 
-###Config
+### Config
 
     # Do you allow your users to skip authentication with the bypass permission
     bypassPermission=false
@@ -125,12 +125,12 @@ Tested against:
 Please leave star on Github or a like/comment on this thread. Feel free to clone, fork or contribute to this repository.
 This is a complete new project, so many features can be added.
 
-###Screenshots:
+### Screenshots:
 
-####TOTP Key generation (/register)
+#### TOTP Key generation (/register)
 ![Minecraft image picture](http://fs2.directupload.net/images/150805/eu3fycsp.png)
 
-####Android App Google Authenticator (IOS App exists too)
+#### Android App Google Authenticator (IOS App exists too)
 ![Minecraft image picture](http://fs2.directupload.net/images/150804/3qrcb9j3.png)
 You can see there a time generated code which can be used for the login process. (/login <code>)
 Additionally it display your user account name and the server ip.
