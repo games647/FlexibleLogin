@@ -27,6 +27,12 @@ import com.github.games647.flexiblelogin.commands.*;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;
 import com.github.games647.flexiblelogin.hasher.Hasher;
+import com.github.games647.flexiblelogin.hasher.MD2Hasher;
+import com.github.games647.flexiblelogin.hasher.MD5Hasher;
+import com.github.games647.flexiblelogin.hasher.SHA1Hasher;
+import com.github.games647.flexiblelogin.hasher.SHA256Hasher;
+import com.github.games647.flexiblelogin.hasher.SHA384Hasher;
+import com.github.games647.flexiblelogin.hasher.SHA512Hasher;
 import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.github.games647.flexiblelogin.listener.ConnectionListener;
 import com.github.games647.flexiblelogin.listener.PreventListener;
@@ -104,11 +110,33 @@ public class FlexibleLogin {
 
         protectionManager = new ProtectionManager();
 
-        if (configuration.getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
+        String hashAlgo = configuration.getConfig().getHashAlgo().toLowerCase();
+        switch (hashAlgo) {
+        case "totp":
             hasher = new TOTP();
-        } else {
+            break;
+        case "sha512":
+            hasher = new SHA512Hasher();
+            break;
+        case "sha384":
+            hasher = new SHA384Hasher();
+            break;
+        case "sha256":
+            hasher = new SHA256Hasher();
+            break;
+        case "sha1":
+            hasher = new SHA1Hasher();
+            break;
+        case "md5":
+            hasher = new MD5Hasher();
+            break;
+        case "md2":
+            hasher = new MD2Hasher();
+            break;
+        default:
             //use bcrypt as fallback for now
             hasher = new BcryptHasher();
+            break;
         }
     }
 
@@ -197,11 +225,33 @@ public class FlexibleLogin {
         database = new Database();
         database.createTable();
 
-        if (configuration.getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
+        String hashAlgo = configuration.getConfig().getHashAlgo().toLowerCase();
+        switch (hashAlgo) {
+        case "totp":
             hasher = new TOTP();
-        } else {
+            break;
+        case "sha512":
+            hasher = new SHA512Hasher();
+            break;
+        case "sha384":
+            hasher = new SHA384Hasher();
+            break;
+        case "sha256":
+            hasher = new SHA256Hasher();
+            break;
+        case "sha1":
+            hasher = new SHA1Hasher();
+            break;
+        case "md5":
+            hasher = new MD5Hasher();
+            break;
+        case "md2":
+            hasher = new MD2Hasher();
+            break;
+        default:
             //use bcrypt as fallback for now
             hasher = new BcryptHasher();
+            break;
         }
 
         game.getServer().getOnlinePlayers().forEach(protectionManager::protect);

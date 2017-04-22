@@ -274,6 +274,7 @@ public class TextConfig {
         return fromString(alreadyOnline);
     }
 
+    @SuppressWarnings("deprecation")
     private Text fromString(String textString) {
         return TextSerializers.LEGACY_FORMATTING_CODE.deserialize(textString);
     }
