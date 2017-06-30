@@ -30,8 +30,8 @@ import com.github.games647.flexiblelogin.tasks.ResetPwTask;
 
 import java.util.Optional;
 import java.util.UUID;
-import org.spongepowered.api.Sponge;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;

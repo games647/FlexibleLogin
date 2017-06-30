@@ -24,6 +24,7 @@
 package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.config.SQLType;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;

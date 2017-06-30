@@ -23,14 +23,14 @@
  */
 package com.github.games647.flexiblelogin.commands;
 
-import com.google.common.collect.Lists;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.RegisterTask;
+import com.google.common.collect.Lists;
 
 import java.util.Collection;
 import java.util.List;
-import org.spongepowered.api.Sponge;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;

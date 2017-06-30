@@ -25,10 +25,11 @@ package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+
 import java.util.concurrent.TimeUnit;
+
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.source.ConsoleSource;
-
 import org.spongepowered.api.entity.living.player.Player;
 
 public class LoginTask implements Runnable {

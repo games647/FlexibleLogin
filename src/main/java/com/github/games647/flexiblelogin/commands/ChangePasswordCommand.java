@@ -29,8 +29,8 @@ import com.google.common.collect.Lists;
 
 import java.util.Collection;
 import java.util.List;
-import org.spongepowered.api.Sponge;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;

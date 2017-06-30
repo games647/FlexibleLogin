@@ -24,6 +24,7 @@
 package com.github.games647.flexiblelogin.config;
 
 import java.util.Optional;
+
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.Sponge;

@@ -27,8 +27,8 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.SaveTask;
-import org.spongepowered.api.Sponge;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
