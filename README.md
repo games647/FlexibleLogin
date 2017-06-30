@@ -9,9 +9,9 @@ Do you want to let your players protect their account (from hackers/login steale
 
 Tested against:
 
-	Sponge: sponge-3.0
+    Sponge: sponge-3.0
 
-	Minecraft (Client): 1.8.8
+    Minecraft (Client): 1.8.8
 
 ### Commands
 

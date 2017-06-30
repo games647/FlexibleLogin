@@ -104,7 +104,7 @@ public class ConnectionListener {
         } else {
             long lastLogin = loadedAccount.getTimestamp().getTime();
             if (config.isIpAutoLogin() && Arrays.equals(loadedAccount.getIp(), newIp)
-                    && lastLogin + 12 * 60 * 60 * 1000 < System.currentTimeMillis()
+                    && System.currentTimeMillis() < lastLogin + 12 * 60 * 60 * 1000
                     && !player.hasPermission(plugin.getContainer().getId() + ".no_auto_login")) {
                 //user will be auto logged in
                 player.sendMessage(plugin.getConfigManager().getTextConfig().getIpAutoLogin());

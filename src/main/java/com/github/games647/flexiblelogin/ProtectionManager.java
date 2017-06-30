@@ -29,6 +29,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.UUID;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -45,7 +46,7 @@ public class ProtectionManager {
             if (spawnLocation != null) {
                 oldLocations.put(player.getUniqueId(), player.getLocation());
                 if (plugin.getConfigManager().getConfig().isSafeLocation()) {
-                    plugin.getGame().getTeleportHelper().getSafeLocation(spawnLocation).ifPresent(player::setLocation);
+                    Sponge.getTeleportHelper().getSafeLocation(spawnLocation).ifPresent(player::setLocation);
                 } else {
                     player.setLocation(spawnLocation);
                 }
@@ -55,7 +56,7 @@ public class ProtectionManager {
 
             //sometimes players stuck in a wall
             if (plugin.getConfigManager().getConfig().isSafeLocation()) {
-                plugin.getGame().getTeleportHelper().getSafeLocation(oldLoc).ifPresent(player::setLocation);
+                Sponge.getTeleportHelper().getSafeLocation(oldLoc).ifPresent(player::setLocation);
             } else {
                 player.setLocation(oldLoc);
             }
@@ -69,7 +70,7 @@ public class ProtectionManager {
         }
 
         if (plugin.getConfigManager().getConfig().isSafeLocation()) {
-            plugin.getGame().getTeleportHelper().getSafeLocation(oldLocation).ifPresent(player::setLocation);
+            Sponge.getTeleportHelper().getSafeLocation(oldLocation).ifPresent(player::setLocation);
         } else {
             player.setLocation(oldLocation);
         }
