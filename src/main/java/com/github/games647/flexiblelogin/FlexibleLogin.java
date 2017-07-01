@@ -60,9 +60,8 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
-@Plugin(id = "flexiblelogin", name = "FlexibleLogin", version = "0.12.1"
-        , url = "https://github.com/games647/FlexibleLogin"
-        , description = "A Sponge minecraft server plugin for second authentication.")
+@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION
+        , url = PomData.URL, description = PomData.DESCRIPTION)
 public class FlexibleLogin {
 
     private static FlexibleLogin instance;
@@ -88,7 +87,7 @@ public class FlexibleLogin {
 
     private Settings configuration;
     private Database database;
-    private ProtectionManager protectionManager;
+    private final ProtectionManager protectionManager;
 
     private Hasher hasher;
 
@@ -99,6 +98,8 @@ public class FlexibleLogin {
         this.logger = logger;
         this.pluginContainer = pluginContainer;
         this.game = game;
+
+        this.protectionManager = new ProtectionManager();
     }
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
@@ -108,8 +109,6 @@ public class FlexibleLogin {
 
         database = new Database();
         database.createTable();
-
-        protectionManager = new ProtectionManager();
 
         if (configuration.getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
             hasher = new TOTP();
@@ -241,14 +240,6 @@ public class FlexibleLogin {
 
     public ProtectionManager getProtectionManager() {
         return protectionManager;
-    }
-
-    public void setDatabase(Database database) {
-        this.database = database;
-    }
-
-    public void setHasher(Hasher hasher) {
-        this.hasher = hasher;
     }
 
     public Hasher getHasher() {
