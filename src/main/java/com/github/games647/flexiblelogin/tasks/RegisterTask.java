@@ -60,7 +60,8 @@ public class RegisterTask implements Runnable {
 
             try {
                 String hashedPassword = plugin.getHasher().hash(password);
-                Account createdAccount = plugin.getDatabase().createAccount(player, hashedPassword);
+                Account createdAccount = new Account(player, hashedPassword);
+                plugin.getDatabase().createAccount(createdAccount, true);
                 if (createdAccount == null) {
                     return;
                 }

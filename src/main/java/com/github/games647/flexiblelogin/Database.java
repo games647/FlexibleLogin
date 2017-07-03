@@ -252,41 +252,40 @@ public class Database {
         return -1;
     }
 
-    public Account createAccount(Player player, String password) {
+    public boolean createAccount(Account account, boolean shouldCache) {
         Connection conn = null;
         try {
             conn = getConnection();
             PreparedStatement prepareStatement = conn.prepareStatement("INSERT INTO " + USERS_TABLE
                     + " (UUID, Username, Password, IP, Email, LastLogin) VALUES (?,?,?,?,?,?)");
 
-            UUID uuid = player.getUniqueId();
+            UUID uuid = account.getUuid();
             byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
             byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
 
-            byte[] ip = player.getConnection().getAddress().getAddress().getAddress();
-            Account account = new Account(uuid, player.getName(), password, ip);
-
             prepareStatement.setObject(1, Bytes.concat(mostBytes, leastBytes));
-            prepareStatement.setString(2, player.getName());
+            prepareStatement.setString(2, account.getUsername());
             prepareStatement.setString(3, password);
 
-            prepareStatement.setObject(4, ip);
+            prepareStatement.setObject(4, account.getUsername());
 
             prepareStatement.setString(5, account.getEmail());
             prepareStatement.setTimestamp(6, account.getTimestamp());
 
             prepareStatement.execute();
 
-            //if successfull
-            cache.put(uuid, account);
-            return account;
+            if (shouldCache) {
+                cache.put(uuid, account);
+            }
+
+            return true;
         } catch (SQLException sqlEx) {
             plugin.getLogger().error("Error registering account", sqlEx);
         } finally {
             closeQuietly(conn);
         }
 
-        return null;
+        return false;
     }
 
     protected void closeQuietly(Connection conn) {

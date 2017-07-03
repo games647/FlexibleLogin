@@ -46,6 +46,7 @@ import java.util.Map;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandManager;
@@ -60,8 +61,8 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
-@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION
-        , url = PomData.URL, description = PomData.DESCRIPTION)
+@Plugin(id = com.github.games647.flexiblelogin.PomData.ARTIFACT_ID, name = com.github.games647.flexiblelogin.PomData.NAME, version = com.github.games647.flexiblelogin.PomData.VERSION
+        , url = com.github.games647.flexiblelogin.PomData.URL, description = com.github.games647.flexiblelogin.PomData.DESCRIPTION)
 public class FlexibleLogin {
 
     private static FlexibleLogin instance;

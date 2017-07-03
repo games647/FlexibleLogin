@@ -34,6 +34,7 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.spongepowered.api.entity.living.player.Player;
 
 public class Account {
 
@@ -48,6 +49,10 @@ public class Account {
     private String email;
 
     private boolean loggedIn;
+
+    public Account(Player player, String password) {
+        this(player.getUniqueId(), player.getName(), password, player.getConnection().getAddress().getAddress().getAddress());
+    }
 
     //new account
     public Account(UUID uuid, String username, String password, byte[] ip) {

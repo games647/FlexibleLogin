@@ -53,7 +53,7 @@ public class ForceRegTask implements Runnable {
             try {
                 String hash = plugin.getHasher().hash(password);
                 account = new Account(accountIndentifer, "", hash, new byte[]{});
-                plugin.getDatabase().save(account);
+                plugin.getDatabase().createAccount(account, false);
 
                 src.sendMessage(plugin.getConfigManager().getTextConfig().getForceRegisterSuccessMessage());
             } catch (Exception ex) {
