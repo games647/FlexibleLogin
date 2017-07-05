@@ -76,6 +76,9 @@ public class Config {
     @Setting(comment = "How many accounts are allowed per ip-addres. Use 0 to disable it")
     private int maxIpReg = 0;
 
+    @Setting(comment = "Interval where the please login will be printed to the user")
+    private int messageInterval = 2;
+
     @Setting
     private SpawnTeleportConfig teleportConfig = new SpawnTeleportConfig();
 
@@ -149,5 +152,9 @@ public class Config {
 
     public String getLockCommand() {
         return lockCommand;
+    }
+
+    public int getMessageInterval() {
+        return messageInterval;
     }
 }

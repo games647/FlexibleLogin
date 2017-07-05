@@ -124,7 +124,8 @@ public class ConnectionListener {
                 || !player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
             Sponge.getScheduler().createTaskBuilder()
                     .execute(new LoginMessageTask(player))
-                    .interval(2, TimeUnit.SECONDS).submit(plugin);
+                    .interval(plugin.getConfigManager().getConfig().getMessageInterval(), TimeUnit.SECONDS)
+                    .submit(plugin);
         }
     }
 
