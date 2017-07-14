@@ -33,8 +33,8 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 public class TextConfig {
 
     @Setting(comment = "You can use the Github wiki for example configurations: https://github.com/games647/FlexibleLogin/wiki "
-            + "\n"
-            + "\n"
+            + '\n'
+            + '\n'
             + "When a non-player (i.e. Console, Command Block) tries to do a player only action.")
     private String playersOnly = "§4Only players can do this!";
 

@@ -67,7 +67,7 @@ public class RegisterTask implements Runnable {
                 }
 
                 //thread-safe, because it's immutable after config load
-                if (plugin.getConfigManager().getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
+                if ("totp".equalsIgnoreCase(plugin.getConfigManager().getConfig().getHashAlgo())) {
                     sendTotpHint(hashedPassword);
                 }
 

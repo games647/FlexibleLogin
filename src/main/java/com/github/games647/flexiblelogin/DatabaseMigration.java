@@ -69,7 +69,7 @@ public class DatabaseMigration {
                             + "`Email` VARCHAR(64) DEFAULT NULL , "
                             + "`LoggedIn` BOOLEAN DEFAULT 0, "
                             + "UNIQUE (`UUID`) "
-                            + ")");
+                            + ')');
                     statement.close();
                 } else {
                     Statement statement = conn.createStatement();
@@ -83,7 +83,7 @@ public class DatabaseMigration {
                             + "`Email` VARCHAR(64) DEFAULT NULL , "
                             + "`LoggedIn` BOOLEAN DEFAULT 0, "
                             + "PRIMARY KEY (`UserID`) , UNIQUE (`UUID`) "
-                            + ")");
+                            + ')');
                     statement.close();
             	}
             }

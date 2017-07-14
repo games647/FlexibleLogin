@@ -36,5 +36,5 @@ public enum SQLType {
 
     SQLITE,
 
-    H2;
+    H2
 }

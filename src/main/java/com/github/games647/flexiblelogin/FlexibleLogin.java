@@ -111,7 +111,7 @@ public class FlexibleLogin {
         database = new Database();
         database.createTable();
 
-        if (configuration.getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
+        if ("totp".equalsIgnoreCase(configuration.getConfig().getHashAlgo())) {
             hasher = new TOTP();
         } else {
             //use bcrypt as fallback for now
@@ -204,7 +204,7 @@ public class FlexibleLogin {
         database = new Database();
         database.createTable();
 
-        if (configuration.getConfig().getHashAlgo().equalsIgnoreCase("totp")) {
+        if ("totp".equalsIgnoreCase(configuration.getConfig().getHashAlgo())) {
             hasher = new TOTP();
         } else {
             //use bcrypt as fallback for now

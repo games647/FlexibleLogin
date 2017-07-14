@@ -61,7 +61,7 @@ public class ChangePasswordCommand implements CommandExecutor {
             return CommandResult.empty();
         }
 
-        Collection<String> passwords = args.<String>getAll("password");
+        Collection<String> passwords = args.getAll("password");
         List<String> indexPasswords = Lists.newArrayList(passwords);
         String password = indexPasswords.get(0);
         if (password.equals(indexPasswords.get(1))) {

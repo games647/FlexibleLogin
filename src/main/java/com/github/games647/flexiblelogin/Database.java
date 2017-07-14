@@ -219,8 +219,7 @@ public class Database {
 
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                Account loadedAccount = new Account(resultSet);
-                return loadedAccount;
+                return new Account(resultSet);
             }
         } catch (SQLException sqlEx) {
             plugin.getLogger().error("Error loading account", sqlEx);

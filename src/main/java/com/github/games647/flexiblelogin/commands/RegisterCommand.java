@@ -57,7 +57,7 @@ public class RegisterCommand implements CommandExecutor {
 
         //If the server is using TOTP, no password is required
         if (!args.hasAny("password")) {
-            if (plugin.getConfigManager().getConfig().getHashAlgo().equals("totp")) {
+            if ("totp".equals(plugin.getConfigManager().getConfig().getHashAlgo())) {
                 startTask(source, "");
             } else {
                 source.sendMessage(plugin.getConfigManager().getTextConfig().getTotpNotEnabledMessage());
@@ -66,7 +66,7 @@ public class RegisterCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        Collection<String> passwords = args.<String>getAll("password");
+        Collection<String> passwords = args.getAll("password");
         List<String> indexPasswords = Lists.newArrayList(passwords);
         String password = indexPasswords.get(0);
         if (password.equals(indexPasswords.get(1))) {
