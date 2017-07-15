@@ -29,6 +29,7 @@ import com.github.games647.flexiblelogin.config.Config;
 import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.Sponge;
@@ -80,9 +81,12 @@ public class ConnectionListener {
             //validate invalid characters
             playerAuthEvent.setMessage(plugin.getConfigManager().getTextConfig().getInvalidUsername());
             playerAuthEvent.setCancelled(true);
-        } else if (Sponge.getServer().getPlayer(playerName).isPresent()) {
-            playerAuthEvent.setMessage(plugin.getConfigManager().getTextConfig().getAlreadyOnlineMessage());
-            playerAuthEvent.setCancelled(true);
+        } else {
+            Optional<Player> player = Sponge.getServer().getPlayer(playerName);
+            if (player.isPresent() && player.get().getName().equals(playerName)) {
+                playerAuthEvent.setMessage(plugin.getConfigManager().getTextConfig().getAlreadyOnlineMessage());
+                playerAuthEvent.setCancelled(true);
+            }
         }
     }
 

@@ -85,7 +85,7 @@ public class DatabaseMigration {
                             + "PRIMARY KEY (`UserID`) , UNIQUE (`UUID`) "
                             + ')');
                     statement.close();
-            	}
+                }
             }
         } finally {
             plugin.getDatabase().closeQuietly(conn);
