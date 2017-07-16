@@ -264,7 +264,7 @@ public class Database {
 
             prepareStatement.setObject(1, Bytes.concat(mostBytes, leastBytes));
             prepareStatement.setString(2, account.getUsername());
-            prepareStatement.setString(3, password);
+            prepareStatement.setString(3, account.getPassword());
 
             prepareStatement.setObject(4, account.getIp());
 
