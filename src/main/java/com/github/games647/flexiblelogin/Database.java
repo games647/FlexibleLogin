@@ -266,7 +266,7 @@ public class Database {
             prepareStatement.setString(2, account.getUsername());
             prepareStatement.setString(3, password);
 
-            prepareStatement.setObject(4, account.getUsername());
+            prepareStatement.setObject(4, account.getIp());
 
             prepareStatement.setString(5, account.getEmail());
             prepareStatement.setTimestamp(6, account.getTimestamp());
