@@ -53,8 +53,8 @@ public class LoginTask implements Runnable {
         }
 
         try {
-            Integer attempts = plugin.getAttempts().get(player.getName());
-            if (attempts != null && attempts > plugin.getConfigManager().getConfig().getMaxAttempts()) {
+            Integer attempts = plugin.getAttempts().computeIfAbsent(player.getName(), (playerName) -> 0);
+            if (attempts > plugin.getConfigManager().getConfig().getMaxAttempts()) {
                 player.sendMessage(plugin.getConfigManager().getTextConfig().getMaxAttemptsMessage());
                 String lockCommand = plugin.getConfigManager().getConfig().getLockCommand();
                 if (lockCommand != null && !lockCommand.isEmpty()) {
@@ -86,10 +86,6 @@ public class LoginTask implements Runnable {
                     plugin.getDatabase().flushLoginStatus(account, true);
                 }
             } else {
-                if (attempts == null) {
-                    attempts = 0;
-                }
-
                 attempts++;
                 plugin.getAttempts().put(player.getName(), attempts);
 
