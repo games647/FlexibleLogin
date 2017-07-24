@@ -31,14 +31,7 @@ public class BcryptHasher implements Hasher {
     @Override
     public String hash(String rawPassword) {
         //generate a different salt for each user
-        String passwordHash = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
-        if (passwordHash.charAt(2) == 'y') {
-            //$2y - Replace the prefix to $2a in order to provide compatibility with bcrypt generated passwords
-            //from other implementations like in PHP
-            return passwordHash.substring(0, 2) + 'a' + passwordHash.substring(3, passwordHash.length());
-        }
-
-        return passwordHash;
+        return BCrypt.hashpw(rawPassword, BCrypt.gensalt());
     }
 
     @Override
