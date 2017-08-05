@@ -62,6 +62,7 @@
                             <include>javax.mail:*</include>
                             <include>com.sun.mail:*</include>
                             <include>de.svenkubiak:jBCrypt</include>
+                            <include>org.mindrot.jbcrypt:*</include>
                         </includes>
                     </artifactSet>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
