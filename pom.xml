@@ -32,7 +32,7 @@
     <packaging>jar</packaging>
 
     <name>FlexibleLogin</name>
-    <version>0.14.3</version>
+    <version>0.14.5</version>
     <description>Second Auth plugin for Sponge minecraft servers</description>
     <url>https://github.com/games647/FlexibleLogin</url>
 
@@ -61,8 +61,7 @@
                         <includes>
                             <include>javax.mail:*</include>
                             <include>com.sun.mail:*</include>
-                            <include>de.svenkubiak:jBCrypt</include>
-                            <include>org.mindrot.jbcrypt:*</include>
+                            <include>com.github.anebril:jBCrypt</include>
                         </includes>
                     </artifactSet>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
