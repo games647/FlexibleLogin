@@ -175,6 +175,28 @@ public class Database {
         return false;
     }
 
+    public boolean exists(String username) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            PreparedStatement statement = conn.prepareStatement("SELECT DISTINCT USERNAME FROM " + USERS_TABLE
+                    + " WHERE LOWER(USERNAME) = ?");
+            statement.setString(1, username.toLowerCase());
+
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.next()) {
+                return false;
+            }
+        } catch (SQLException sqlEx) {
+            plugin.getLogger().error("Error deleting user account", sqlEx);
+        } finally {
+            closeQuietly(conn);
+        }
+
+        return true;
+    }
+
     public Account loadAccount(Player player) {
         return loadAccount(player.getUniqueId());
     }

@@ -46,7 +46,7 @@ public class ProtectionManager {
             if (spawnLocation != null) {
                 oldLocations.put(player.getUniqueId(), player.getLocation());
                 if (plugin.getConfigManager().getConfig().isSafeLocation()) {
-                    Sponge.getTeleportHelper().getSafeLocation(spawnLocation).ifPresent(player::setLocation);
+                    Sponge.getGame().getTeleportHelper().getSafeLocation(spawnLocation).ifPresent(player::setLocation);
                 } else {
                     player.setLocation(spawnLocation);
                 }
@@ -56,7 +56,7 @@ public class ProtectionManager {
 
             //sometimes players stuck in a wall
             if (plugin.getConfigManager().getConfig().isSafeLocation()) {
-                Sponge.getTeleportHelper().getSafeLocation(oldLoc).ifPresent(player::setLocation);
+                Sponge.getGame().getTeleportHelper().getSafeLocation(oldLoc).ifPresent(player::setLocation);
             } else {
                 player.setLocation(oldLoc);
             }
@@ -70,7 +70,7 @@ public class ProtectionManager {
         }
 
         if (plugin.getConfigManager().getConfig().isSafeLocation()) {
-            Sponge.getTeleportHelper().getSafeLocation(oldLocation).ifPresent(player::setLocation);
+            Sponge.getGame().getTeleportHelper().getSafeLocation(oldLocation).ifPresent(player::setLocation);
         } else {
             player.setLocation(oldLocation);
         }
