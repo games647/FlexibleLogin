@@ -43,12 +43,15 @@ import com.google.inject.Inject;
 
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Platform.Component;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
@@ -61,8 +64,11 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
-@Plugin(id = com.github.games647.flexiblelogin.PomData.ARTIFACT_ID, name = com.github.games647.flexiblelogin.PomData.NAME, version = com.github.games647.flexiblelogin.PomData.VERSION
-        , url = com.github.games647.flexiblelogin.PomData.URL, description = com.github.games647.flexiblelogin.PomData.DESCRIPTION)
+@Plugin(id = com.github.games647.flexiblelogin.PomData.ARTIFACT_ID
+        , name = com.github.games647.flexiblelogin.PomData.NAME
+        , version = com.github.games647.flexiblelogin.PomData.VERSION
+        , url = com.github.games647.flexiblelogin.PomData.URL
+        , description = com.github.games647.flexiblelogin.PomData.DESCRIPTION)
 public class FlexibleLogin {
 
     private static FlexibleLogin instance;
@@ -105,6 +111,15 @@ public class FlexibleLogin {
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
+        Optional<String> apiVersion = Sponge.getPlatform().getContainer(Component.API).getVersion();
+        apiVersion.ifPresent(version -> {
+            String targetVersion = com.github.games647.flexiblelogin.PomData.SPONGE_VERSION;
+            if (!version.split("\\.")[0].equals(targetVersion.split("\\.")[0])) {
+                logger.warn("Major sponge version doesn't equal the target version of this plugin");
+                Sponge.getServer().shutdown();
+            }
+        });
+
         configuration = new Settings(configManager, defaultConfigFile);
         configuration.load();
 
@@ -114,7 +129,7 @@ public class FlexibleLogin {
         if ("totp".equalsIgnoreCase(configuration.getConfig().getHashAlgo())) {
             hasher = new TOTP();
         } else {
-            //use bcrypt as fallback for now
+            //use BCrypt as fallback for now
             hasher = new BcryptHasher();
         }
     }

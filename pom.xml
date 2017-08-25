@@ -38,6 +38,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spongeVersion>7.0.0-SNAPSHOT</spongeVersion>
     </properties>
 
     <build>
@@ -127,7 +128,7 @@
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
-            <version>7.0.0-SNAPSHOT</version>
+            <version>${spongeVersion}</version>
             <scope>provided</scope>
         </dependency>
 
