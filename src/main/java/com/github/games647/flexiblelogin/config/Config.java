@@ -143,6 +143,10 @@ public class Config {
     }
 
     public int getMaxIpReg() {
+        if (maxIpReg <= 0) {
+            return Integer.MAX_VALUE;
+        }
+
         return maxIpReg;
     }
 

@@ -274,6 +274,6 @@ public class TextConfig {
     }
 
     private Text fromString(String textString) {
-        return TextSerializers.LEGACY_FORMATTING_CODE.deserialize(textString);
+        return TextSerializers.FORMATTING_CODE.deserialize(textString);
     }
 }
