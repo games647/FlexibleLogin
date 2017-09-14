@@ -94,12 +94,10 @@ public class RegisterTask implements Runnable {
         String host = Sponge.getServer().getBoundAddress().get().getAddress().getCanonicalHostName();
         try {
             URL barcodeUrl = new URL(TOTP.getQRBarcodeURL(player.getName(), host, secretCode));
-            player.sendMessage(Text.builder()
-                    .append(plugin.getConfigManager().getTextConfig().getKeyGenerated())
-                    .build());
+            player.sendMessage(plugin.getConfigManager().getTextConfig().getKeyGenerated());
             player.sendMessage(Text.builder(secretCode)
                     .color(TextColors.GOLD)
-                    .append(Text.of(TextColors.DARK_BLUE, " / "))
+                    .append(Text.builder(" / ").color(TextColors.DARK_BLUE).build())
                     .append(Text.builder()
                             .append(plugin.getConfigManager().getTextConfig().getScanQr())
                             .onClick(TextActions.openUrl(barcodeUrl))

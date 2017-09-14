@@ -113,3 +113,100 @@
 
 * Added teleport to spawn for unlogged players
 * Make permissions optional
+
+##### 0.6.1
+
+* Added plugin meta data
+
+##### 0.7
+
+* Added changepassword command
+
+##### 0.8
+
+* Delete last ip on manually logout (Related #13)
+* Added minimum password length (Related to #13)
+
+##### 0.9
+
+* Update to 1.9
+* Add a repeating message task and add a not registered message
+* Fail safely on already created accounts (Fixes #16)
+* Add resetpassword other command (Related #13)
+* Add max login attempts
+* Add max ip registrations (Fixes #13)
+* Add custom lock command (Fixes #18)
+
+##### 0.9.1
+
+* Catch NPE on unprotect location
+
+##### 0.9.2
+
+* Extract messages to an extra file (Fixes #19)
+* Backport to Sponge 4.X (Fixes #23)
+
+##### 0.10
+
+* Add reload command (Fixes #27)
+* Add force register command
+* Fix attempts NPE on disconnect (Fixes #29)
+* Fix messages file extension name
+* Restructure admin commands (Fixes #30)
+* Fix cancel drop item (Fix #34)
+
+##### 0.11
+
+* Make safeLocation configurable (Fixes #36)
+* Send already logged in message
+* Load the account into the cache after a save (Fixes #40)
+* Prevent player logins if that player is already online (Fixes #41)
+
+##### 0.12.1
+
+* Add /l and /reg as command aliases
+* Only auto login if the last login is between 12 hours
+* Add permission to prevent ip auto login (Fixes #43)
+* Remove cache
+* Fix email prefix (now from http://emailregex.com/) (Fixes #483)
+* Fix creating default config
+* Change login alias from /l -> /log
+
+##### 0.12.2
+
+* Fix timeout check (Fix #51)
+
+##### 0.12.3
+
+* Add missing = for key=value sql config
+
+##### 0.13
+
+* Do not timeout kick for bypassed players (Fixes #55)
+* Update to Sponge 7.0 (Minecraft 1.12) Fixes #64
+
+##### 0.14 
+
+* Add version number to the file name (Fixes #61)
+* Fix time calc for auto login (Fixes #59)
+* Fix forceRegister not working at all
+* Configurable message interval (Fixes #65)
+
+##### 0.14.1
+
+* Compare the playername case sensitive (Fixes #66)
+* Fix creating accoutn (Fixes #67)
+
+##### 0.14.2
+
+* Fix account password saving (Fixes #66)
+
+##### 0.14.3
+
+* Generate $2y instead of $2a bcrypt hashes to support PHP impl
+
+##### 0.14.7
+
+* Shutdown the server if the major version doesn't equal the target version
+* Prevent different case name stealing (Fix #71)
+* Fix max ip registrations (Fixes #72)

@@ -43,12 +43,15 @@ import com.google.inject.Inject;
 
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Platform.Component;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
@@ -60,6 +63,9 @@ import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
+
+import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
+import static org.spongepowered.api.command.args.GenericArguments.string;
 
 @Plugin(id = com.github.games647.flexiblelogin.PomData.ARTIFACT_ID
         , name = com.github.games647.flexiblelogin.PomData.NAME
@@ -108,14 +114,14 @@ public class FlexibleLogin {
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
-        // Optional<String> apiVersion = Sponge.getPlatform().getContainer(Component.API).getVersion();
-        // apiVersion.ifPresent(version -> {
-        //     String targetVersion = com.github.games647.flexiblelogin.PomData.SPONGE_VERSION;
-        //     if (!version.split("\\.")[0].equals(targetVersion.split("\\.")[0])) {
-        //         logger.warn("Major sponge version doesn't equal the target version of this plugin");
-        //         Sponge.getServer().shutdown();
-        //     }
-        // });
+        Optional<String> apiVersion = Sponge.getPlatform().getContainer(Component.API).getVersion();
+        apiVersion.ifPresent(version -> {
+            String targetVersion = com.github.games647.flexiblelogin.PomData.SPONGE_VERSION;
+            if (!version.split("\\.")[0].equals(targetVersion.split("\\.")[0])) {
+                logger.warn("Major sponge version doesn't equal the target version of this plugin");
+                Sponge.getServer().shutdown();
+            }
+        });
 
         configuration = new Settings(configManager, defaultConfigFile);
         configuration.load();
@@ -138,27 +144,27 @@ public class FlexibleLogin {
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new LoginCommand())
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("password"))))
+                .arguments(onlyOne(string(Text.of("password"))))
                 .build(), "login", "log");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new RegisterCommand())
                 .arguments(GenericArguments
                         .optional(GenericArguments
-                                .repeated(GenericArguments
-                                        .string(Text.of("password")), 2)))
+                                .repeated(
+                                        string(Text.of("password")), 2)))
                 .build(), "register", "reg");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new ChangePasswordCommand())
                 .arguments(GenericArguments
-                        .repeated(GenericArguments
-                                .string(Text.of("password")), 2))
+                        .repeated(
+                                string(Text.of("password")), 2))
                 .build(), "changepassword", "changepw");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new SetEmailCommand())
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("email"))))
+                .arguments(onlyOne(string(Text.of("email"))))
                 .build(), "setemail", "email");
 
         commandDispatcher.register(this, CommandSpec.builder()
@@ -177,19 +183,19 @@ public class FlexibleLogin {
                         .build(), "reload", "rl")
                 .child(CommandSpec.builder()
                         .executor(new UnregisterCommand())
-                        .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("account"))))
+                        .arguments(onlyOne(string(Text.of("account"))))
                         .build(), "unregister", "unreg")
                 .child(CommandSpec.builder()
                         .executor(new ForceRegisterCommand())
                         .arguments(
-                                GenericArguments.onlyOne(GenericArguments
-                                        .string(Text.of("account"))), GenericArguments.string(Text.of("password")))
+                                onlyOne(
+                                        string(Text.of("account"))), string(Text.of("password")))
                         .build(), "register", "reg")
                 .child(CommandSpec.builder()
                         .executor(new ResetPasswordCommand())
                         .arguments(
-                                GenericArguments.onlyOne(GenericArguments
-                                        .string(Text.of("account"))), GenericArguments.string(Text.of("password")))
+                                onlyOne(
+                                        string(Text.of("account"))), string(Text.of("password")))
                         .build(), "resetpw", "resetpassword")
                 .build(), pluginContainer.getName());
 

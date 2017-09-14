@@ -23,11 +23,18 @@
  */
 package com.github.games647.flexiblelogin.config;
 
+import com.google.common.collect.ImmutableMap;
+
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.TextTemplate;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
+
+import static org.spongepowered.api.text.TextTemplate.arg;
+import static org.spongepowered.api.text.TextTemplate.of;
 
 @ConfigSerializable
 public class TextConfig {
@@ -90,7 +97,9 @@ public class TextConfig {
     private String invalidUsername = "§4Invalid username - Choose characters a-z,A-Z,0-9 and a length between 2 and 16";
 
     @Setting(comment = "When an account was successfully deleted")
-    private String accountDeleted = "§2Deleted account of %s";
+    private TextTemplate accountDeleted = of(
+            TextColors.DARK_GREEN, "Deleted account of ", TextColors.YELLOW, arg("account")
+    );
 
     @Setting(comment = "When an account already exists, and therefore cannot be created.")
     private String accountAlreadyExists = "§4Account already exists";
@@ -98,8 +107,8 @@ public class TextConfig {
     @Setting(comment = "When the player successfully created his/her account.")
     private String accountCreated = "§2Account created";
 
-    @Setting(comment = "When a secretkey is created (header).")
-    private String keyGenerated = "§2SecretKey genereted: ";
+    @Setting(comment = "When a secret-key is created (header).")
+    private String keyGenerated = "§2SecretKey generated: ";
 
     @Setting(comment = "When a player registered using TOTP and the code can be scanned by clicking on it")
     private String scanQr = "§6Click here to scan the QR-Code";
@@ -114,7 +123,7 @@ public class TextConfig {
     private String timeoutReason = "§4Login timeout";
 
     @Setting(comment = "Message if the player changed his account password successfully")
-    private String changePassword = "§2Successfull changed password";
+    private String changePassword = "§2Successful changed password";
 
     @Setting(comment = "Message if the player has to register with a longer password")
     private String tooShortPassword = "§2Your password is too short";
@@ -126,7 +135,7 @@ public class TextConfig {
     private String maxIpReg = "§2You reached the max amount of registrations for this ip-address";
 
     @Setting(comment = "Admin reloaded the plugin")
-    private String onReload = "§4Successfull reloaded plugin";
+    private String onReload = "§4Successful reloaded plugin";
 
     @Setting(comment = "Force register failed because the player is online")
     private String forceRegisterOnline = "§2Cannot force register player. That player is online";
@@ -226,7 +235,7 @@ public class TextConfig {
     }
 
     public Text getAccountDeleted(String account) {
-        return fromString(String.format(accountDeleted, account));
+        return accountDeleted.apply(ImmutableMap.of("account", account)).build();
     }
 
     public Text getProtectedCommand() {
