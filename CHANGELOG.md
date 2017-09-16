@@ -210,3 +210,14 @@
 * Shutdown the server if the major version doesn't equal the target version
 * Prevent different case name stealing (Fix #71)
 * Fix max ip registrations (Fixes #72)
+
+##### 0.15
+
+* Remove version check, because the sponge is much more stable nowadays
+* Add more events that will be cancelled if not logged in (some of them might be redundant):
+    * ItemPickup
+    * ItemInteract
+    * InventoryInteract
+    * ClickInventory
+    * EntityInteract
+* Add beforeModification annotation to prevent forge mods from seeing the cancelled events

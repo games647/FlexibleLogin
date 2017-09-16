@@ -36,14 +36,20 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
+import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
+import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
+import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 
@@ -53,7 +59,7 @@ public class PreventListener {
 
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
-    @Listener
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onPlayerMove(MoveEntityEvent playerMoveEvent, @First Player player) {
         Vector3d oldLocation = playerMoveEvent.getFromTransform().getPosition();
         Vector3d newLocation = playerMoveEvent.getToTransform().getPosition();
@@ -63,12 +69,12 @@ public class PreventListener {
         }
     }
 
-    @Listener
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onChat(MessageChannelEvent.Chat chatEvent, @First Player player) {
         checkLoginStatus(chatEvent, player);
     }
 
-    @Listener
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onCommand(SendCommandEvent commandEvent, @First Player player) {
         String command = commandEvent.getCommand();
 
@@ -100,42 +106,68 @@ public class PreventListener {
         }
     }
 
-    @Listener
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onPlayerItemDrop(DropItemEvent.Dispense dropItemEvent, @First EntitySpawnCause spawnCause) {
         if (spawnCause.getEntity() instanceof Player) {
             checkLoginStatus(dropItemEvent, (Player) spawnCause.getEntity());
         }
     }
 
-    @Listener
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onPlayerItemPickup(ChangeInventoryEvent.Pickup pickupItemEvent, @Root Player player) {
+        checkLoginStatus(pickupItemEvent, player);
+    }
+
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onItemConsume(UseItemStackEvent.Start itemConsumeEvent, @First Player player) {
         checkLoginStatus(itemConsumeEvent, player);
     }
 
-    @Listener
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onItemInteract(InteractItemEvent interactItemEvent, @First Player player) {
+        checkLoginStatus(interactItemEvent, player);
+    }
+
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onInventoryChange(ChangeInventoryEvent changeInventoryEvent, @First Player player) {
         checkLoginStatus(changeInventoryEvent, player);
     }
 
-    @Listener
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onInventoryInteract(InteractInventoryEvent interactInventoryEvent, @First Player player) {
+        checkLoginStatus(interactInventoryEvent, player);
+    }
+
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onInventoryClick(ClickInventoryEvent clickInventoryEvent, @First Player player) {
+        checkLoginStatus(clickInventoryEvent, player);
+    }
+
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onInventoryDrop(DropItemEvent.Dispense dropItemEvent, @First Player player) {
         checkLoginStatus(dropItemEvent, player);
     }
 
-    @Listener
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onBlockInteract(InteractBlockEvent interactBlockEvent, @First Player player) {
         checkLoginStatus(interactBlockEvent, player);
     }
 
-    @Listener
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onPlayerInteractEntity(InteractEntityEvent interactEntityEvent, @First Player player) {
+        checkLoginStatus(interactEntityEvent, player);
+    }
+
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onPlayerDamage(DamageEntityEvent damageEntityEvent, @First Player player) {
         checkLoginStatus(damageEntityEvent, player);
     }
 
-    @Listener
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onDamagePlayer(DamageEntityEvent damageEntityEvent) {
         //check the target
         Entity targetEntity = damageEntityEvent.getTargetEntity();
+
         //check only if the event isn't already cancelled by the first call
         if (targetEntity instanceof Player) {
             checkLoginStatus(damageEntityEvent, (Player) damageEntityEvent.getTargetEntity());
@@ -151,7 +183,7 @@ public class PreventListener {
         if (plugin.getConfigManager().getConfig().isCommandOnlyProtection()) {
             //check if the user is already registered
             if (plugin.getDatabase().getAccountIfPresent(player) == null
-                && player.hasPermission(plugin.getContainer().getId()+ ".registerRequired")) {
+                    && player.hasPermission(plugin.getContainer().getId() + ".registerRequired")) {
                 event.setCancelled(true);
             }
         } else if (!plugin.getDatabase().isLoggedin(player)) {

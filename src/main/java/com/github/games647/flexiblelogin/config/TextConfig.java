@@ -97,8 +97,8 @@ public class TextConfig {
     private String invalidUsername = "§4Invalid username - Choose characters a-z,A-Z,0-9 and a length between 2 and 16";
 
     @Setting(comment = "When an account was successfully deleted")
-    private TextTemplate accountDeleted = of(
-            TextColors.DARK_GREEN, "Deleted account of ", TextColors.YELLOW, arg("account")
+    private TextTemplate accountDelete = of(
+            TextColors.DARK_GREEN, "Deleted account of ", TextColors.YELLOW, arg("account").optional(), "!"
     );
 
     @Setting(comment = "When an account already exists, and therefore cannot be created.")
@@ -235,7 +235,7 @@ public class TextConfig {
     }
 
     public Text getAccountDeleted(String account) {
-        return accountDeleted.apply(ImmutableMap.of("account", account)).build();
+        return accountDelete.apply(ImmutableMap.of("account", account)).build();
     }
 
     public Text getProtectedCommand() {
