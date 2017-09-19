@@ -221,3 +221,7 @@
     * ClickInventory
     * EntityInteract
 * Add beforeModification annotation to prevent forge mods from seeing the cancelled events
+
+###### 0.15.1
+
+* Cancel CreateClaimEvents for GriefPrevention

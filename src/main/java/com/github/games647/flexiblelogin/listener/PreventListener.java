@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import me.ryanhamshire.griefprevention.api.event.CreateClaimEvent;
+
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
@@ -116,6 +118,11 @@ public class PreventListener {
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onPlayerItemPickup(ChangeInventoryEvent.Pickup pickupItemEvent, @Root Player player) {
         checkLoginStatus(pickupItemEvent, player);
+    }
+
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onPlayerItemPickup(CreateClaimEvent createClaimEvent, @Root Player player) {
+        checkLoginStatus(createClaimEvent, player);
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
