@@ -36,8 +36,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
+
+import javax.sql.DataSource;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.sql.SqlService;
@@ -50,11 +51,9 @@ public class Database {
     //this cache is thread-safe
     private final Map<UUID, Account> cache = Maps.newConcurrentMap();
 
-    private final String jdbcUrl;
+    private final DataSource dataSource;
 
-    private Optional<SqlService> sql;
-
-    public Database() {
+    public Database() throws SQLException {
         SQLConfiguration sqlConfig = plugin.getConfigManager().getGeneral().getSQL();
 
         //flat file drivers throw exception if you try to connect with a account
@@ -90,16 +89,9 @@ public class Database {
                 break;
         }
 
-        this.jdbcUrl = urlBuilder.toString();
-    }
-
-    public Connection getConnection() throws SQLException {
-        if (!sql.isPresent()) {
-            //lazy binding
-            sql = plugin.getGame().getServiceManager().provide(SqlService.class);
-        }
-
-        return sql.get().getDataSource(jdbcUrl).getConnection();
+        String jdbcUrl = urlBuilder.toString();
+        SqlService sqlService = plugin.getGame().getServiceManager().provideUnchecked(SqlService.class);
+        this.dataSource = sqlService.getDataSource(jdbcUrl);
     }
 
     public Account getAccountIfPresent(Player player) {
@@ -114,7 +106,6 @@ public class Database {
     public void createTable() {
         try {
             DatabaseMigration migration = new DatabaseMigration(plugin);
-            migration.migrateName();
             migration.createTable();
         } catch (SQLException sqlEx) {
             plugin.getLogger().error("Error creating database table", sqlEx);
@@ -122,7 +113,7 @@ public class Database {
     }
 
     public boolean deleteAccount(String playerName) {
-        try (Connection conn = getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM " + USERS_TABLE + " WHERE Username=?")) {
             stmt.setString(1, playerName);
 
@@ -143,7 +134,7 @@ public class Database {
     }
 
     public boolean deleteAccount(UUID uuid) {
-        try (Connection conn = getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM " + USERS_TABLE + " WHERE UUID=?")) {
             byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
             byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
@@ -164,7 +155,7 @@ public class Database {
     }
 
     public boolean exists(String username) {
-        try (Connection conn = getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT USERNAME FROM " + USERS_TABLE
                      + " WHERE LOWER(USERNAME) = ?")) {
             stmt.setString(1, username.toLowerCase());
@@ -191,7 +182,7 @@ public class Database {
 
     public Account loadAccount(UUID uuid) {
         Account loadedAccount = null;
-        try (Connection conn = getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + USERS_TABLE
                      + " WHERE UUID=?")) {
 
@@ -200,7 +191,7 @@ public class Database {
 
             stmt.setObject(1, Bytes.concat(mostBytes, leastBytes));
 
-            try (ResultSet resultSet = stmt.executeQuery();) {
+            try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
                     loadedAccount = new Account(resultSet);
                     cache.put(uuid, loadedAccount);
@@ -214,11 +205,11 @@ public class Database {
     }
 
     public Account loadAccount(String playerName) {
-        try (Connection conn = getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + USERS_TABLE + " WHERE Username=?")) {
             stmt.setString(1, playerName);
 
-            try (ResultSet resultSet = stmt.executeQuery();) {
+            try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
                     return new Account(resultSet);
                 }
@@ -231,11 +222,11 @@ public class Database {
     }
 
     public int getRegistrationsCount(byte[] ip) {
-        try (Connection conn = getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM " + USERS_TABLE
                      + " WHERE IP=?")) {
             stmt.setBytes(1, ip);
-            try (ResultSet resultSet = stmt.executeQuery();) {
+            try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
                     return resultSet.getInt(1);
                 }
@@ -248,9 +239,9 @@ public class Database {
     }
 
     public boolean createAccount(Account account, boolean shouldCache) {
-        try (Connection conn = getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO " + USERS_TABLE
-                     + " (UUID, Username, Password, IP, Email, LastLogin) VALUES (?,?,?,?,?,?)");) {
+                     + " (UUID, Username, Password, IP, Email, LastLogin) VALUES (?,?,?,?,?,?)")) {
             UUID uuid = account.getUuid();
             byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
             byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
@@ -279,7 +270,7 @@ public class Database {
     }
 
     public void flushLoginStatus(Account account, boolean loggedIn) {
-        try (Connection conn = getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("UPDATE " + USERS_TABLE
                      + " SET LoggedIn=? WHERE UUID=?")) {
             stmt.setInt(1, loggedIn ? 1 : 0);
@@ -298,7 +289,7 @@ public class Database {
     public void close() {
         cache.clear();
 
-        try (Connection conn = getConnection();
+        try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement()) {
             //set all player accounts existing in the database to unlogged
             stmt.execute("UPDATE " + USERS_TABLE + " SET LoggedIn=0");
@@ -308,7 +299,7 @@ public class Database {
     }
 
     public boolean save(Account account) {
-        try (Connection con = getConnection();
+        try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("UPDATE " + USERS_TABLE
                      + " SET Username=?, Password=?, IP=?, LastLogin=?, Email=? WHERE UUID=?")) {
             //username is now changeable by Mojang - so keep it up to date

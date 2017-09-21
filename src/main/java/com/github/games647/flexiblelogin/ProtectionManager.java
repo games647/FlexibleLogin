@@ -44,10 +44,10 @@ public class ProtectionManager {
         SpawnTeleportConfig teleportConfig = plugin.getConfigManager().getGeneral().getTeleport();
         if (teleportConfig.isEnabled()) {
             Optional<Location<World>> spawnLocation = teleportConfig.getSpawnLocation();
-            if (spawnLocation.isPresent()) {
+            spawnLocation.ifPresent(worldLocation -> {
                 oldLocations.put(player.getUniqueId(), player.getLocation());
-                safeTeleport(player, spawnLocation.get());
-            }
+                safeTeleport(player, worldLocation);
+            });
         } else {
             Location<World> oldLoc = player.getLocation();
 

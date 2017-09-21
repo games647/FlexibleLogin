@@ -31,8 +31,6 @@ import java.sql.Statement;
 
 public class DatabaseMigration {
 
-    private static final String OLD_TABLE_NAME = "users";
-
     private final FlexibleLogin plugin;
 
     public DatabaseMigration(FlexibleLogin plugin) {
@@ -84,35 +82,6 @@ public class DatabaseMigration {
                     }
                 }
             }
-        }
-    }
-
-    public void migrateName() {
-        try (Connection con = plugin.getDatabase().getConnection()) {
-            boolean tableExists = false;
-            try {
-                //check if the table already exists
-                try (Statement stmt = con.createStatement()) {
-                    stmt.execute("SELECT 1 FROM " + OLD_TABLE_NAME);
-                    stmt.close();
-                }
-
-                tableExists = true;
-            } catch (SQLException sqlEx) {
-                //Old Table doesn't exist
-            }
-
-            if (tableExists) {
-                try (Statement stmt = con.createStatement();) {
-                    stmt.execute("SELECT 1 FROM " + OLD_TABLE_NAME);
-
-                    //if no error happens the table exists
-                    stmt.execute("INSERT INTO " + Database.USERS_TABLE + " SELECT *, 0 FROM " + OLD_TABLE_NAME);
-                    stmt.execute("DROP TABLE " + OLD_TABLE_NAME);
-                }
-            }
-        } catch (SQLException ex) {
-            plugin.getLogger().error("Error migrating database", ex);
         }
     }
 }

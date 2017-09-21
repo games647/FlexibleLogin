@@ -43,6 +43,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.Map;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -113,17 +114,7 @@ public class FlexibleLogin {
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
         configuration = new Settings(configManager, defaultConfigFile);
-        configuration.load();
-
-        database = new Database();
-        database.createTable();
-
-        if ("totp".equalsIgnoreCase(configuration.getGeneral().getHashAlgo())) {
-            hasher = new TOTP();
-        } else {
-            //use BCrypt as fallback for now
-            hasher = new BcryptHasher();
-        }
+        init();
     }
 
     @Listener //Commands register + events
@@ -207,9 +198,21 @@ public class FlexibleLogin {
 
         game.getServer().getOnlinePlayers().forEach(protectionManager::unprotect);
 
+        init();
+
+        game.getServer().getOnlinePlayers().forEach(protectionManager::protect);
+        game.getServer().getOnlinePlayers().forEach(database::loadAccount);
+    }
+
+    private void init() {
         configuration.load();
-        database = new Database();
-        database.createTable();
+        try {
+            database = new Database();
+            database.createTable();
+        } catch (SQLException sqlEx) {
+            logger.error("Cannot connect to auth storage", sqlEx);
+            game.getServer().shutdown();
+        }
 
         if ("totp".equalsIgnoreCase(configuration.getGeneral().getHashAlgo())) {
             hasher = new TOTP();
@@ -217,9 +220,6 @@ public class FlexibleLogin {
             //use bcrypt as fallback for now
             hasher = new BcryptHasher();
         }
-
-        game.getServer().getOnlinePlayers().forEach(protectionManager::protect);
-        game.getServer().getOnlinePlayers().forEach(database::loadAccount);
     }
 
     public Settings getConfigManager() {

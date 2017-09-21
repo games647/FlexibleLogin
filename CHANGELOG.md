@@ -229,3 +229,7 @@
 ###### 0.15.2
 
 * Fix missing ItemDropEvent cause for Sponge 7.0 (Fixes #76)
+
+###### 0.15.3
+
+* Fix NPE on database connect (Fixes #77)
