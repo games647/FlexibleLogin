@@ -25,6 +25,7 @@ package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.commands.ChangePasswordCommand;
 import com.github.games647.flexiblelogin.commands.ForceRegisterCommand;
+import com.github.games647.flexiblelogin.commands.ForgotPasswordCommand;
 import com.github.games647.flexiblelogin.commands.LoginCommand;
 import com.github.games647.flexiblelogin.commands.LogoutCommand;
 import com.github.games647.flexiblelogin.commands.RegisterCommand;
@@ -90,7 +91,7 @@ public class FlexibleLogin {
     @DefaultConfig(sharedRoot = false)
     private ConfigurationLoader<CommentedConfigurationNode> configManager;
 
-    private Map<String, Integer> attempts = Maps.newConcurrentMap();
+    private final Map<String, Integer> attempts = Maps.newConcurrentMap();
 
     private Settings configuration;
     private Database database;
@@ -117,7 +118,7 @@ public class FlexibleLogin {
         database = new Database();
         database.createTable();
 
-        if ("totp".equalsIgnoreCase(configuration.getConfig().getHashAlgo())) {
+        if ("totp".equalsIgnoreCase(configuration.getGeneral().getHashAlgo())) {
             hasher = new TOTP();
         } else {
             //use BCrypt as fallback for now
@@ -156,7 +157,7 @@ public class FlexibleLogin {
                 .build(), "setemail", "email");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new UnregisterCommand())
+                .executor(new ForgotPasswordCommand())
                 .build(), "forgotpassword", "forgot");
 
         commandDispatcher.register(this, CommandSpec.builder()
@@ -210,7 +211,7 @@ public class FlexibleLogin {
         database = new Database();
         database.createTable();
 
-        if ("totp".equalsIgnoreCase(configuration.getConfig().getHashAlgo())) {
+        if ("totp".equalsIgnoreCase(configuration.getGeneral().getHashAlgo())) {
             hasher = new TOTP();
         } else {
             //use bcrypt as fallback for now

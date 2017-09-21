@@ -55,7 +55,7 @@ public class ConnectionListener {
             //account is loaded -> mark the player as logout as it could remain in the cache
             account.setLoggedIn(false);
 
-            if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
+            if (plugin.getConfigManager().getGeneral().isUpdateLoginStatus()) {
                 Sponge.getScheduler().createTaskBuilder()
                         .async().execute(() -> plugin.getDatabase().flushLoginStatus(account, false))
                         .submit(plugin);
@@ -79,22 +79,22 @@ public class ConnectionListener {
         String playerName = playerAuthEvent.getProfile().getName().get();
         if (!playerName.matches(VALID_USERNAME)) {
             //validate invalid characters
-            playerAuthEvent.setMessage(plugin.getConfigManager().getTextConfig().getInvalidUsername());
+            playerAuthEvent.setMessage(plugin.getConfigManager().getText().getInvalidUsername());
             playerAuthEvent.setCancelled(true);
         } else {
             Optional<Player> player = Sponge.getServer().getPlayer(playerName);
             if (player.isPresent() && player.get().getName().equals(playerName)) {
-                playerAuthEvent.setMessage(plugin.getConfigManager().getTextConfig().getAlreadyOnlineMessage());
+                playerAuthEvent.setMessage(plugin.getConfigManager().getText().getAlreadyOnline());
                 playerAuthEvent.setCancelled(true);
             }
         }
     }
 
-    public void onAccountLoaded(Player player) {
+    private void onAccountLoaded(Player player) {
         Account loadedAccount = plugin.getDatabase().loadAccount(player);
         byte[] newIp = player.getConnection().getAddress().getAddress().getAddress();
 
-        Config config = plugin.getConfigManager().getConfig();
+        Config config = plugin.getConfigManager().getGeneral();
         if (loadedAccount == null) {
             if (config.isCommandOnlyProtection()) {
                 if (player.hasPermission(plugin.getContainer().getId() + ".registerRequired")) {
@@ -111,7 +111,7 @@ public class ConnectionListener {
                     && System.currentTimeMillis() < lastLogin + 12 * 60 * 60 * 1000
                     && !player.hasPermission(plugin.getContainer().getId() + ".no_auto_login")) {
                 //user will be auto logged in
-                player.sendMessage(plugin.getConfigManager().getTextConfig().getIpAutoLogin());
+                player.sendMessage(plugin.getConfigManager().getText().getIpAutoLogin());
                 loadedAccount.setLoggedIn(true);
             } else {
                 //user has an account but isn't logged in
@@ -124,18 +124,18 @@ public class ConnectionListener {
 
     private void sendNotLoggedInMessage(Player player) {
         //send the message if the player only needs to login
-        if (!plugin.getConfigManager().getConfig().isBypassPermission()
+        if (!plugin.getConfigManager().getGeneral().isBypassPermission()
                 || !player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
             Sponge.getScheduler().createTaskBuilder()
                     .execute(new LoginMessageTask(player))
-                    .interval(plugin.getConfigManager().getConfig().getMessageInterval(), TimeUnit.SECONDS)
+                    .interval(plugin.getConfigManager().getGeneral().getMessageInterval(), TimeUnit.SECONDS)
                     .submit(plugin);
         }
     }
 
     private void scheduleTimeoutTask(Player player) {
-        Config config = plugin.getConfigManager().getConfig();
-        if (plugin.getConfigManager().getConfig().isBypassPermission()
+        Config config = plugin.getConfigManager().getGeneral();
+        if (plugin.getConfigManager().getGeneral().isBypassPermission()
                 && player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
             return;
         }
@@ -145,7 +145,7 @@ public class ConnectionListener {
                     .execute(() -> {
                         Account account = plugin.getDatabase().getAccountIfPresent(player);
                         if (account == null || !account.isLoggedIn()) {
-                            player.kick(plugin.getConfigManager().getTextConfig().getTimeoutReason());
+                            player.kick(plugin.getConfigManager().getText().getTimeoutReason());
                         }
                     })
                     .delay(config.getTimeoutLogin(), TimeUnit.SECONDS)

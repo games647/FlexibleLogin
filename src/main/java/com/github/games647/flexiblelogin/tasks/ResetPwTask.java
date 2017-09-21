@@ -27,49 +27,49 @@ package com.github.games647.flexiblelogin.tasks;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
-import java.util.UUID;
+import java.util.Optional;
 
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
 
-public class ResetPwTask implements Runnable {
+public abstract class ResetPwTask implements Runnable {
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    protected final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
-    private final CommandSource src;
-    private final Object accountIndentifer;
-    private final String password;
+    protected final CommandSource src;
+    protected final String password;
 
-    public ResetPwTask(CommandSource src, UUID uuid, String password) {
+    public ResetPwTask(CommandSource src, String password) {
         this.src = src;
-        this.accountIndentifer = uuid;
-        this.password = password;
-    }
-
-    public ResetPwTask(CommandSource src, String playerName, String password) {
-        this.src = src;
-        this.accountIndentifer = playerName;
         this.password = password;
     }
 
     @Override
     public void run() {
-        Account account;
-        if (accountIndentifer instanceof String) {
-            account = plugin.getDatabase().loadAccount((String) accountIndentifer);
+        Optional<Player> player = getIfPresent();
+        if (player.isPresent()) {
+            Account account = plugin.getDatabase().getAccountIfPresent(player.get());
+            resetPassword(Optional.ofNullable(account));
         } else {
-            account = plugin.getDatabase().loadAccount((UUID) accountIndentifer);
-        }
-
-        if (account == null) {
-            src.sendMessage(plugin.getConfigManager().getTextConfig().getAccountNotFound());
-        } else {
-            try {
-                account.setPasswordHash(plugin.getHasher().hash(password));
-                src.sendMessage(plugin.getConfigManager().getTextConfig().getChangePasswordMessage());
-            } catch (Exception ex) {
-                plugin.getLogger().error("Error creating hash", ex);
-                src.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
-            }
+            resetPassword(loadAccount());
         }
     }
+
+    private void resetPassword(Optional<Account> account) {
+        if (account.isPresent()) {
+            try {
+                account.get().setPasswordHash(plugin.getHasher().hash(password));
+                src.sendMessage(plugin.getConfigManager().getText().getChangePassword());
+            } catch (Exception ex) {
+                plugin.getLogger().error("Error creating hash", ex);
+                src.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
+            }
+        } else {
+            src.sendMessage(plugin.getConfigManager().getText().getAccountNotFound());
+        }
+    }
+
+    public abstract Optional<Player> getIfPresent();
+
+    public abstract Optional<Account> loadAccount();
 }

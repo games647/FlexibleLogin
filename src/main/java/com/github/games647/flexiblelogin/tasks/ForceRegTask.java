@@ -55,13 +55,13 @@ public class ForceRegTask implements Runnable {
                 account = new Account(accountIndentifer, "", hash, new byte[]{});
                 plugin.getDatabase().createAccount(account, false);
 
-                src.sendMessage(plugin.getConfigManager().getTextConfig().getForceRegisterSuccessMessage());
+                src.sendMessage(plugin.getConfigManager().getText().getForceRegisterSuccess());
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash", ex);
-                src.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
+                src.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
             }
         } else {
-            src.sendMessage(plugin.getConfigManager().getTextConfig().getAccountAlreadyExists());
+            src.sendMessage(plugin.getConfigManager().getText().getAccountAlreadyExists());
         }
     }
 }

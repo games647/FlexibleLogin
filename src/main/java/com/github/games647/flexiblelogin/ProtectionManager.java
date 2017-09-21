@@ -27,6 +27,7 @@ import com.github.games647.flexiblelogin.config.SpawnTeleportConfig;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.spongepowered.api.Sponge;
@@ -40,26 +41,18 @@ public class ProtectionManager {
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     public void protect(Player player) {
-        SpawnTeleportConfig teleportConfig = plugin.getConfigManager().getConfig().getTeleportConfig();
+        SpawnTeleportConfig teleportConfig = plugin.getConfigManager().getGeneral().getTeleport();
         if (teleportConfig.isEnabled()) {
-            Location<World> spawnLocation = teleportConfig.getSpawnLocation();
-            if (spawnLocation != null) {
+            Optional<Location<World>> spawnLocation = teleportConfig.getSpawnLocation();
+            if (spawnLocation.isPresent()) {
                 oldLocations.put(player.getUniqueId(), player.getLocation());
-                if (plugin.getConfigManager().getConfig().isSafeLocation()) {
-                    Sponge.getGame().getTeleportHelper().getSafeLocation(spawnLocation).ifPresent(player::setLocation);
-                } else {
-                    player.setLocation(spawnLocation);
-                }
+                safeTeleport(player, spawnLocation.get());
             }
         } else {
             Location<World> oldLoc = player.getLocation();
 
             //sometimes players stuck in a wall
-            if (plugin.getConfigManager().getConfig().isSafeLocation()) {
-                Sponge.getGame().getTeleportHelper().getSafeLocation(oldLoc).ifPresent(player::setLocation);
-            } else {
-                player.setLocation(oldLoc);
-            }
+            safeTeleport(player, oldLoc);
         }
     }
 
@@ -69,10 +62,14 @@ public class ProtectionManager {
             return;
         }
 
-        if (plugin.getConfigManager().getConfig().isSafeLocation()) {
-            Sponge.getGame().getTeleportHelper().getSafeLocation(oldLocation).ifPresent(player::setLocation);
+        safeTeleport(player, oldLocation);
+    }
+
+    private void safeTeleport(Player player, Location<World> location) {
+        if (plugin.getConfigManager().getGeneral().isSafeLocation()) {
+            Sponge.getGame().getTeleportHelper().getSafeLocation(location).ifPresent(player::setLocation);
         } else {
-            player.setLocation(oldLocation);
+            player.setLocation(location);
         }
     }
 }

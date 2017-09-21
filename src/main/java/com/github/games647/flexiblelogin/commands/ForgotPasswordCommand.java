@@ -35,7 +35,6 @@ import java.util.Properties;
 
 import javax.mail.Message.RecipientType;
 import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
@@ -56,34 +55,38 @@ public class ForgotPasswordCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(plugin.getConfigManager().getTextConfig().getPlayersOnlyActionMessage());
+            src.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
             return CommandResult.success();
         }
 
-        if (plugin.getConfigManager().getConfig().isPlayerPermissions()
+        if (plugin.getConfigManager().getGeneral().isPlayerPermissions()
                 && !src.hasPermission(plugin.getContainer().getId() + ".command.forgot")) {
             throw new CommandPermissionException();
+        }
+
+        if (!plugin.getConfigManager().getGeneral().getEmail().isEnabled()) {
+            src.sendMessage(plugin.getConfigManager().getText().getEmailNotEnabled());
         }
 
         Player player = (Player) src;
         Account account = plugin.getDatabase().getAccountIfPresent(player);
         if (account == null) {
-            src.sendMessage(plugin.getConfigManager().getTextConfig().getAccountNotLoadedMessage());
+            src.sendMessage(plugin.getConfigManager().getText().getAccountNotLoaded());
             return CommandResult.success();
         } else if (account.isLoggedIn()) {
-            src.sendMessage(plugin.getConfigManager().getTextConfig().getAlreadyLoggedInMessage());
+            src.sendMessage(plugin.getConfigManager().getText().getAlreadyLoggedIn());
             return CommandResult.success();
         }
 
         String email = account.getEmail();
         if (email == null || email.isEmpty()) {
-            src.sendMessage(plugin.getConfigManager().getTextConfig().getUncommittedEmailAddressMessage());
+            src.sendMessage(plugin.getConfigManager().getText().getUncommittedEmailAddress());
             return CommandResult.success();
         }
 
         String newPassword = generatePassword();
 
-        EmailConfiguration emailConfig = plugin.getConfigManager().getConfig().getEmailConfiguration();
+        EmailConfiguration emailConfig = plugin.getConfigManager().getGeneral().getEmail();
 
         Properties properties = new Properties();
         properties.setProperty("mail.smtp.host", emailConfig.getHost());
@@ -109,12 +112,10 @@ public class ForgotPasswordCommand implements CommandExecutor {
             //allow html
             message.setContent(textContent, "text/html");
 
-            //we only need to send the message so we use smtp
-            Transport transport = session.getTransport("smtp");
             //send email
             Sponge.getScheduler().createTaskBuilder()
                     .async()
-                    .execute(new SendEmailTask(player, transport, message))
+                    .execute(new SendEmailTask(player, session, message))
                     .submit(plugin);
 
             //set new password here if the email sending fails fails we have still the old password
@@ -127,7 +128,7 @@ public class ForgotPasswordCommand implements CommandExecutor {
             //we can ignore this, because we will encode with UTF-8 which all Java platforms supports
         } catch (Exception ex) {
             plugin.getLogger().error("Error executing command", ex);
-            src.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
+            src.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
         }
 
         return CommandResult.success();

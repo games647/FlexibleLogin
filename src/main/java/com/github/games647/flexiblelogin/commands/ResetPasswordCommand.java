@@ -24,11 +24,11 @@
 
 package com.github.games647.flexiblelogin.commands;
 
-import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.tasks.NameResetPwTask;
 import com.github.games647.flexiblelogin.tasks.ResetPwTask;
+import com.github.games647.flexiblelogin.tasks.UUIDResetPwTask;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.spongepowered.api.Sponge;
@@ -37,7 +37,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.entity.living.player.Player;
 
 public class ResetPasswordCommand implements CommandExecutor {
 
@@ -51,66 +50,23 @@ public class ResetPasswordCommand implements CommandExecutor {
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         String accountId = args.<String>getOne("account").get();
         String password = args.<String>getOne("password").get();
+
+        ResetPwTask resetTask;
         if (accountId.matches(UUID_REGEX)) {
-            onUuidReset(accountId, src, password);
-
-            return CommandResult.success();
+            UUID uuid = UUID.fromString(accountId);
+            resetTask = new UUIDResetPwTask(src, password, uuid);
         } else if (accountId.matches(VALID_USERNAME)) {
-            onNameReset(src, accountId, password);
-            return CommandResult.success();
+            resetTask = new NameResetPwTask(src, password, accountId);
+        } else {
+            return CommandResult.empty();
         }
 
+        //check if the account is a valid player name
+        Sponge.getScheduler().createTaskBuilder()
+                //Async as it could run a SQL query
+                .async()
+                .execute(resetTask)
+                .submit(plugin);
         return CommandResult.success();
-    }
-
-    private void onNameReset(CommandSource src, String accountId, String password) {
-        Optional<Player> player = Sponge.getServer().getPlayer(accountId);
-        if (player.isPresent()) {
-            Account account = plugin.getDatabase().getAccountIfPresent(player.get());
-            if (account == null) {
-                src.sendMessage(plugin.getConfigManager().getTextConfig().getAccountNotFound());
-            } else {
-                try {
-                    account.setPasswordHash(plugin.getHasher().hash(password));
-                    src.sendMessage(plugin.getConfigManager().getTextConfig().getChangePasswordMessage());
-                } catch (Exception ex) {
-                    plugin.getLogger().error("Error creating hash", ex);
-                    src.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
-                }
-            }
-        } else {
-            //check if the account is a valid player name
-            Sponge.getScheduler().createTaskBuilder()
-                    //Async as it could run a SQL query
-                    .async()
-                    .execute(new ResetPwTask(src, accountId, password))
-                    .submit(plugin);
-        }
-    }
-
-    private void onUuidReset(String accountId, CommandSource src, String password) {
-        //check if the account is an UUID
-        UUID uuid = UUID.fromString(accountId);
-        Optional<Player> player = Sponge.getServer().getPlayer(uuid);
-        if (player.isPresent()) {
-            Account account = plugin.getDatabase().getAccountIfPresent(player.get());
-            if (account == null) {
-                src.sendMessage(plugin.getConfigManager().getTextConfig().getAccountNotFound());
-            } else {
-                try {
-                    account.setPasswordHash(plugin.getHasher().hash(password));
-                    src.sendMessage(plugin.getConfigManager().getTextConfig().getChangePasswordMessage());
-                } catch (Exception ex) {
-                    plugin.getLogger().error("Error creating hash", ex);
-                    src.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
-                }
-            }
-        } else {
-            Sponge.getScheduler().createTaskBuilder()
-                    //Async as it could run a SQL query
-                    .async()
-                    .execute(new ResetPwTask(src, uuid, password))
-                    .submit(plugin);
-        }
     }
 }

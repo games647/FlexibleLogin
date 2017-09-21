@@ -48,22 +48,22 @@ public class LoginTask implements Runnable {
     public void run() {
         Account account = plugin.getDatabase().loadAccount(player);
         if (account == null) {
-            player.sendMessage(plugin.getConfigManager().getTextConfig().getAccountNotFound());
+            player.sendMessage(plugin.getConfigManager().getText().getAccountNotFound());
             return;
         }
 
         try {
             Integer attempts = plugin.getAttempts().computeIfAbsent(player.getName(), (playerName) -> 0);
-            if (attempts > plugin.getConfigManager().getConfig().getMaxAttempts()) {
-                player.sendMessage(plugin.getConfigManager().getTextConfig().getMaxAttemptsMessage());
-                String lockCommand = plugin.getConfigManager().getConfig().getLockCommand();
-                if (lockCommand != null && !lockCommand.isEmpty()) {
+            if (attempts > plugin.getConfigManager().getGeneral().getMaxAttempts()) {
+                player.sendMessage(plugin.getConfigManager().getText().getMaxAttempts());
+                String lockCommand = plugin.getConfigManager().getGeneral().getLockCommand();
+                if (!lockCommand.isEmpty()) {
                     ConsoleSource console = Sponge.getServer().getConsole();
                     plugin.getGame().getCommandManager().process(console, lockCommand);
                 }
 
                 Sponge.getScheduler().createTaskBuilder()
-                        .delay(plugin.getConfigManager().getConfig().getWaitTime(), TimeUnit.SECONDS)
+                        .delay(plugin.getConfigManager().getGeneral().getWaitTime(), TimeUnit.SECONDS)
                         .execute(() -> plugin.getAttempts().remove(player.getName())).submit(plugin);
                 return;
             }
@@ -75,25 +75,25 @@ public class LoginTask implements Runnable {
                 byte[] playerIp = player.getConnection().getAddress().getAddress().getAddress();
                 account.setIp(playerIp);
 
-                player.sendMessage(plugin.getConfigManager().getTextConfig().getLoggedIn());
+                player.sendMessage(plugin.getConfigManager().getText().getLoggedIn());
                 Sponge.getScheduler().createTaskBuilder()
                         .execute(() -> plugin.getProtectionManager().unprotect(player))
                         .submit(plugin);
 
                 //flushes the ip update
                 plugin.getDatabase().save(account);
-                if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
+                if (plugin.getConfigManager().getGeneral().isUpdateLoginStatus()) {
                     plugin.getDatabase().flushLoginStatus(account, true);
                 }
             } else {
                 attempts++;
                 plugin.getAttempts().put(player.getName(), attempts);
 
-                player.sendMessage(plugin.getConfigManager().getTextConfig().getIncorrectPassword());
+                player.sendMessage(plugin.getConfigManager().getText().getIncorrectPassword());
             }
         } catch (Exception ex) {
             plugin.getLogger().error("Unexpected error while password checking", ex);
-            player.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
+            player.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
         }
     }
 }

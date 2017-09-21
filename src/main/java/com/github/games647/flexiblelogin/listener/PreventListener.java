@@ -95,11 +95,11 @@ public class PreventListener {
             return;
         }
 
-        if (plugin.getConfigManager().getConfig().isCommandOnlyProtection()) {
-            List<String> protectedCommands = plugin.getConfigManager().getConfig().getProtectedCommands();
+        if (plugin.getConfigManager().getGeneral().isCommandOnlyProtection()) {
+            List<String> protectedCommands = plugin.getConfigManager().getGeneral().getProtectedCommands();
             if ((protectedCommands.isEmpty() || protectedCommands.contains(command))) {
                 if (!plugin.getDatabase().isLoggedin(player)) {
-                    player.sendMessage(plugin.getConfigManager().getTextConfig().getProtectedCommand());
+                    player.sendMessage(plugin.getConfigManager().getText().getProtectedCommand());
                     commandEvent.setCancelled(true);
                 }
             }
@@ -182,12 +182,12 @@ public class PreventListener {
     }
 
     private void checkLoginStatus(Cancellable event, Player player) {
-        if (plugin.getConfigManager().getConfig().isBypassPermission()
+        if (plugin.getConfigManager().getGeneral().isBypassPermission()
                 && player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
             return;
         }
 
-        if (plugin.getConfigManager().getConfig().isCommandOnlyProtection()) {
+        if (plugin.getConfigManager().getGeneral().isCommandOnlyProtection()) {
             //check if the user is already registered
             if (plugin.getDatabase().getAccountIfPresent(player) == null
                     && player.hasPermission(plugin.getContainer().getId() + ".registerRequired")) {

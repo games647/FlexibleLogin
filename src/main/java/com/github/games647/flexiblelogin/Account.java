@@ -31,6 +31,7 @@ import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -51,7 +52,8 @@ public class Account {
     private boolean loggedIn;
 
     public Account(Player player, String password) {
-        this(player.getUniqueId(), player.getName(), password, player.getConnection().getAddress().getAddress().getAddress());
+        this(player.getUniqueId()
+                , player.getName(), password, player.getConnection().getAddress().getAddress().getAddress());
     }
 
     //new account
@@ -121,11 +123,11 @@ public class Account {
         return ip;
     }
 
-    public synchronized String getIpString() {
+    public synchronized Optional<String> getIpString() {
         try {
-            return InetAddress.getByAddress(ip).getHostName();
+            return Optional.of(InetAddress.getByAddress(ip).getHostName());
         } catch (UnknownHostException ex) {
-            return null;
+            return Optional.empty();
         }
     }
 

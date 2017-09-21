@@ -40,16 +40,13 @@ public class DatabaseMigration {
     }
 
     public void createTable() throws SQLException {
-        Connection conn = null;
-        try {
-            conn = plugin.getDatabase().getConnection();
-
+        try (Connection con = plugin.getDatabase().getConnection()) {
             boolean tableExists = false;
             try {
                 //check if the table already exists
-                Statement statement = conn.createStatement();
-                statement.execute("SELECT 1 FROM " + Database.USERS_TABLE);
-                statement.close();
+                try (Statement statement = con.createStatement()) {
+                    statement.execute("SELECT 1 FROM " + Database.USERS_TABLE);
+                }
 
                 tableExists = true;
             } catch (SQLException sqlEx) {
@@ -57,52 +54,48 @@ public class DatabaseMigration {
             }
 
             if (!tableExists) {
-                if (plugin.getConfigManager().getConfig().getSqlConfiguration().getType() == SQLType.SQLITE) {
-                    Statement statement = conn.createStatement();
-                    statement.execute("CREATE TABLE " + Database.USERS_TABLE + " ( "
-                            + "`UserID` INTEGER PRIMARY KEY AUTOINCREMENT, "
-                            + "`UUID` BINARY(16) NOT NULL , "
-                            + "`Username` VARCHAR , "
-                            + "`Password` VARCHAR(64) NOT NULL , "
-                            + "`IP` BINARY(32) NOT NULL , "
-                            + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
-                            + "`Email` VARCHAR(64) DEFAULT NULL , "
-                            + "`LoggedIn` BOOLEAN DEFAULT 0, "
-                            + "UNIQUE (`UUID`) "
-                            + ')');
-                    statement.close();
+                if (plugin.getConfigManager().getGeneral().getSQL().getType() == SQLType.SQLITE) {
+                    try (Statement statement = con.createStatement()) {
+                        statement.execute("CREATE TABLE " + Database.USERS_TABLE + " ( "
+                                + "`UserID` INTEGER PRIMARY KEY AUTOINCREMENT, "
+                                + "`UUID` BINARY(16) NOT NULL , "
+                                + "`Username` VARCHAR , "
+                                + "`Password` VARCHAR(64) NOT NULL , "
+                                + "`IP` BINARY(32) NOT NULL , "
+                                + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
+                                + "`Email` VARCHAR(64) DEFAULT NULL , "
+                                + "`LoggedIn` BOOLEAN DEFAULT 0, "
+                                + "UNIQUE (`UUID`) "
+                                + ')');
+                    }
                 } else {
-                    Statement statement = conn.createStatement();
-                    statement.execute("CREATE TABLE " + Database.USERS_TABLE + " ( "
-                            + "`UserID` INT UNSIGNED NOT NULL AUTO_INCREMENT , "
-                            + "`UUID` BINARY(16) NOT NULL , "
-                            + "`Username` VARCHAR, "
-                            + "`Password` VARCHAR(64) NOT NULL , "
-                            + "`IP` BINARY(32) NOT NULL , "
-                            + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
-                            + "`Email` VARCHAR(64) DEFAULT NULL , "
-                            + "`LoggedIn` BOOLEAN DEFAULT 0, "
-                            + "PRIMARY KEY (`UserID`) , UNIQUE (`UUID`) "
-                            + ')');
-                    statement.close();
+                    try (Statement stmt = con.createStatement()) {
+                        stmt.execute("CREATE TABLE " + Database.USERS_TABLE + " ( "
+                                + "`UserID` INT UNSIGNED NOT NULL AUTO_INCREMENT , "
+                                + "`UUID` BINARY(16) NOT NULL , "
+                                + "`Username` VARCHAR, "
+                                + "`Password` VARCHAR(64) NOT NULL , "
+                                + "`IP` BINARY(32) NOT NULL , "
+                                + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , "
+                                + "`Email` VARCHAR(64) DEFAULT NULL , "
+                                + "`LoggedIn` BOOLEAN DEFAULT 0, "
+                                + "PRIMARY KEY (`UserID`) , UNIQUE (`UUID`) "
+                                + ')');
+                    }
                 }
             }
-        } finally {
-            plugin.getDatabase().closeQuietly(conn);
         }
     }
 
     public void migrateName() {
-        Connection conn = null;
-        try {
-            conn = plugin.getDatabase().getConnection();
-
+        try (Connection con = plugin.getDatabase().getConnection()) {
             boolean tableExists = false;
             try {
                 //check if the table already exists
-                Statement statement = conn.createStatement();
-                statement.execute("SELECT 1 FROM " + OLD_TABLE_NAME);
-                statement.close();
+                try (Statement stmt = con.createStatement()) {
+                    stmt.execute("SELECT 1 FROM " + OLD_TABLE_NAME);
+                    stmt.close();
+                }
 
                 tableExists = true;
             } catch (SQLException sqlEx) {
@@ -110,23 +103,16 @@ public class DatabaseMigration {
             }
 
             if (tableExists) {
-                Statement statement = conn.createStatement();
-                statement.execute("SELECT 1 FROM " + OLD_TABLE_NAME);
+                try (Statement stmt = con.createStatement();) {
+                    stmt.execute("SELECT 1 FROM " + OLD_TABLE_NAME);
 
-                //if no error happens the table exists
-                statement.execute("INSERT INTO " + Database.USERS_TABLE + " SELECT *, 0 FROM " + OLD_TABLE_NAME);
-                statement.execute("DROP TABLE " + OLD_TABLE_NAME);
+                    //if no error happens the table exists
+                    stmt.execute("INSERT INTO " + Database.USERS_TABLE + " SELECT *, 0 FROM " + OLD_TABLE_NAME);
+                    stmt.execute("DROP TABLE " + OLD_TABLE_NAME);
+                }
             }
         } catch (SQLException ex) {
             plugin.getLogger().error("Error migrating database", ex);
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException ex) {
-                    //ignore
-                }
-            }
         }
     }
 }

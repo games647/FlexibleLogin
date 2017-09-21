@@ -86,11 +86,11 @@ public class Config {
             + " all commands are protected")
     private List<String> protectedCommands = Lists.newArrayList("op", "pex");
 
-    public EmailConfiguration getEmailConfiguration() {
+    public EmailConfiguration getEmail() {
         return emailConfiguration;
     }
 
-    public SQLConfiguration getSqlConfiguration() {
+    public SQLConfiguration getSQL() {
         return sqlConfiguration;
     }
 
@@ -126,7 +126,7 @@ public class Config {
         return bypassPermission;
     }
 
-    public SpawnTeleportConfig getTeleportConfig() {
+    public SpawnTeleportConfig getTeleport() {
         return teleportConfig;
     }
 

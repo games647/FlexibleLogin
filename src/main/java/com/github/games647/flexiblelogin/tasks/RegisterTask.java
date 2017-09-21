@@ -54,8 +54,8 @@ public class RegisterTask implements Runnable {
         if (plugin.getDatabase().loadAccount(player) == null && !plugin.getDatabase().exists(name)) {
             byte[] ipAddress = player.getConnection().getAddress().getAddress().getAddress();
             int regByIp = plugin.getDatabase().getRegistrationsCount(ipAddress);
-            if (regByIp > plugin.getConfigManager().getConfig().getMaxIpReg()) {
-                player.sendMessage(plugin.getConfigManager().getTextConfig().getMaxIpRegMessage());
+            if (regByIp > plugin.getConfigManager().getGeneral().getMaxIpReg()) {
+                player.sendMessage(plugin.getConfigManager().getText().getMaxIpReg());
                 return;
             }
 
@@ -67,13 +67,13 @@ public class RegisterTask implements Runnable {
                 }
 
                 //thread-safe, because it's immutable after config load
-                if ("totp".equalsIgnoreCase(plugin.getConfigManager().getConfig().getHashAlgo())) {
+                if ("totp".equalsIgnoreCase(plugin.getConfigManager().getGeneral().getHashAlgo())) {
                     sendTotpHint(hashedPassword);
                 }
 
-                player.sendMessage(plugin.getConfigManager().getTextConfig().getAccountCreated());
+                player.sendMessage(plugin.getConfigManager().getText().getAccountCreated());
                 createdAccount.setLoggedIn(true);
-                if (plugin.getConfigManager().getConfig().isUpdateLoginStatus()) {
+                if (plugin.getConfigManager().getGeneral().isUpdateLoginStatus()) {
                     plugin.getDatabase().flushLoginStatus(createdAccount, true);
                 }
 
@@ -82,10 +82,10 @@ public class RegisterTask implements Runnable {
                         .submit(plugin);
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash", ex);
-                player.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
+                player.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
             }
         } else {
-            player.sendMessage(plugin.getConfigManager().getTextConfig().getAccountAlreadyExists());
+            player.sendMessage(plugin.getConfigManager().getText().getAccountAlreadyExists());
         }
     }
 
@@ -94,12 +94,12 @@ public class RegisterTask implements Runnable {
         String host = Sponge.getServer().getBoundAddress().get().getAddress().getCanonicalHostName();
         try {
             URL barcodeUrl = new URL(TOTP.getQRBarcodeURL(player.getName(), host, secretCode));
-            player.sendMessage(plugin.getConfigManager().getTextConfig().getKeyGenerated());
+            player.sendMessage(plugin.getConfigManager().getText().getKeyGenerated());
             player.sendMessage(Text.builder(secretCode)
                     .color(TextColors.GOLD)
                     .append(Text.builder(" / ").color(TextColors.DARK_BLUE).build())
                     .append(Text.builder()
-                            .append(plugin.getConfigManager().getTextConfig().getScanQr())
+                            .append(plugin.getConfigManager().getText().getScanQr())
                             .onClick(TextActions.openUrl(barcodeUrl))
                             .build())
                     .build());

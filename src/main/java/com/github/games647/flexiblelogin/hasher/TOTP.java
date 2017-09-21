@@ -46,7 +46,7 @@ public class TOTP implements Hasher {
     private static final int TIME_PRECISION = 3;
     private static final String CRYPTO_ALGO = "HmacSHA1";
 
-    public static String generateSecretKey() {
+    private static String generateSecretKey() {
         // Allocating the buffer
         byte[] buffer = new byte[SCRET_BYTE + SCRATCH_CODES * BYTES_PER_SCRATCH_CODE];
 

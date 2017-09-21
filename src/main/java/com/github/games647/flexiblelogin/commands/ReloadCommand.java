@@ -39,7 +39,7 @@ public class ReloadCommand implements CommandExecutor {
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         plugin.onReload();
 
-        source.sendMessage(plugin.getConfigManager().getTextConfig().getReloadMessage());
+        source.sendMessage(plugin.getConfigManager().getText().getReload());
         return CommandResult.success();
     }
 }

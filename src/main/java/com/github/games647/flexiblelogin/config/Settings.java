@@ -79,9 +79,9 @@ public class Settings {
         loadMapper(textMapper, textLoader);
     }
 
-    public void loadMapper(ObjectMapper<?>.BoundInstance mapper
+    private void loadMapper(ObjectMapper<?>.BoundInstance mapper
             , ConfigurationLoader<CommentedConfigurationNode> loader) {
-        CommentedConfigurationNode rootNode = loader.createEmptyNode();
+        CommentedConfigurationNode rootNode;
         if (mapper != null) {
             try {
                 rootNode = loader.load();
@@ -100,19 +100,11 @@ public class Settings {
         }
     }
 
-    public Config getConfig() {
-        if (configMapper == null) {
-            return null;
-        }
-
+    public Config getGeneral() {
         return configMapper.getInstance();
     }
 
-    public TextConfig getTextConfig() {
-        if (textMapper == null) {
-            return null;
-        }
-
+    public TextConfig getText() {
         return textMapper.getInstance();
     }
 

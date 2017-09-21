@@ -46,21 +46,21 @@ public class RegisterCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(plugin.getConfigManager().getTextConfig().getPlayersOnlyActionMessage());
+            source.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
             return CommandResult.success();
         }
 
-        if (plugin.getConfigManager().getConfig().isPlayerPermissions()
+        if (plugin.getConfigManager().getGeneral().isPlayerPermissions()
                 && !source.hasPermission(plugin.getContainer().getId() + ".command.register")) {
             throw new CommandPermissionException();
         }
 
         //If the server is using TOTP, no password is required
         if (!args.hasAny("password")) {
-            if ("totp".equals(plugin.getConfigManager().getConfig().getHashAlgo())) {
+            if ("totp".equals(plugin.getConfigManager().getGeneral().getHashAlgo())) {
                 startTask(source, "");
             } else {
-                source.sendMessage(plugin.getConfigManager().getTextConfig().getTotpNotEnabledMessage());
+                source.sendMessage(plugin.getConfigManager().getText().getTotpNotEnabled());
             }
 
             return CommandResult.success();
@@ -70,14 +70,14 @@ public class RegisterCommand implements CommandExecutor {
         List<String> indexPasswords = Lists.newArrayList(passwords);
         String password = indexPasswords.get(0);
         if (password.equals(indexPasswords.get(1))) {
-            if (password.length() >= plugin.getConfigManager().getConfig().getMinPasswordLength()) {
+            if (password.length() >= plugin.getConfigManager().getGeneral().getMinPasswordLength()) {
                 //Check if the first two passwords are equal to prevent typos
                 startTask(source, password);
             } else {
-                source.sendMessage(plugin.getConfigManager().getTextConfig().getTooShortPasswordMessage());
+                source.sendMessage(plugin.getConfigManager().getText().getTooShortPassword());
             }
         } else {
-            source.sendMessage(plugin.getConfigManager().getTextConfig().getUnequalPasswordsMessage());
+            source.sendMessage(plugin.getConfigManager().getText().getUnequalPasswords());
         }
 
         return CommandResult.success();

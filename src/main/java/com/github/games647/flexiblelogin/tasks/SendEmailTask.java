@@ -27,6 +27,7 @@ package com.github.games647.flexiblelogin.tasks;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfiguration;
 
+import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 
@@ -35,13 +36,13 @@ import org.spongepowered.api.entity.living.player.Player;
 public class SendEmailTask implements Runnable {
 
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
-    private final Transport transport;
+    private final Session session;
     private final MimeMessage email;
 
     private final Player player;
 
-    public SendEmailTask(Player player, Transport transport, MimeMessage email) {
-        this.transport = transport;
+    public SendEmailTask(Player player, Session session, MimeMessage email) {
+        this.session = session;
         this.email = email;
 
         this.player = player;
@@ -49,8 +50,9 @@ public class SendEmailTask implements Runnable {
 
     @Override
     public void run() {
-        try {
-            EmailConfiguration emailConfig = plugin.getConfigManager().getConfig().getEmailConfiguration();
+        //we only need to send the message so we use smtp
+        try (Transport transport = session.getTransport("smtp")) {
+            EmailConfiguration emailConfig = plugin.getConfigManager().getGeneral().getEmail();
 
             //connect to host and send message
             if (!transport.isConnected()) {
@@ -59,10 +61,10 @@ public class SendEmailTask implements Runnable {
             }
 
             transport.sendMessage(email, email.getAllRecipients());
-            player.sendMessage(plugin.getConfigManager().getTextConfig().getMailSent());
+            player.sendMessage(plugin.getConfigManager().getText().getMailSent());
         } catch (Exception ex) {
             plugin.getLogger().error("Error sending email", ex);
-            player.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
+            player.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
         }
     }
 }

@@ -39,8 +39,8 @@ import static org.spongepowered.api.text.TextTemplate.of;
 @ConfigSerializable
 public class TextConfig {
 
-    @Setting(comment = "You can use the Github wiki for example configurations: https://github.com/games647/FlexibleLogin/wiki "
-            + '\n'
+    @Setting(comment = "You can use the Github wiki for example configurations: "
+            + "https://github.com/games647/FlexibleLogin/wiki"
             + '\n'
             + "When a non-player (i.e. Console, Command Block) tries to do a player only action.")
     private String playersOnly = "§4Only players can do this!";
@@ -146,6 +146,9 @@ public class TextConfig {
     @Setting(comment = "Another player with the same name tried to join the server while that player is still online")
     private String alreadyOnline = "§2You are already online";
 
+    @Setting(comment = "If email recovery is not enabled")
+    private String emailNotEnabled = "§2Email recovery is not enabled.";
+
     public Text getAccountAlreadyExists() {
         return fromString(accountAlreadyExists);
     }
@@ -182,55 +185,55 @@ public class TextConfig {
         return fromString(mailSent);
     }
 
-    public Text getPlayersOnlyActionMessage() {
+    public Text getPlayersOnlyAction() {
         return fromString(playersOnly);
     }
 
-    public Text getAccountNotLoadedMessage() {
+    public Text getAccountNotLoaded() {
         return fromString(playersAccountNotLoaded);
     }
 
-    public Text getAlreadyLoggedInMessage() {
+    public Text getAlreadyLoggedIn() {
         return fromString(playersAccountAlreadyLoggedIn);
     }
 
-    public Text getUncommittedEmailAddressMessage() {
+    public Text getUncommittedEmailAddress() {
         return fromString(uncommittedEmailAddress);
     }
 
-    public Text getErrorCommandMessage() {
+    public Text getErrorCommand() {
         return fromString(errorExecutingCommand);
     }
 
-    public Text getSuccessfullyLoggedOutMessage() {
+    public Text getSuccessfullyLoggedOut() {
         return fromString(loggedOut);
     }
 
-    public Text getNotRegisteredMessage() {
+    public Text getNotRegistered() {
         return fromString(notRegistered);
     }
 
-    public Text getNotLoggedInMessage() {
+    public Text getNotLoggedIn() {
         return fromString(notLoggedIn);
     }
 
-    public Text getTotpNotEnabledMessage() {
+    public Text getTotpNotEnabled() {
         return fromString(totpNotEnabled);
     }
 
-    public Text getUnequalPasswordsMessage() {
+    public Text getUnequalPasswords() {
         return fromString(unevenPasswords);
     }
 
-    public Text getEmailSetMessage() {
+    public Text getEmailSet() {
         return fromString(emailSet);
     }
 
-    public Text getNotEmailMessage() {
+    public Text getNotEmail() {
         return fromString(notEmail);
     }
 
-    public Text getUnregisteringFailedMessage() {
+    public Text getUnregisteringFailed() {
         return fromString(unregisterFailed);
     }
 
@@ -250,36 +253,40 @@ public class TextConfig {
         return fromString(timeoutReason);
     }
 
-    public Text getChangePasswordMessage() {
+    public Text getChangePassword() {
         return fromString(changePassword);
     }
 
-    public Text getTooShortPasswordMessage() {
+    public Text getTooShortPassword() {
         return fromString(tooShortPassword);
     }
 
-    public Text getMaxAttemptsMessage() {
+    public Text getMaxAttempts() {
         return fromString(maxAttempts);
     }
 
-    public Text getMaxIpRegMessage() {
+    public Text getMaxIpReg() {
         return fromString(maxIpReg);
     }
 
-    public Text getReloadMessage() {
+    public Text getReload() {
         return fromString(onReload);
     }
 
-    public Text getForceRegisterOnlineMessage() {
+    public Text getForceRegisterOnline() {
         return fromString(forceRegisterOnline);
     }
 
-    public Text getForceRegisterSuccessMessage() {
+    public Text getForceRegisterSuccess() {
         return fromString(forceRegisterSuccess);
     }
 
-    public Text getAlreadyOnlineMessage() {
+    public Text getAlreadyOnline() {
         return fromString(alreadyOnline);
+    }
+
+    public Text getEmailNotEnabled() {
+        return fromString(emailNotEnabled);
     }
 
     private Text fromString(String textString) {

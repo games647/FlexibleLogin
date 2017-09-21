@@ -46,18 +46,18 @@ public class ChangePasswordCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         if (!(source instanceof Player)) {
-            source.sendMessage(plugin.getConfigManager().getTextConfig().getPlayersOnlyActionMessage());
+            source.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
             return CommandResult.empty();
         }
 
-        if (plugin.getConfigManager().getConfig().isPlayerPermissions()
+        if (plugin.getConfigManager().getGeneral().isPlayerPermissions()
                 && !source.hasPermission(plugin.getContainer().getId() + ".command.changepw")) {
             throw new CommandPermissionException();
         }
 
         Account account = plugin.getDatabase().getAccountIfPresent((Player) source);
         if (account == null || !account.isLoggedIn()) {
-            source.sendMessage(plugin.getConfigManager().getTextConfig().getNotLoggedInMessage());
+            source.sendMessage(plugin.getConfigManager().getText().getNotLoggedIn());
             return CommandResult.empty();
         }
 
@@ -75,19 +75,19 @@ public class ChangePasswordCommand implements CommandExecutor {
                             account.setPasswordHash(hash);
                             boolean success = plugin.getDatabase().save(account);
                             if (success) {
-                                source.sendMessage(plugin.getConfigManager().getTextConfig().getChangePasswordMessage());
+                                source.sendMessage(plugin.getConfigManager().getText().getChangePassword());
                             } else {
-                                source.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
+                                source.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
                             }
                         })
                         .name("Register Query")
                         .submit(plugin);
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash on change password", ex);
-                source.sendMessage(plugin.getConfigManager().getTextConfig().getErrorCommandMessage());
+                source.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
             }
         } else {
-            source.sendMessage(plugin.getConfigManager().getTextConfig().getUnequalPasswordsMessage());
+            source.sendMessage(plugin.getConfigManager().getText().getUnequalPasswords());
         }
 
         return CommandResult.success();
