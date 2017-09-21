@@ -94,6 +94,10 @@ public class Database {
         this.dataSource = sqlService.getDataSource(jdbcUrl);
     }
 
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
     public Account getAccountIfPresent(Player player) {
         return cache.get(player.getUniqueId());
     }

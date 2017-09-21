@@ -38,7 +38,7 @@ public class DatabaseMigration {
     }
 
     public void createTable() throws SQLException {
-        try (Connection con = plugin.getDatabase().getConnection()) {
+        try (Connection con = plugin.getDatabase().getDataSource().getConnection()) {
             boolean tableExists = false;
             try {
                 //check if the table already exists
