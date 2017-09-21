@@ -225,3 +225,7 @@
 ###### 0.15.1
 
 * Cancel CreateClaimEvents for GriefPrevention
+
+###### 0.15.2
+
+* Fix missing ItemDropEvent cause for Sponge 7.0 (Fixes #76)
