@@ -298,7 +298,7 @@ public class Database {
             //set all player accounts existing in the database to unlogged
             stmt.execute("UPDATE " + USERS_TABLE + " SET LoggedIn=0");
         } catch (SQLException ex) {
-            plugin.getLogger().error("Error updating user account", ex);
+            plugin.getLogger().error("Error updating loggin status", ex);
         }
     }
 

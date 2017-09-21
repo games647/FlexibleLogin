@@ -58,7 +58,7 @@ import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
@@ -185,7 +185,7 @@ public class FlexibleLogin {
     }
 
     @Listener
-    public void onDisable(GameStoppedServerEvent gameStoppedEvent) {
+    public void onDisable(GameStoppingServerEvent stoppingEvent) {
         //run this task sync in order let it finish before the process ends
         database.close();
 

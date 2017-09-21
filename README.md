@@ -121,22 +121,16 @@ Tested against:
     # How seconds the user should wait after the user tried to make too many attempts
     waitTime=300
 
-### Links
+### Download
 
-[Github - Source Code][1]
-[Download][2]
-Please leave star on Github or a like/comment on this thread. Feel free to clone, fork or contribute to this repository.
-This is a complete new project, so many features can be added.
+https://github.com/games647/FlexibleLogin/releases
 
 ### Screenshots:
 
 #### TOTP Key generation (/register)
-![Minecraft image picture](http://fs2.directupload.net/images/150805/eu3fycsp.png)
+![Minecraft image picture](https://i.imgur.com/K2GDqfW.png)
 
 #### Android App Google Authenticator (IOS App exists too)
-![Minecraft image picture](http://fs2.directupload.net/images/150804/3qrcb9j3.png)
-You can see there a time generated code which can be used for the login process. (/login <code>)
+![Google authenticator](https://i.imgur.com/Zz6RkdY.png)
+You can see there a time generated code which can be used for the login process. `/login <code>`
 Additionally it display your user account name and the server ip.
-
-  [1]: https://github.com/games647/FlexibleLogin
-  [2]: https://github.com/games647/FlexibleLogin/releases

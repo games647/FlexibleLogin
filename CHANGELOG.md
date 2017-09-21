@@ -168,7 +168,7 @@
 * Only auto login if the last login is between 12 hours
 * Add permission to prevent ip auto login (Fixes #43)
 * Remove cache
-* Fix email prefix (now from http://emailregex.com/) (Fixes #483)
+* Fix email prefix (now from https://emailregex.com/) (Fixes #483)
 * Fix creating default config
 * Change login alias from /l -> /log
 
