@@ -233,3 +233,7 @@
 ###### 0.15.3
 
 * Fix NPE on database connect (Fixes #77)
+
+###### 0.15.3
+
+* Fix database cleanup on shutdown (Fixes #78)
