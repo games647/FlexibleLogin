@@ -237,3 +237,9 @@
 ###### 0.15.3
 
 * Fix database cleanup on shutdown (Fixes #78)
+
+###### 0.16
+
+* Stronger TOTP code generation
+* Compile constant patterns for better perfomance
+

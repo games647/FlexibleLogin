@@ -41,7 +41,7 @@ public class Config {
     private String hashAlgo = "bcrypt";
 
     @Setting(comment = "Should the plugin login users automatically if it's the same account from the same IP")
-    private boolean ipAutoLogin = false;
+    private boolean ipAutoLogin;
 
     @Setting(comment = "Should only the specified commands be protected from unauthorized access")
     private boolean commandOnlyProtection;
@@ -74,7 +74,7 @@ public class Config {
     private String lockCommand = "";
 
     @Setting(comment = "How many accounts are allowed per ip-addres. Use 0 to disable it")
-    private int maxIpReg = 0;
+    private int maxIpReg;
 
     @Setting(comment = "Interval where the please login will be printed to the user")
     private int messageInterval = 2;

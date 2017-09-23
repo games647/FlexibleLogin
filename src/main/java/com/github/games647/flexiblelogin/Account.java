@@ -30,7 +30,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,7 +46,7 @@ public class Account {
     private String passwordHash;
 
     private byte[] ip;
-    private Timestamp timestamp;
+    private long timestamp;
 
     private String email;
 
@@ -63,7 +64,7 @@ public class Account {
         this.passwordHash = password;
 
         this.ip = ip;
-        this.timestamp = new Timestamp(System.currentTimeMillis());
+        this.timestamp = Date.from(Instant.now()).getTime();
     }
 
     //existing account
@@ -82,7 +83,7 @@ public class Account {
         this.passwordHash = resultSet.getString(4);
 
         this.ip = resultSet.getBytes(5);
-        this.timestamp = resultSet.getTimestamp(6);
+        this.timestamp = resultSet.getTimestamp(6).getTime();
 
         this.email = resultSet.getString(7);
     }
@@ -95,11 +96,11 @@ public class Account {
         return uuid;
     }
 
-    public String getUsername() {
+    public synchronized String getUsername() {
         return username;
     }
 
-    /* package */ String getPassword() {
+    /* package */ synchronized String getPassword() {
         return passwordHash;
     }
 
@@ -115,7 +116,7 @@ public class Account {
         this.ip = ip;
     }
 
-    public synchronized void setTimestamp(Timestamp timestamp) {
+    public synchronized void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -131,7 +132,7 @@ public class Account {
         }
     }
 
-    public synchronized Timestamp getTimestamp() {
+    public synchronized long getTimestamp() {
         return timestamp;
     }
 

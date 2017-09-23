@@ -27,6 +27,7 @@ package com.github.games647.flexiblelogin.tasks;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfiguration;
 
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
@@ -62,7 +63,7 @@ public class SendEmailTask implements Runnable {
 
             transport.sendMessage(email, email.getAllRecipients());
             player.sendMessage(plugin.getConfigManager().getText().getMailSent());
-        } catch (Exception ex) {
+        } catch (MessagingException ex) {
             plugin.getLogger().error("Error sending email", ex);
             player.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
         }

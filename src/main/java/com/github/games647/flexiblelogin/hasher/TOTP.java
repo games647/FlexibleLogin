@@ -28,11 +28,12 @@ import com.google.common.primitives.Ints;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorConfig.GoogleAuthenticatorConfigBuilder;
 import com.warrenstrange.googleauth.HmacHashFunction;
+import com.warrenstrange.googleauth.IGoogleAuthenticator;
 import com.warrenstrange.googleauth.KeyRepresentation;
 
 public class TOTP implements Hasher {
 
-    private final GoogleAuthenticator gAuth = new GoogleAuthenticator(new GoogleAuthenticatorConfigBuilder()
+    private final IGoogleAuthenticator gAuth = new GoogleAuthenticator(new GoogleAuthenticatorConfigBuilder()
             .setHmacHashFunction(HmacHashFunction.HmacSHA512)
             .setKeyRepresentation(KeyRepresentation.BASE64)
             .build());
@@ -51,7 +52,7 @@ public class TOTP implements Hasher {
     }
 
     @Override
-    public boolean checkPassword(String passwordHash, String userInput) throws Exception {
+    public boolean checkPassword(String passwordHash, String userInput) {
         Integer code = Ints.tryParse(userInput);
         if (code == null) {
             return false;

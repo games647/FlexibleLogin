@@ -30,6 +30,7 @@ import com.github.games647.flexiblelogin.tasks.ResetPwTask;
 import com.github.games647.flexiblelogin.tasks.UUIDResetPwTask;
 
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
@@ -40,11 +41,10 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 
 public class ResetPasswordCommand implements CommandExecutor {
 
-    private static final String UUID_REGEX
-            = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}";
-    private static final String VALID_USERNAME = "^\\w{2,16}$";
-
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    private final Pattern validNamePattern = Pattern.compile("^\\w{2,16}$");
+    private final Pattern uuidPattern = Pattern
+            .compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}");
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
@@ -52,10 +52,10 @@ public class ResetPasswordCommand implements CommandExecutor {
         String password = args.<String>getOne("password").get();
 
         ResetPwTask resetTask;
-        if (accountId.matches(UUID_REGEX)) {
+        if (uuidPattern.matcher(accountId).matches()) {
             UUID uuid = UUID.fromString(accountId);
             resetTask = new UUIDResetPwTask(src, password, uuid);
-        } else if (accountId.matches(VALID_USERNAME)) {
+        } else if (validNamePattern.matcher(accountId).matches()) {
             resetTask = new NameResetPwTask(src, password, accountId);
         } else {
             return CommandResult.empty();

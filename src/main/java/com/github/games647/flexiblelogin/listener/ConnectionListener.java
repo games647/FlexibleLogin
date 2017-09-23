@@ -31,20 +31,22 @@ import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent.Auth;
+import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
+import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
 
 public class ConnectionListener {
 
-    private static final String VALID_USERNAME = "^\\w{2,16}$";
-
+    private final Pattern validNamePattern = Pattern.compile("^\\w{2,16}$");
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Listener
-    public void onPlayerQuit(ClientConnectionEvent.Disconnect playerQuitEvent) {
+    public void onPlayerQuit(Disconnect playerQuitEvent) {
         Player player = playerQuitEvent.getTargetEntity();
         Account account = plugin.getDatabase().remove(player);
 
@@ -64,7 +66,7 @@ public class ConnectionListener {
     }
 
     @Listener
-    public void onPlayerJoin(ClientConnectionEvent.Join playerJoinEvent) {
+    public void onPlayerJoin(Join playerJoinEvent) {
         Player player = playerJoinEvent.getTargetEntity();
         plugin.getProtectionManager().protect(player);
 
@@ -75,18 +77,18 @@ public class ConnectionListener {
     }
 
     @Listener
-    public void onPlayerAuth(ClientConnectionEvent.Auth playerAuthEvent) {
+    public void onPlayerAuth(Auth playerAuthEvent) {
         String playerName = playerAuthEvent.getProfile().getName().get();
-        if (!playerName.matches(VALID_USERNAME)) {
-            //validate invalid characters
-            playerAuthEvent.setMessage(plugin.getConfigManager().getText().getInvalidUsername());
-            playerAuthEvent.setCancelled(true);
-        } else {
+        if (validNamePattern.matcher(playerName).matches()) {
             Optional<Player> player = Sponge.getServer().getPlayer(playerName);
             if (player.isPresent() && player.get().getName().equals(playerName)) {
                 playerAuthEvent.setMessage(plugin.getConfigManager().getText().getAlreadyOnline());
                 playerAuthEvent.setCancelled(true);
             }
+        } else {
+            //validate invalid characters
+            playerAuthEvent.setMessage(plugin.getConfigManager().getText().getInvalidUsername());
+            playerAuthEvent.setCancelled(true);
         }
     }
 
@@ -106,7 +108,7 @@ public class ConnectionListener {
                 sendNotLoggedInMessage(player);
             }
         } else {
-            long lastLogin = loadedAccount.getTimestamp().getTime();
+            long lastLogin = loadedAccount.getTimestamp();
             if (config.isIpAutoLogin() && Arrays.equals(loadedAccount.getIp(), newIp)
                     && System.currentTimeMillis() < lastLogin + 12 * 60 * 60 * 1000
                     && !player.hasPermission(plugin.getContainer().getId() + ".no_auto_login")) {

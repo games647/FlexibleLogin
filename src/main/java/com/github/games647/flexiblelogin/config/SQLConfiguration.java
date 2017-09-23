@@ -50,7 +50,7 @@ public class SQLConfiguration {
 
     @Setting(comment = "It's strongly recommended to enable SSL and setup a SSL certificate if the MySQL server isn't "
             + "running on the same machine")
-    private boolean useSSL = false;
+    private boolean useSSL;
 
     public SQLType getType() {
         return type;

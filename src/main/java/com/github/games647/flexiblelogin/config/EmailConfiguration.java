@@ -31,7 +31,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class EmailConfiguration {
 
     @Setting(comment = "Is password recovery using an email allowed")
-    private boolean enabled = false;
+    private boolean enabled;
 
     @Setting(comment = "Mail server")
     private String host = "smtp.gmail.com";

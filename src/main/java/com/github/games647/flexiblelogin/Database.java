@@ -35,6 +35,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Map;
 import java.util.UUID;
 
@@ -257,7 +258,7 @@ public class Database {
             stmt.setObject(4, account.getIp());
 
             stmt.setString(5, account.getEmail());
-            stmt.setTimestamp(6, account.getTimestamp());
+            stmt.setTimestamp(6, new Timestamp(account.getTimestamp()));
 
             stmt.execute();
 
@@ -311,7 +312,7 @@ public class Database {
             stmt.setString(2, account.getPassword());
             stmt.setObject(3, account.getIp());
 
-            stmt.setTimestamp(4, account.getTimestamp());
+            stmt.setTimestamp(4, new Timestamp(account.getTimestamp()));
             stmt.setString(5, account.getEmail());
 
             UUID uuid = account.getUuid();

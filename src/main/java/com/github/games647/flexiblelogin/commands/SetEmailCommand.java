@@ -28,6 +28,8 @@ import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.SaveTask;
 
+import java.util.regex.Pattern;
+
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandPermissionException;
@@ -39,8 +41,7 @@ import org.spongepowered.api.entity.living.player.Player;
 
 public class SetEmailCommand implements CommandExecutor {
 
-    private static final String EMAIL_REGEX = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+";
-
+    private final Pattern emailPattern = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+");
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Override
@@ -56,7 +57,7 @@ public class SetEmailCommand implements CommandExecutor {
         }
 
         String email = args.<String>getOne("email").get();
-        if (email.matches(EMAIL_REGEX)) {
+        if (emailPattern.matcher(email).matches()) {
             Account account = plugin.getDatabase().getAccountIfPresent((Player) src);
             if (account != null) {
                 account.setEmail(email);

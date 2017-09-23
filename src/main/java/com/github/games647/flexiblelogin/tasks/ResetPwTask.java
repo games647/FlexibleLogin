@@ -36,8 +36,8 @@ public abstract class ResetPwTask implements Runnable {
 
     protected final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
-    protected final CommandSource src;
-    protected final String password;
+    private final CommandSource src;
+    private final String password;
 
     public ResetPwTask(CommandSource src, String password) {
         this.src = src;
@@ -69,7 +69,7 @@ public abstract class ResetPwTask implements Runnable {
         }
     }
 
-    public abstract Optional<Player> getIfPresent();
+    protected abstract Optional<Player> getIfPresent();
 
-    public abstract Optional<Account> loadAccount();
+    protected abstract Optional<Account> loadAccount();
 }
