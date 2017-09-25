@@ -25,6 +25,6 @@ public class NameResetPwTask extends ResetPwTask {
 
     @Override
     public Optional<Account> loadAccount() {
-        return Optional.ofNullable(plugin.getDatabase().loadAccount(username));
+        return plugin.getDatabase().loadAccount(username);
     }
 }

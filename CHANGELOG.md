@@ -241,5 +241,5 @@
 ###### 0.16
 
 * Stronger TOTP code generation
-* Compile constant patterns for better perfomance
+* Compile constant patterns for better performance
 

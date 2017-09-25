@@ -54,10 +54,6 @@ public class TOTP implements Hasher {
     @Override
     public boolean checkPassword(String passwordHash, String userInput) {
         Integer code = Ints.tryParse(userInput);
-        if (code == null) {
-            return false;
-        }
-
-        return gAuth.authorize(passwordHash, code);
+        return code != null && gAuth.authorize(passwordHash, code);
     }
 }

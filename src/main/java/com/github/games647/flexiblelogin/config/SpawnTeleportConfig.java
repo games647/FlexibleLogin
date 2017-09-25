@@ -83,15 +83,12 @@ public class SpawnTeleportConfig {
         }
 
         Optional<World> optionalWorld = Sponge.getServer().getWorld(worldName);
-        if (optionalWorld.isPresent()) {
-            World world = optionalWorld.get();
+        return optionalWorld.map(world -> {
             if (defaultSpawn) {
-                return Optional.of(world.getSpawnLocation());
+                return world.getSpawnLocation();
             }
 
-            return Optional.of(world.getLocation(coordX, coordY, coordZ));
-        }
-
-        return Optional.empty();
+            return world.getLocation(coordX, coordY, coordZ);
+        });
     }
 }

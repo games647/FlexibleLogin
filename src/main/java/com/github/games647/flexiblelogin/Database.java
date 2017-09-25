@@ -37,10 +37,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.sql.SqlService;
 
@@ -91,7 +93,7 @@ public class Database {
         }
 
         String jdbcUrl = urlBuilder.toString();
-        SqlService sqlService = plugin.getGame().getServiceManager().provideUnchecked(SqlService.class);
+        SqlService sqlService = Sponge.getServiceManager().provideUnchecked(SqlService.class);
         this.dataSource = sqlService.getDataSource(jdbcUrl);
     }
 
@@ -177,7 +179,7 @@ public class Database {
         return true;
     }
 
-    public Account loadAccount(Player player) {
+    public Optional<Account> loadAccount(Player player) {
         return loadAccount(player.getUniqueId());
     }
 
@@ -185,8 +187,7 @@ public class Database {
         return cache.remove(player.getUniqueId());
     }
 
-    public Account loadAccount(UUID uuid) {
-        Account loadedAccount = null;
+    public Optional<Account> loadAccount(UUID uuid) {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + USERS_TABLE
                      + " WHERE UUID=?")) {
@@ -198,32 +199,33 @@ public class Database {
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
-                    loadedAccount = new Account(resultSet);
+                    Account loadedAccount = new Account(resultSet);
                     cache.put(uuid, loadedAccount);
+                    return Optional.of(loadedAccount);
                 }
             }
         } catch (SQLException sqlEx) {
             plugin.getLogger().error("Error loading account", sqlEx);
         }
 
-        return loadedAccount;
+        return Optional.empty();
     }
 
-    public Account loadAccount(String playerName) {
+    public Optional<Account> loadAccount(String playerName) {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + USERS_TABLE + " WHERE Username=?")) {
             stmt.setString(1, playerName);
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
-                    return new Account(resultSet);
+                    return Optional.of(new Account(resultSet));
                 }
             }
         } catch (SQLException sqlEx) {
             plugin.getLogger().error("Error loading account", sqlEx);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     public int getRegistrationsCount(byte[] ip) {

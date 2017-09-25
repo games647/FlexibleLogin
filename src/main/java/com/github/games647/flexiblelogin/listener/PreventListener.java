@@ -26,6 +26,7 @@ package com.github.games647.flexiblelogin.listener;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.PomData;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 
 import me.ryanhamshire.griefprevention.api.event.CreateClaimEvent;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
@@ -53,12 +55,12 @@ import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
-
-//import org.spongepowered.api.event.entity.DisplaceEntityEvent;
+import org.spongepowered.api.plugin.PluginContainer;
 
 public class PreventListener {
 
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    private final PluginContainer pluginContainer = Sponge.getPluginManager().fromInstance(plugin).get();
 
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onPlayerMove(MoveEntityEvent playerMoveEvent, @First Player player) {
@@ -79,14 +81,14 @@ public class PreventListener {
     public void onCommand(SendCommandEvent commandEvent, @First Player player) {
         String command = commandEvent.getCommand();
 
-        Optional<? extends CommandMapping> commandOpt = plugin.getGame().getCommandManager().get(command);
+        Optional<? extends CommandMapping> commandOpt = Sponge.getCommandManager().get(command);
         if (commandOpt.isPresent()) {
             command = commandOpt.get().getPrimaryAlias();
         }
 
         //do not blacklist our own commands
-        if (plugin.getGame().getCommandManager()
-                .getOwnedBy(plugin.getContainer())
+        if (Sponge.getCommandManager()
+                .getOwnedBy(pluginContainer)
                 .stream()
                 .map(CommandMapping::getPrimaryAlias)
                 .collect(Collectors.toSet())
@@ -180,14 +182,14 @@ public class PreventListener {
 
     private void checkLoginStatus(Cancellable event, Player player) {
         if (plugin.getConfigManager().getGeneral().isBypassPermission()
-                && player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
+                && player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
             return;
         }
 
         if (plugin.getConfigManager().getGeneral().isCommandOnlyProtection()) {
             //check if the user is already registered
             if (plugin.getDatabase().getAccountIfPresent(player) == null
-                    && player.hasPermission(plugin.getContainer().getId() + ".registerRequired")) {
+                    && player.hasPermission(PomData.ARTIFACT_ID + ".registerRequired")) {
                 event.setCancelled(true);
             }
         } else if (!plugin.getDatabase().isLoggedin(player)) {

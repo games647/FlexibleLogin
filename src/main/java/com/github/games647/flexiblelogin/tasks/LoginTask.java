@@ -26,6 +26,7 @@ package com.github.games647.flexiblelogin.tasks;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.Sponge;
@@ -46,8 +47,8 @@ public class LoginTask implements Runnable {
 
     @Override
     public void run() {
-        Account account = plugin.getDatabase().loadAccount(player);
-        if (account == null) {
+        Optional<Account> optAccount = plugin.getDatabase().loadAccount(player);
+        if (!optAccount.isPresent()) {
             player.sendMessage(plugin.getConfigManager().getText().getAccountNotFound());
             return;
         }
@@ -59,7 +60,7 @@ public class LoginTask implements Runnable {
                 String lockCommand = plugin.getConfigManager().getGeneral().getLockCommand();
                 if (!lockCommand.isEmpty()) {
                     ConsoleSource console = Sponge.getServer().getConsole();
-                    plugin.getGame().getCommandManager().process(console, lockCommand);
+                    Sponge.getCommandManager().process(console, lockCommand);
                 }
 
                 Sponge.getScheduler().createTaskBuilder()
@@ -68,6 +69,7 @@ public class LoginTask implements Runnable {
                 return;
             }
 
+            Account account = optAccount.get();
             if (account.checkPassword(plugin, userInput)) {
                 plugin.getAttempts().remove(player.getName());
                 account.setLoggedIn(true);

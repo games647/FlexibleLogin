@@ -67,7 +67,7 @@ public class ProtectionManager {
 
     private void safeTeleport(Player player, Location<World> location) {
         if (plugin.getConfigManager().getGeneral().isSafeLocation()) {
-            Sponge.getGame().getTeleportHelper().getSafeLocation(location).ifPresent(player::setLocation);
+            Sponge.getTeleportHelper().getSafeLocation(location).ifPresent(player::setLocation);
         } else {
             player.setLocation(location);
         }

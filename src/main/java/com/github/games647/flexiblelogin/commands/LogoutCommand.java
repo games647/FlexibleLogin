@@ -29,7 +29,6 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import org.apache.commons.lang3.ArrayUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
-import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -41,22 +40,19 @@ public class LogoutCommand implements CommandExecutor {
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Override
-    public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
-        if (!(source instanceof Player)) {
-            source.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
+    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+        if (!(src instanceof Player)) {
+            src.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
             return CommandResult.success();
         }
 
-        if (plugin.getConfigManager().getGeneral().isPlayerPermissions()
-                && !source.hasPermission(plugin.getContainer().getId() + ".command.logout")) {
-            throw new CommandPermissionException();
-        }
+        plugin.checkPlayerPermission(src, "logout");
 
-        Account account = plugin.getDatabase().getAccountIfPresent((Player) source);
+        Account account = plugin.getDatabase().getAccountIfPresent((Player) src);
         if (account == null || !account.isLoggedIn()) {
-            source.sendMessage(plugin.getConfigManager().getText().getNotLoggedIn());
+            src.sendMessage(plugin.getConfigManager().getText().getNotLoggedIn());
         } else {
-            source.sendMessage(plugin.getConfigManager().getText().getSuccessfullyLoggedOut());
+            src.sendMessage(plugin.getConfigManager().getText().getSuccessfullyLoggedOut());
             account.setLoggedIn(false);
             account.setIp(ArrayUtils.EMPTY_BYTE_ARRAY);
 

@@ -1,6 +1,6 @@
 package com.github.games647.flexiblelogin;
 
-class PomData {
+public class PomData {
 
     public static final String ARTIFACT_ID = "${project.artifactId}";
     public static final String NAME = "${project.name}";

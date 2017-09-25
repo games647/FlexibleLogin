@@ -45,32 +45,32 @@ import com.google.inject.Inject;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import org.slf4j.Logger;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
+import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
 import static org.spongepowered.api.command.args.GenericArguments.string;
 
-@Plugin(id = com.github.games647.flexiblelogin.PomData.ARTIFACT_ID
-        , name = com.github.games647.flexiblelogin.PomData.NAME
-        , version = com.github.games647.flexiblelogin.PomData.VERSION
-        , url = com.github.games647.flexiblelogin.PomData.URL
-        , description = com.github.games647.flexiblelogin.PomData.DESCRIPTION)
+@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION
+        , url = PomData.URL, description = PomData.DESCRIPTION)
 public class FlexibleLogin {
 
     private static FlexibleLogin instance;
@@ -79,48 +79,46 @@ public class FlexibleLogin {
         return instance;
     }
 
-    private final PluginContainer pluginContainer;
     private final Logger logger;
-    private final Game game;
+
+    private final Pattern validNamePattern = Pattern.compile("^\\w{2,16}$");
+    private final Pattern uuidPattern = Pattern
+            .compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}");
 
     @Inject
-    @DefaultConfig(sharedRoot = false)
+    @ConfigDir(sharedRoot = false)
     //We will place more than one config there (i.e. H2/SQLite database)
-    private Path defaultConfigFile;
+    private Path dataFolder;
 
     @Inject
     @DefaultConfig(sharedRoot = false)
     private ConfigurationLoader<CommentedConfigurationNode> configManager;
 
+    private final ProtectionManager protectionManager = new ProtectionManager();
     private final Map<String, Integer> attempts = Maps.newConcurrentMap();
 
     private Settings configuration;
     private Database database;
-    private final ProtectionManager protectionManager;
 
     private Hasher hasher;
 
     @Inject
-    public FlexibleLogin(Logger logger, PluginContainer pluginContainer, Game game) {
+    public FlexibleLogin(Logger logger) {
         instance = this;
 
         this.logger = logger;
-        this.pluginContainer = pluginContainer;
-        this.game = game;
-
-        this.protectionManager = new ProtectionManager();
     }
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
-        configuration = new Settings(configManager, defaultConfigFile);
+        configuration = new Settings(dataFolder);
         init();
     }
 
     @Listener //Commands register + events
     public void onInit(GameInitializationEvent initEvent) {
         //register commands
-        CommandManager commandDispatcher = game.getCommandManager();
+        CommandManager commandDispatcher = Sponge.getCommandManager();
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new LoginCommand())
@@ -157,7 +155,7 @@ public class FlexibleLogin {
 
         //admin commands
         commandDispatcher.register(this, CommandSpec.builder()
-                .permission(pluginContainer.getName() + ".admin")
+                .permission(PomData.NAME + ".admin")
                 .child(CommandSpec.builder()
                         .executor(new ReloadCommand())
                         .build(), "reload", "rl")
@@ -177,11 +175,11 @@ public class FlexibleLogin {
                                 onlyOne(
                                         string(Text.of("account"))), string(Text.of("password")))
                         .build(), "resetpw", "resetpassword")
-                .build(), pluginContainer.getName());
+                .build(), PomData.NAME);
 
         //register events
-        game.getEventManager().registerListeners(this, new ConnectionListener());
-        game.getEventManager().registerListeners(this, new PreventListener());
+        Sponge.getEventManager().registerListeners(this, new ConnectionListener());
+        Sponge.getEventManager().registerListeners(this, new PreventListener());
     }
 
     @Listener
@@ -189,19 +187,19 @@ public class FlexibleLogin {
         //run this task sync in order let it finish before the process ends
         database.close();
 
-        game.getServer().getOnlinePlayers().forEach(protectionManager::unprotect);
+        Sponge.getServer().getOnlinePlayers().forEach(protectionManager::unprotect);
     }
 
     public void onReload() {
         //run this task sync in order let it finish before the process ends
         database.close();
 
-        game.getServer().getOnlinePlayers().forEach(protectionManager::unprotect);
+        Sponge.getServer().getOnlinePlayers().forEach(protectionManager::unprotect);
 
         init();
 
-        game.getServer().getOnlinePlayers().forEach(protectionManager::protect);
-        game.getServer().getOnlinePlayers().forEach(database::loadAccount);
+        Sponge.getServer().getOnlinePlayers().forEach(protectionManager::protect);
+        Sponge.getServer().getOnlinePlayers().forEach(database::loadAccount);
     }
 
     private void init() {
@@ -211,7 +209,7 @@ public class FlexibleLogin {
             database.createTable();
         } catch (SQLException sqlEx) {
             logger.error("Cannot connect to auth storage", sqlEx);
-            game.getServer().shutdown();
+            Sponge.getServer().shutdown();
         }
 
         if ("totp".equalsIgnoreCase(configuration.getGeneral().getHashAlgo())) {
@@ -222,20 +220,27 @@ public class FlexibleLogin {
         }
     }
 
+    public void checkPlayerPermission(Subject player, String key) throws CommandPermissionException {
+        if (configuration.getGeneral().isPlayerPermissions()
+                && !player.hasPermission(PomData.ARTIFACT_ID + ".command." + key)) {
+            throw new CommandPermissionException();
+        }
+    }
+
+    public boolean isValidName(String input) {
+        return validNamePattern.matcher(input).matches();
+    }
+
+    public boolean isValidUUID(String input) {
+        return uuidPattern.matcher(input).matches();
+    }
+
     public Settings getConfigManager() {
         return configuration;
     }
 
-    public PluginContainer getContainer() {
-        return pluginContainer;
-    }
-
     public Logger getLogger() {
         return logger;
-    }
-
-    public Game getGame() {
-        return game;
     }
 
     public Database getDatabase() {

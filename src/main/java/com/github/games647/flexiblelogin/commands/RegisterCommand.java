@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
-import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -44,23 +43,20 @@ public class RegisterCommand implements CommandExecutor {
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Override
-    public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
-        if (!(source instanceof Player)) {
-            source.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
+    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+        if (!(src instanceof Player)) {
+            src.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
             return CommandResult.success();
         }
 
-        if (plugin.getConfigManager().getGeneral().isPlayerPermissions()
-                && !source.hasPermission(plugin.getContainer().getId() + ".command.register")) {
-            throw new CommandPermissionException();
-        }
+        plugin.checkPlayerPermission(src, "register");
 
         //If the server is using TOTP, no password is required
         if (!args.hasAny("password")) {
             if ("totp".equals(plugin.getConfigManager().getGeneral().getHashAlgo())) {
-                startTask(source, "");
+                startTask(src, "");
             } else {
-                source.sendMessage(plugin.getConfigManager().getText().getTotpNotEnabled());
+                src.sendMessage(plugin.getConfigManager().getText().getTotpNotEnabled());
             }
 
             return CommandResult.success();
@@ -72,12 +68,12 @@ public class RegisterCommand implements CommandExecutor {
         if (password.equals(indexPasswords.get(1))) {
             if (password.length() >= plugin.getConfigManager().getGeneral().getMinPasswordLength()) {
                 //Check if the first two passwords are equal to prevent typos
-                startTask(source, password);
+                startTask(src, password);
             } else {
-                source.sendMessage(plugin.getConfigManager().getText().getTooShortPassword());
+                src.sendMessage(plugin.getConfigManager().getText().getTooShortPassword());
             }
         } else {
-            source.sendMessage(plugin.getConfigManager().getText().getUnequalPasswords());
+            src.sendMessage(plugin.getConfigManager().getText().getUnequalPasswords());
         }
 
         return CommandResult.success();

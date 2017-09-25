@@ -27,6 +27,7 @@ package com.github.games647.flexiblelogin.tasks;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.spongepowered.api.command.CommandSource;
@@ -47,12 +48,14 @@ public class ForceRegTask implements Runnable {
 
     @Override
     public void run() {
-        Account account = plugin.getDatabase().loadAccount(accountIndentifer);
+        Optional<Account> optAccount = plugin.getDatabase().loadAccount(accountIndentifer);
 
-        if (account == null) {
+        if (optAccount.isPresent()) {
+            src.sendMessage(plugin.getConfigManager().getText().getAccountAlreadyExists());
+        } else {
             try {
                 String hash = plugin.getHasher().hash(password);
-                account = new Account(accountIndentifer, "", hash, new byte[]{});
+                Account account = new Account(accountIndentifer, "", hash, new byte[]{});
                 plugin.getDatabase().createAccount(account, false);
 
                 src.sendMessage(plugin.getConfigManager().getText().getForceRegisterSuccess());
@@ -60,8 +63,6 @@ public class ForceRegTask implements Runnable {
                 plugin.getLogger().error("Error creating hash", ex);
                 src.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
             }
-        } else {
-            src.sendMessage(plugin.getConfigManager().getText().getAccountAlreadyExists());
         }
     }
 }

@@ -38,17 +38,15 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 public class Settings {
 
-    private final ConfigurationLoader<CommentedConfigurationNode> configManager;
-    private final Path defaultConfigFile;
+    private final Path dataFolder;
 
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     private ObjectMapper<Config>.BoundInstance configMapper;
     private ObjectMapper<TextConfig>.BoundInstance textMapper;
 
-    public Settings(ConfigurationLoader<CommentedConfigurationNode> configManager, Path defaultConfigFile) {
-        this.configManager = configManager;
-        this.defaultConfigFile = defaultConfigFile;
+    public Settings(Path dataFolder) {
+        this.dataFolder = dataFolder;
 
         try {
             configMapper = ObjectMapper.forClass(Config.class).bindToNew();
@@ -59,24 +57,20 @@ public class Settings {
     }
 
     public void load() {
-        if (Files.notExists(defaultConfigFile)) {
+        Path configFile = dataFolder.resolve("config.conf");
+        if (Files.notExists(configFile)) {
             try {
-                if (Files.notExists(defaultConfigFile.getParent())) {
-                    Files.createDirectory(defaultConfigFile.getParent());
-                }
+                Files.createDirectories(dataFolder);
 
-                Files.createFile(defaultConfigFile);
+                loadMapper(configMapper, HoconConfigurationLoader.builder().setPath(configFile).build());
+
+                Path textFile = getConfigDir().resolve("messages.conf");
+                loadMapper(textMapper, HoconConfigurationLoader.builder().setPath(textFile).build());
             } catch (IOException ioExc) {
                 plugin.getLogger().error("Error creating a new config file", ioExc);
                 return;
             }
         }
-
-        loadMapper(configMapper, configManager);
-
-        Path textFile = getConfigDir().resolve("messages.conf");
-        HoconConfigurationLoader textLoader = HoconConfigurationLoader.builder().setPath(textFile).build();
-        loadMapper(textMapper, textLoader);
     }
 
     private void loadMapper(ObjectMapper<?>.BoundInstance mapper
@@ -109,6 +103,6 @@ public class Settings {
     }
 
     public Path getConfigDir() {
-        return defaultConfigFile.getParent();
+        return dataFolder;
     }
 }

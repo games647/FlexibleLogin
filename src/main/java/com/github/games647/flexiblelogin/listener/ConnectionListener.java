@@ -25,6 +25,7 @@ package com.github.games647.flexiblelogin.listener;
 
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.PomData;
 import com.github.games647.flexiblelogin.config.Config;
 import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
 
@@ -36,9 +37,11 @@ import java.util.regex.Pattern;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Auth;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
+import org.spongepowered.api.profile.GameProfile;
 
 public class ConnectionListener {
 
@@ -46,8 +49,7 @@ public class ConnectionListener {
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Listener
-    public void onPlayerQuit(Disconnect playerQuitEvent) {
-        Player player = playerQuitEvent.getTargetEntity();
+    public void onPlayerQuit(Disconnect playerQuitEvent, @First Player player) {
         Account account = plugin.getDatabase().remove(player);
 
         plugin.getProtectionManager().unprotect(player);
@@ -66,8 +68,7 @@ public class ConnectionListener {
     }
 
     @Listener
-    public void onPlayerJoin(Join playerJoinEvent) {
-        Player player = playerJoinEvent.getTargetEntity();
+    public void onPlayerJoin(Join playerJoinEvent, @First Player player) {
         plugin.getProtectionManager().protect(player);
 
         Sponge.getScheduler().createTaskBuilder()
@@ -77,14 +78,16 @@ public class ConnectionListener {
     }
 
     @Listener
-    public void onPlayerAuth(Auth playerAuthEvent) {
-        String playerName = playerAuthEvent.getProfile().getName().get();
+    public void onPlayerAuth(Auth playerAuthEvent, @First GameProfile gameProfile) {
+        String playerName = gameProfile.getName().get();
         if (validNamePattern.matcher(playerName).matches()) {
-            Optional<Player> player = Sponge.getServer().getPlayer(playerName);
-            if (player.isPresent() && player.get().getName().equals(playerName)) {
-                playerAuthEvent.setMessage(plugin.getConfigManager().getText().getAlreadyOnline());
-                playerAuthEvent.setCancelled(true);
-            }
+            Sponge.getServer().getPlayer(playerName)
+                    .map(Player::getName)
+                    .filter(name -> name.equals(playerName))
+                    .ifPresent(name -> {
+                        playerAuthEvent.setMessage(plugin.getConfigManager().getText().getAlreadyOnline());
+                        playerAuthEvent.setCancelled(true);
+                    });
         } else {
             //validate invalid characters
             playerAuthEvent.setMessage(plugin.getConfigManager().getText().getInvalidUsername());
@@ -93,30 +96,32 @@ public class ConnectionListener {
     }
 
     private void onAccountLoaded(Player player) {
-        Account loadedAccount = plugin.getDatabase().loadAccount(player);
+        Optional<Account> optAccount = plugin.getDatabase().loadAccount(player);
         byte[] newIp = player.getConnection().getAddress().getAddress().getAddress();
 
         Config config = plugin.getConfigManager().getGeneral();
-        if (loadedAccount == null) {
+        if (optAccount.isPresent()) {
+            Account account = optAccount.get();
+
+            long lastLogin = account.getTimestamp();
+            if (config.isIpAutoLogin() && Arrays.equals(account.getIp(), newIp)
+                    && System.currentTimeMillis() < lastLogin + 12 * 60 * 60 * 1000
+                    && !player.hasPermission(PomData.ARTIFACT_ID + ".no_auto_login")) {
+                //user will be auto logged in
+                player.sendMessage(plugin.getConfigManager().getText().getIpAutoLogin());
+                account.setLoggedIn(true);
+            } else {
+                //user has an account but isn't logged in
+                sendNotLoggedInMessage(player);
+            }
+        } else {
             if (config.isCommandOnlyProtection()) {
-                if (player.hasPermission(plugin.getContainer().getId() + ".registerRequired")) {
+                if (player.hasPermission(PomData.ARTIFACT_ID + ".registerRequired")) {
                     //command only protection but have to register
                     sendNotLoggedInMessage(player);
                 }
             } else {
                 //no account
-                sendNotLoggedInMessage(player);
-            }
-        } else {
-            long lastLogin = loadedAccount.getTimestamp();
-            if (config.isIpAutoLogin() && Arrays.equals(loadedAccount.getIp(), newIp)
-                    && System.currentTimeMillis() < lastLogin + 12 * 60 * 60 * 1000
-                    && !player.hasPermission(plugin.getContainer().getId() + ".no_auto_login")) {
-                //user will be auto logged in
-                player.sendMessage(plugin.getConfigManager().getText().getIpAutoLogin());
-                loadedAccount.setLoggedIn(true);
-            } else {
-                //user has an account but isn't logged in
                 sendNotLoggedInMessage(player);
             }
         }
@@ -127,7 +132,7 @@ public class ConnectionListener {
     private void sendNotLoggedInMessage(Player player) {
         //send the message if the player only needs to login
         if (!plugin.getConfigManager().getGeneral().isBypassPermission()
-                || !player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
+                || !player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
             Sponge.getScheduler().createTaskBuilder()
                     .execute(new LoginMessageTask(player))
                     .interval(plugin.getConfigManager().getGeneral().getMessageInterval(), TimeUnit.SECONDS)
@@ -138,7 +143,7 @@ public class ConnectionListener {
     private void scheduleTimeoutTask(Player player) {
         Config config = plugin.getConfigManager().getGeneral();
         if (plugin.getConfigManager().getGeneral().isBypassPermission()
-                && player.hasPermission(plugin.getContainer().getId() + ".bypass")) {
+                && player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
             return;
         }
 

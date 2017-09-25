@@ -26,6 +26,6 @@ public class UUIDResetPwTask extends ResetPwTask {
 
     @Override
     public Optional<Account> loadAccount() {
-        return Optional.ofNullable(plugin.getDatabase().loadAccount(uuid));
+        return plugin.getDatabase().loadAccount(uuid);
     }
 }

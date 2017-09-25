@@ -91,9 +91,11 @@ public class RegisterTask implements Runnable {
 
     private void sendTotpHint(String secretCode) {
         //I assume this thread-safe, because PlayerChat is also in an async task
-        String host = Sponge.getServer().getBoundAddress().get().getAddress().getCanonicalHostName();
+        String hostName = Sponge.getServer().getBoundAddress()
+                .map(inetSocketAddress -> inetSocketAddress.getAddress().getCanonicalHostName())
+                .orElse("Minecraft Server");
         try {
-            URL barcodeUrl = new URL(TOTP.getQRBarcodeURL(player.getName(), host, secretCode));
+            URL barcodeUrl = new URL(TOTP.getQRBarcodeURL(player.getName(), hostName, secretCode));
             player.sendMessage(plugin.getConfigManager().getText().getKeyGenerated());
             player.sendMessage(Text.builder(secretCode)
                     .color(TextColors.GOLD)

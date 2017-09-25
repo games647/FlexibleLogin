@@ -15,6 +15,10 @@ Tested against:
 
     Minecraft (Client): 1.12.1
 
+### Requirements
+
+* Sponge > 5.1+, 6.0 or 7.0
+
 ### Commands
 
     /register <password> <password> - Registers using a specific password

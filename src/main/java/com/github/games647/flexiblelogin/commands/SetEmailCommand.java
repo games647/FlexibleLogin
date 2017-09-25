@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
-import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -51,10 +50,7 @@ public class SetEmailCommand implements CommandExecutor {
             return CommandResult.empty();
         }
 
-        if (plugin.getConfigManager().getGeneral().isPlayerPermissions()
-                && !src.hasPermission(plugin.getContainer().getId() + ".command.email")) {
-            throw new CommandPermissionException();
-        }
+        plugin.checkPlayerPermission(src, "email");
 
         String email = args.<String>getOne("email").get();
         if (emailPattern.matcher(email).matches()) {

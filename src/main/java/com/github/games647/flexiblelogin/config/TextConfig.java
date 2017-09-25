@@ -43,58 +43,58 @@ public class TextConfig {
             + "https://github.com/games647/FlexibleLogin/wiki"
             + '\n'
             + "When a non-player (i.e. Console, Command Block) tries to do a player only action.")
-    private String playersOnly = "§4Only players can do this!";
+    private String playersOnly = "&4Only players can do this!";
 
     @Setting(comment = "When the account does not exist on the account database.")
-    private String playersAccountNotLoaded = "§4Your account cannot be loaded.";
+    private String playersAccountNotLoaded = "&4Your account cannot be loaded.";
 
     @Setting(comment = "If the player is logged in, it is then pointless to use the forgot password command")
-    private String playersAccountAlreadyLoggedIn = "§4You are already logged in!";
+    private String playersAccountAlreadyLoggedIn = "&4You are already logged in!";
 
     @Setting(comment = "When the player did not or forgot to submit an email address used to recover a password.")
-    private String uncommittedEmailAddress = "§4You did not submit an email address!";
+    private String uncommittedEmailAddress = "&4You did not submit an email address!";
 
     @Setting(comment = "When an unexpected error occurs. (Should not happen)")
-    private String errorExecutingCommand = "§4Error executing command, see console.";
+    private String errorExecutingCommand = "&4Error executing command, see console.";
 
     @Setting(comment = "Whe the player successfully logs out of his/her account.")
-    private String loggedOut = "§2Logged out.";
+    private String loggedOut = "&2Logged out.";
 
     @Setting(comment = "When the player is not logged in of his/her account.")
-    private String notLoggedIn = "§4Not logged in. Type /login to login in";
+    private String notLoggedIn = "&4Not logged in. Type /login to login in";
 
     @Setting(comment = "When the player is not logged in of his/her account.")
-    private String notRegistered = "§4Not registered. Type /register to register";
+    private String notRegistered = "&4Not registered. Type /register to register";
 
     @Setting(comment = "When totp is not enabled.")
-    private String totpNotEnabled = "§4Totp is not enabled. You have to enter two passwords.";
+    private String totpNotEnabled = "&4Totp is not enabled. You have to enter two passwords.";
 
     @Setting(comment = "When the two passwords typed do not match each other.")
-    private String unevenPasswords = "§4The passwords are not equal.";
+    private String unevenPasswords = "&4The passwords are not equal.";
 
     @Setting(comment = "When the player successfully used the set email command and set his/her email.")
-    private String emailSet = "§2Your email was set.";
+    private String emailSet = "&2Your email was set.";
 
     @Setting(comment = "When the player enters an email that does not exist.")
-    private String notEmail = "§4You have entered in an invalid email!";
+    private String notEmail = "&4You have entered in an invalid email!";
 
     @Setting(comment = "When the unregister process failed.")
-    private String unregisterFailed = "§4Your request is neither a player name or uuid.";
+    private String unregisterFailed = "&4Your request is neither a player name or uuid.";
 
     @Setting(comment = "When a player successfully logs in.")
-    private String loggedIn = "§2Logged in";
+    private String loggedIn = "&2Logged in";
 
     @Setting(comment = "When a player enters an incorrect password.")
-    private String incorrectPassword = "§4Incorrect password";
+    private String incorrectPassword = "&4Incorrect password";
 
     @Setting(comment = "When the recovery email was sent!")
-    private String mailSent = "§2Email sent";
+    private String mailSent = "&2Email sent";
 
     @Setting(comment = "When a player's account does not exist.")
-    private String accountNotFound = "§4Account not found";
+    private String accountNotFound = "&4Account not found";
 
     @Setting(comment = "When a player joined with a non Mojang valid username")
-    private String invalidUsername = "§4Invalid username - Choose characters a-z,A-Z,0-9 and a length between 2 and 16";
+    private String invalidUsername = "&4Invalid username - Choose characters a-z,A-Z,0-9 and a length between 2 and 16";
 
     @Setting(comment = "When an account was successfully deleted")
     private TextTemplate accountDelete = of(
@@ -102,52 +102,52 @@ public class TextConfig {
     );
 
     @Setting(comment = "When an account already exists, and therefore cannot be created.")
-    private String accountAlreadyExists = "§4Account already exists";
+    private String accountAlreadyExists = "&4Account already exists";
 
     @Setting(comment = "When the player successfully created his/her account.")
-    private String accountCreated = "§2Account created";
+    private String accountCreated = "&2Account created";
 
     @Setting(comment = "When a secret-key is created (header).")
-    private String keyGenerated = "§2SecretKey generated: ";
+    private String keyGenerated = "&2SecretKey generated: ";
 
     @Setting(comment = "When a player registered using TOTP and the code can be scanned by clicking on it")
-    private String scanQr = "§6Click here to scan the QR-Code";
+    private String scanQr = "&6Click here to scan the QR-Code";
 
     @Setting(comment = "When the user tries to execute a protected command if command only protection is enabled")
-    private String protectedCommand = "§4This command is protected. Please login";
+    private String protectedCommand = "&4This command is protected. Please login";
 
     @Setting(comment = "When the player is auto logged in by using the same ip as the last login")
-    private String ipAutoLogin = "§2Auto logged in";
+    private String ipAutoLogin = "&2Auto logged in";
 
     @Setting(comment = "Kick message if the player doesn't logged during the configured time out seconds")
-    private String timeoutReason = "§4Login timeout";
+    private String timeoutReason = "&4Login timeout";
 
     @Setting(comment = "Message if the player changed his account password successfully")
-    private String changePassword = "§2Successful changed password";
+    private String changePassword = "&2Successful changed password";
 
     @Setting(comment = "Message if the player has to register with a longer password")
-    private String tooShortPassword = "§2Your password is too short";
+    private String tooShortPassword = "&2Your password is too short";
 
     @Setting(comment = "User reached max attempts")
-    private String maxAttempts = "§2You entered too many times a wrong password";
+    private String maxAttempts = "&2You entered too many times a wrong password";
 
     @Setting(comment = "User reached the max ip registrations")
-    private String maxIpReg = "§2You reached the max amount of registrations for this ip-address";
+    private String maxIpReg = "&2You reached the max amount of registrations for this ip-address";
 
     @Setting(comment = "Admin reloaded the plugin")
-    private String onReload = "§4Successful reloaded plugin";
+    private String onReload = "&4Successful reloaded plugin";
 
     @Setting(comment = "Force register failed because the player is online")
-    private String forceRegisterOnline = "§2Cannot force register player. That player is online";
+    private String forceRegisterOnline = "&2Cannot force register player. That player is online";
 
     @Setting(comment = "Successfull force registered an account")
-    private String forceRegisterSuccess = "§4Force register success";
+    private String forceRegisterSuccess = "&4Force register success";
 
     @Setting(comment = "Another player with the same name tried to join the server while that player is still online")
-    private String alreadyOnline = "§2You are already online";
+    private String alreadyOnline = "&2You are already online";
 
     @Setting(comment = "If email recovery is not enabled")
-    private String emailNotEnabled = "§2Email recovery is not enabled.";
+    private String emailNotEnabled = "&2Email recovery is not enabled.";
 
     public Text getAccountAlreadyExists() {
         return fromString(accountAlreadyExists);

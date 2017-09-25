@@ -29,7 +29,6 @@ import com.github.games647.flexiblelogin.tasks.LoginTask;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
-import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -41,20 +40,17 @@ public class LoginCommand implements CommandExecutor {
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     @Override
-    public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
-        if (!(source instanceof Player)) {
-            source.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
+    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+        if (!(src instanceof Player)) {
+            src.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
             return CommandResult.empty();
         }
 
-        if (plugin.getConfigManager().getGeneral().isPlayerPermissions()
-                && !source.hasPermission(plugin.getContainer().getId() + ".command.login")) {
-            throw new CommandPermissionException();
-        }
+        plugin.checkPlayerPermission(src, "login");
 
-        Account account = plugin.getDatabase().getAccountIfPresent((Player) source);
+        Account account = plugin.getDatabase().getAccountIfPresent((Player) src);
         if (account != null && account.isLoggedIn()) {
-            source.sendMessage(plugin.getConfigManager().getText().getAlreadyLoggedIn());
+            src.sendMessage(plugin.getConfigManager().getText().getAlreadyLoggedIn());
         }
 
         //the arg isn't optional. We can be sure there is value
@@ -63,7 +59,7 @@ public class LoginCommand implements CommandExecutor {
         Sponge.getScheduler().createTaskBuilder()
                 //we are executing a SQL Query which is blocking
                 .async()
-                .execute(new LoginTask((Player) source, password))
+                .execute(new LoginTask((Player) src, password))
                 .name("Login Query")
                 .submit(plugin);
 
