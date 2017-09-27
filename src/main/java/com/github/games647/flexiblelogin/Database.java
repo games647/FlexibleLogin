@@ -24,7 +24,6 @@
 package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.config.SQLConfiguration;
-import com.github.games647.flexiblelogin.config.SQLType;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Longs;
@@ -51,21 +50,11 @@ public class Database {
     public static final String USERS_TABLE = "flexiblelogin_users";
 
     private final FlexibleLogin plugin = FlexibleLogin.getInstance();
-    //this cache is thread-safe
     private final Map<UUID, Account> cache = Maps.newConcurrentMap();
-
     private final DataSource dataSource;
 
     public Database() throws SQLException {
         SQLConfiguration sqlConfig = plugin.getConfigManager().getGeneral().getSQL();
-
-        //flat file drivers throw exception if you try to connect with a account
-        String password = "";
-        String username = "";
-        if (sqlConfig.getType() == SQLType.MYSQL) {
-            username = sqlConfig.getUsername();
-            password = sqlConfig.getPassword();
-        }
 
         String storagePath = sqlConfig.getPath()
                 .replace("%DIR%", plugin.getConfigManager().getConfigDir().normalize().toString());
@@ -78,13 +67,18 @@ public class Database {
                 break;
             case MYSQL:
                 //jdbc:<engine>://[<username>[:<password>]@]<host>/<database> - copied from sponge doc
-                urlBuilder.append(username).append(':').append(password).append('@')
+                urlBuilder.append(sqlConfig.getUsername())
+                        .append(':')
+                        .append(sqlConfig.getPassword())
+                        .append('@')
                         .append(sqlConfig.getPath())
                         .append(':')
                         .append(sqlConfig.getPort())
                         .append('/')
                         .append(sqlConfig.getDatabase())
-                        .append("?useSSL").append('=').append(sqlConfig.isUseSSL());
+                        .append("?useSSL")
+                        .append('=')
+                        .append(sqlConfig.isUseSSL());
                 break;
             case H2:
             default:
@@ -93,8 +87,7 @@ public class Database {
         }
 
         String jdbcUrl = urlBuilder.toString();
-        SqlService sqlService = Sponge.getServiceManager().provideUnchecked(SqlService.class);
-        this.dataSource = sqlService.getDataSource(jdbcUrl);
+        this.dataSource = Sponge.getServiceManager().provideUnchecked(SqlService.class).getDataSource(jdbcUrl);
     }
 
     public DataSource getDataSource() {
