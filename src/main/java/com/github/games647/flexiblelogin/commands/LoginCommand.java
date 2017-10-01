@@ -27,13 +27,13 @@ import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.LoginTask;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 
 public class LoginCommand implements CommandExecutor {
 
@@ -56,7 +56,7 @@ public class LoginCommand implements CommandExecutor {
         //the arg isn't optional. We can be sure there is value
         String password = args.<String>getOne("password").get();
 
-        Sponge.getScheduler().createTaskBuilder()
+        Task.builder()
                 //we are executing a SQL Query which is blocking
                 .async()
                 .execute(new LoginTask((Player) src, password))

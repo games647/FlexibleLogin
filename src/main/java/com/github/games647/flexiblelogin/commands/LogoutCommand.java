@@ -27,13 +27,13 @@ import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 
 public class LogoutCommand implements CommandExecutor {
 
@@ -56,7 +56,7 @@ public class LogoutCommand implements CommandExecutor {
             account.setLoggedIn(false);
             account.setIp(ArrayUtils.EMPTY_BYTE_ARRAY);
 
-            Sponge.getScheduler().createTaskBuilder()
+            Task.builder()
                     .async()
                     .execute(() -> {
                         //flushes the ip update

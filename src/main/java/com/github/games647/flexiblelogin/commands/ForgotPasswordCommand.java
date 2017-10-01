@@ -46,6 +46,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 
 public class ForgotPasswordCommand implements CommandExecutor {
 
@@ -109,14 +110,14 @@ public class ForgotPasswordCommand implements CommandExecutor {
             message.setContent(textContent, "text/html");
 
             //send email
-            Sponge.getScheduler().createTaskBuilder()
+            Task.builder()
                     .async()
                     .execute(new SendEmailTask(player, session, message))
                     .submit(plugin);
 
             //set new password here if the email sending fails fails we have still the old password
             account.setPasswordHash(plugin.getHasher().hash(newPassword));
-            Sponge.getScheduler().createTaskBuilder()
+            Task.builder()
                     .async()
                     .execute(new SaveTask(account))
                     .submit(plugin);

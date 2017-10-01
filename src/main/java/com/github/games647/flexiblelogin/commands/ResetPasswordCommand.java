@@ -31,12 +31,12 @@ import com.github.games647.flexiblelogin.tasks.UUIDResetPwTask;
 
 import java.util.UUID;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.scheduler.Task;
 
 public class ResetPasswordCommand implements CommandExecutor {
 
@@ -58,7 +58,7 @@ public class ResetPasswordCommand implements CommandExecutor {
         }
 
         //check if the account is a valid player name
-        Sponge.getScheduler().createTaskBuilder()
+        Task.builder()
                 //Async as it could run a SQL query
                 .async()
                 .execute(resetTask)

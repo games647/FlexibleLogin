@@ -24,11 +24,13 @@
 package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.config.SQLConfiguration;
+import com.github.games647.flexiblelogin.config.SQLType;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Longs;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,8 +58,8 @@ public class Database {
     public Database() throws SQLException {
         SQLConfiguration sqlConfig = plugin.getConfigManager().getGeneral().getSQL();
 
-        String storagePath = sqlConfig.getPath()
-                .replace("%DIR%", plugin.getConfigManager().getConfigDir().normalize().toString());
+        Path configDir = plugin.getConfigManager().getConfigDir();
+        String storagePath = sqlConfig.getPath().replace("%DIR%", configDir.normalize().toString());
 
         StringBuilder urlBuilder = new StringBuilder("jdbc:")
                 .append(sqlConfig.getType().name().toLowerCase()).append("://");
@@ -90,10 +92,6 @@ public class Database {
         this.dataSource = Sponge.getServiceManager().provideUnchecked(SqlService.class).getDataSource(jdbcUrl);
     }
 
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
     public Account getAccountIfPresent(Player player) {
         return cache.get(player.getUniqueId());
     }
@@ -104,9 +102,24 @@ public class Database {
     }
 
     public void createTable() {
-        try {
-            DatabaseMigration migration = new DatabaseMigration(plugin);
-            migration.createTable();
+        try (Connection con = dataSource.getConnection();
+             Statement statement = con.createStatement()) {
+            String createTable = "CREATE TABLE IF NOT EXISTS " + USERS_TABLE + " ( "
+                    + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
+                    + "`UUID` BINARY(16) NOT NULL, "
+                    + "`Username` VARCHAR, "
+                    + "`Password` VARCHAR(64) NOT NULL, "
+                    + "`IP` BINARY(32) NOT NULL, "
+                    + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + "`Email` VARCHAR(64) DEFAULT NULL, "
+                    + "`LoggedIn` BOOLEAN DEFAULT 0, "
+                    + "UNIQUE (`UUID`) "
+                    + ')';
+            if (plugin.getConfigManager().getGeneral().getSQL().getType() == SQLType.SQLITE) {
+                createTable = createTable.replace("AUTO_INCREMENT", "");
+            }
+
+            statement.execute(createTable);
         } catch (SQLException sqlEx) {
             plugin.getLogger().error("Error creating database table", sqlEx);
         }
@@ -253,7 +266,7 @@ public class Database {
             stmt.setObject(4, account.getIp());
 
             stmt.setString(5, account.getEmail());
-            stmt.setTimestamp(6, new Timestamp(account.getTimestamp()));
+            stmt.setTimestamp(6, Timestamp.from(account.getLastLogin()));
 
             stmt.execute();
 
@@ -307,7 +320,7 @@ public class Database {
             stmt.setString(2, account.getPassword());
             stmt.setObject(3, account.getIp());
 
-            stmt.setTimestamp(4, new Timestamp(account.getTimestamp()));
+            stmt.setTimestamp(4, Timestamp.from(account.getLastLogin()));
             stmt.setString(5, account.getEmail());
 
             UUID uuid = account.getUuid();

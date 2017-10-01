@@ -37,6 +37,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 
 public class ForceRegisterCommand implements CommandExecutor {
 
@@ -65,7 +66,7 @@ public class ForceRegisterCommand implements CommandExecutor {
         } else {
             UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + accountId).getBytes(Charsets.UTF_8));
 
-            Sponge.getScheduler().createTaskBuilder()
+            Task.builder()
                     //Async as it could run a SQL query
                     .async()
                     .execute(new ForceRegTask(src, offlineUUID, password))
@@ -80,7 +81,7 @@ public class ForceRegisterCommand implements CommandExecutor {
         if (player.isPresent()) {
             src.sendMessage(plugin.getConfigManager().getText().getForceRegisterOnline());
         } else {
-            Sponge.getScheduler().createTaskBuilder()
+            Task.builder()
                     //Async as it could run a SQL query
                     .async()
                     .execute(new ForceRegTask(src, uuid, password))

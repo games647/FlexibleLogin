@@ -29,6 +29,8 @@ import com.github.games647.flexiblelogin.PomData;
 import com.github.games647.flexiblelogin.config.Config;
 import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -42,6 +44,7 @@ import org.spongepowered.api.event.network.ClientConnectionEvent.Auth;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
 import org.spongepowered.api.profile.GameProfile;
+import org.spongepowered.api.scheduler.Task;
 
 public class ConnectionListener {
 
@@ -60,7 +63,7 @@ public class ConnectionListener {
             account.setLoggedIn(false);
 
             if (plugin.getConfigManager().getGeneral().isUpdateLoginStatus()) {
-                Sponge.getScheduler().createTaskBuilder()
+                Task.builder()
                         .async().execute(() -> plugin.getDatabase().flushLoginStatus(account, false))
                         .submit(plugin);
             }
@@ -70,8 +73,7 @@ public class ConnectionListener {
     @Listener
     public void onPlayerJoin(Join playerJoinEvent, @First Player player) {
         plugin.getProtectionManager().protect(player);
-
-        Sponge.getScheduler().createTaskBuilder()
+        Task.builder()
                 .async()
                 .execute(() -> onAccountLoaded(player))
                 .submit(plugin);
@@ -103,9 +105,9 @@ public class ConnectionListener {
         if (optAccount.isPresent()) {
             Account account = optAccount.get();
 
-            long lastLogin = account.getTimestamp();
+            Instant lastLogin = account.getLastLogin();
             if (config.isIpAutoLogin() && Arrays.equals(account.getIp(), newIp)
-                    && System.currentTimeMillis() < lastLogin + 12 * 60 * 60 * 1000
+                    && Duration.between(lastLogin, Instant.now()).getSeconds() > TimeUnit.HOURS.toSeconds(12)
                     && !player.hasPermission(PomData.ARTIFACT_ID + ".no_auto_login")) {
                 //user will be auto logged in
                 player.sendMessage(plugin.getConfigManager().getText().getIpAutoLogin());
@@ -133,7 +135,7 @@ public class ConnectionListener {
         //send the message if the player only needs to login
         if (!plugin.getConfigManager().getGeneral().isBypassPermission()
                 || !player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
-            Sponge.getScheduler().createTaskBuilder()
+            Task.builder()
                     .execute(new LoginMessageTask(player))
                     .interval(plugin.getConfigManager().getGeneral().getMessageInterval(), TimeUnit.SECONDS)
                     .submit(plugin);
@@ -148,7 +150,7 @@ public class ConnectionListener {
         }
 
         if (!config.isCommandOnlyProtection() && config.getTimeoutLogin() != -1) {
-            Sponge.getScheduler().createTaskBuilder()
+            Task.builder()
                     .execute(() -> {
                         Account account = plugin.getDatabase().getAccountIfPresent(player);
                         if (account == null || !account.isLoggedIn()) {

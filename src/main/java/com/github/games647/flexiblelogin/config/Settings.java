@@ -64,11 +64,10 @@ public class Settings {
 
                 loadMapper(configMapper, HoconConfigurationLoader.builder().setPath(configFile).build());
 
-                Path textFile = getConfigDir().resolve("messages.conf");
+                Path textFile = dataFolder.resolve("messages.conf");
                 loadMapper(textMapper, HoconConfigurationLoader.builder().setPath(textFile).build());
             } catch (IOException ioExc) {
                 plugin.getLogger().error("Error creating a new config file", ioExc);
-                return;
             }
         }
     }

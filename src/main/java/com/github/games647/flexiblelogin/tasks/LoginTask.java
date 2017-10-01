@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 
 public class LoginTask implements Runnable {
 
@@ -63,7 +64,7 @@ public class LoginTask implements Runnable {
                     Sponge.getCommandManager().process(console, lockCommand);
                 }
 
-                Sponge.getScheduler().createTaskBuilder()
+                Task.builder()
                         .delay(plugin.getConfigManager().getGeneral().getWaitTime(), TimeUnit.SECONDS)
                         .execute(() -> plugin.getAttempts().remove(player.getName())).submit(plugin);
                 return;
@@ -78,9 +79,7 @@ public class LoginTask implements Runnable {
                 account.setIp(playerIp);
 
                 player.sendMessage(plugin.getConfigManager().getText().getLoggedIn());
-                Sponge.getScheduler().createTaskBuilder()
-                        .execute(() -> plugin.getProtectionManager().unprotect(player))
-                        .submit(plugin);
+                Task.builder().execute(() -> plugin.getProtectionManager().unprotect(player)).submit(plugin);
 
                 //flushes the ip update
                 plugin.getDatabase().save(account);

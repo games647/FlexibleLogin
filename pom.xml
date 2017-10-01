@@ -132,9 +132,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.MinecraftPortCentral</groupId>
-            <artifactId>GriefPrevention</artifactId>
-            <version>b76abc72cb</version>
+            <groupId>me.ryanhamshire</groupId>
+            <artifactId>griefprevention</artifactId>
+            <version>1.12.1-4.2.0.418</version>
         </dependency>
 
         <dependency>

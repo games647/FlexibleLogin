@@ -47,9 +47,6 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
@@ -57,7 +54,6 @@ import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
@@ -89,10 +85,6 @@ public class FlexibleLogin {
     @ConfigDir(sharedRoot = false)
     //We will place more than one config there (i.e. H2/SQLite database)
     private Path dataFolder;
-
-    @Inject
-    @DefaultConfig(sharedRoot = false)
-    private ConfigurationLoader<CommentedConfigurationNode> configManager;
 
     private final ProtectionManager protectionManager = new ProtectionManager();
     private final Map<String, Integer> attempts = Maps.newConcurrentMap();
@@ -186,8 +178,8 @@ public class FlexibleLogin {
     public void onDisable(GameStoppingServerEvent stoppingEvent) {
         //run this task sync in order let it finish before the process ends
         database.close();
-
         Sponge.getServer().getOnlinePlayers().forEach(protectionManager::unprotect);
+        instance = null;
     }
 
     public void onReload() {

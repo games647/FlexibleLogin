@@ -29,12 +29,12 @@ import com.github.games647.flexiblelogin.tasks.UnregisterTask;
 
 import java.util.UUID;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.scheduler.Task;
 
 public class UnregisterCommand implements CommandExecutor {
 
@@ -46,7 +46,7 @@ public class UnregisterCommand implements CommandExecutor {
         if (plugin.isValidUUID(account)) {
             //check if the account is an UUID
             UUID uuid = UUID.fromString(account);
-           Sponge.getScheduler().createTaskBuilder()
+           Task.builder()
                     //Async as it could run a SQL query
                     .async()
                     .execute(new UnregisterTask(src, uuid))
@@ -54,7 +54,7 @@ public class UnregisterCommand implements CommandExecutor {
             return CommandResult.success();
         } else if (plugin.isValidName(account)) {
             //check if the account is a valid player name
-            Sponge.getScheduler().createTaskBuilder()
+            Task.builder()
                     //Async as it could run a SQL query
                     .async()
                     .execute(new UnregisterTask(src, account))

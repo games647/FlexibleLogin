@@ -32,6 +32,7 @@ import java.net.URL;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
@@ -77,7 +78,7 @@ public class RegisterTask implements Runnable {
                     plugin.getDatabase().flushLoginStatus(createdAccount, true);
                 }
 
-                Sponge.getScheduler().createTaskBuilder()
+                Task.builder()
                         .execute(() -> plugin.getProtectionManager().unprotect(player))
                         .submit(plugin);
             } catch (Exception ex) {
@@ -106,7 +107,7 @@ public class RegisterTask implements Runnable {
                             .build())
                     .build());
         } catch (MalformedURLException ex) {
-            plugin.getLogger().error("Malformed totp url link", ex);
+            plugin.getLogger().error("Malformed TOTP url link", ex);
         }
     }
 }

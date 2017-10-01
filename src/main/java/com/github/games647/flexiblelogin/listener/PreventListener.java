@@ -120,11 +120,6 @@ public class PreventListener {
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onPlayerItemPickup(CreateClaimEvent createClaimEvent, @Root Player player) {
-        checkLoginStatus(createClaimEvent, player);
-    }
-
-    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onItemConsume(UseItemStackEvent.Start itemConsumeEvent, @First Player player) {
         checkLoginStatus(itemConsumeEvent, player);
     }
@@ -178,6 +173,15 @@ public class PreventListener {
         if (targetEntity instanceof Player) {
             checkLoginStatus(damageEntityEvent, (Player) damageEntityEvent.getTargetEntity());
         }
+    }
+
+    /*
+    Third party plugins
+     */
+
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onPlayerItemPickup(CreateClaimEvent createClaimEvent, @Root Player player) {
+        checkLoginStatus(createClaimEvent, player);
     }
 
     private void checkLoginStatus(Cancellable event, Player player) {

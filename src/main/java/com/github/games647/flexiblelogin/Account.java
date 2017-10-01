@@ -31,7 +31,6 @@ import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,7 +45,7 @@ public class Account {
     private String passwordHash;
 
     private byte[] ip;
-    private long timestamp;
+    private Instant lastLogin;
 
     private String email;
 
@@ -64,7 +63,7 @@ public class Account {
         this.passwordHash = password;
 
         this.ip = ip;
-        this.timestamp = Date.from(Instant.now()).getTime();
+        this.lastLogin = Instant.now();
     }
 
     //existing account
@@ -83,7 +82,7 @@ public class Account {
         this.passwordHash = resultSet.getString(4);
 
         this.ip = resultSet.getBytes(5);
-        this.timestamp = resultSet.getTimestamp(6).getTime();
+        this.lastLogin = resultSet.getTimestamp(6).toInstant();
 
         this.email = resultSet.getString(7);
     }
@@ -116,8 +115,8 @@ public class Account {
         this.ip = ip;
     }
 
-    public synchronized void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public synchronized void setLastLogin(Instant lastLogin) {
+        this.lastLogin = lastLogin;
     }
 
     public synchronized byte[] getIp() {
@@ -132,8 +131,8 @@ public class Account {
         }
     }
 
-    public synchronized long getTimestamp() {
-        return timestamp;
+    public synchronized Instant getLastLogin() {
+        return lastLogin;
     }
 
     public synchronized String getEmail() {

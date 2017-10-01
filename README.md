@@ -9,15 +9,9 @@ Do you want to let your players protect their account (from hackers/login steale
 while the session server is down. You can use this little plugin. You can protect your account with 
 a password you choose or with a time based password created from a secret key, generated just for you.
 
-Tested against:
-
-    Sponge: sponge-6.0
-
-    Minecraft (Client): 1.12.1
-
 ### Requirements
 
-* Sponge > 5.1+, 6.0 or 7.0
+* Sponge 6.0 or 7.0
 
 ### Commands
 
