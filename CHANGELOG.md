@@ -2,6 +2,8 @@
 
 ###### 0.16
 
+* Use Instant for lastLogin
+* Remove code duplicates
 * Stronger TOTP code generation
 * Compile constant patterns for better performance
 

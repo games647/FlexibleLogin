@@ -31,11 +31,21 @@ public class BcryptHasher implements Hasher {
     @Override
     public String hash(String rawPassword) {
         //generate a different salt for each user
-        return BCrypt.hashpw(rawPassword, BCrypt.gensalt());
+        String hashpw = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
+        if (hashpw.startsWith("$2a")) {
+            return "$2y" + hashpw.substring(3);
+        }
+
+        return hashpw;
     }
 
     @Override
     public boolean checkPassword(String passwordHash, String userInput) {
-        return BCrypt.checkpw(userInput, passwordHash);
+        String hash = passwordHash;
+        if (hash.startsWith("$2y")) {
+            hash = "$2a" + hash.substring(3);
+        }
+
+        return BCrypt.checkpw(userInput, hash);
     }
 }
