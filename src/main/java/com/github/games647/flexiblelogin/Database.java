@@ -26,10 +26,9 @@ package com.github.games647.flexiblelogin;
 import com.github.games647.flexiblelogin.config.SQLConfiguration;
 import com.github.games647.flexiblelogin.config.SQLType;
 import com.google.common.collect.Maps;
-import com.google.common.primitives.Bytes;
-import com.google.common.primitives.Longs;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -149,10 +148,8 @@ public class Database {
     public boolean deleteAccount(UUID uuid) {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM " + USERS_TABLE + " WHERE UUID=?")) {
-            byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
-            byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
 
-            stmt.setObject(1, Bytes.concat(mostBytes, leastBytes));
+            stmt.setObject(1, toArray(uuid));
 
             int affectedRows = stmt.executeUpdate();
             //removes the account from the cache
@@ -198,10 +195,7 @@ public class Database {
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + USERS_TABLE
                      + " WHERE UUID=?")) {
 
-            byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
-            byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
-
-            stmt.setObject(1, Bytes.concat(mostBytes, leastBytes));
+            stmt.setObject(1, toArray(uuid));
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
@@ -256,10 +250,8 @@ public class Database {
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO " + USERS_TABLE
                      + " (UUID, Username, Password, IP, Email, LastLogin) VALUES (?,?,?,?,?,?)")) {
             UUID uuid = account.getUuid();
-            byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
-            byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
 
-            stmt.setObject(1, Bytes.concat(mostBytes, leastBytes));
+            stmt.setObject(1, toArray(uuid));
             stmt.setString(2, account.getUsername());
             stmt.setString(3, account.getPassword());
 
@@ -289,10 +281,8 @@ public class Database {
             stmt.setInt(1, loggedIn ? 1 : 0);
 
             UUID uuid = account.getUuid();
-            byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
-            byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
+            stmt.setObject(2, toArray(uuid));
 
-            stmt.setObject(2, Bytes.concat(mostBytes, leastBytes));
             stmt.execute();
         } catch (SQLException ex) {
             plugin.getLogger().error("Error updating login status", ex);
@@ -307,7 +297,7 @@ public class Database {
             //set all player accounts existing in the database to unlogged
             stmt.execute("UPDATE " + USERS_TABLE + " SET LoggedIn=0");
         } catch (SQLException ex) {
-            plugin.getLogger().error("Error updating loggin status", ex);
+            plugin.getLogger().error("Error updating login status", ex);
         }
     }
 
@@ -324,11 +314,8 @@ public class Database {
             stmt.setString(5, account.getEmail());
 
             UUID uuid = account.getUuid();
+            stmt.setObject(6, toArray(uuid));
 
-            byte[] mostBytes = Longs.toByteArray(uuid.getMostSignificantBits());
-            byte[] leastBytes = Longs.toByteArray(uuid.getLeastSignificantBits());
-
-            stmt.setObject(6, Bytes.concat(mostBytes, leastBytes));
             stmt.execute();
             cache.put(uuid, account);
             return true;
@@ -336,5 +323,12 @@ public class Database {
             plugin.getLogger().error("Error updating user account", ex);
             return false;
         }
+    }
+
+    private byte[] toArray(UUID uuid) {
+        return ByteBuffer.wrap(new byte[16])
+                .putLong(uuid.getMostSignificantBits())
+                .putLong(uuid.getLeastSignificantBits())
+                .array();
     }
 }

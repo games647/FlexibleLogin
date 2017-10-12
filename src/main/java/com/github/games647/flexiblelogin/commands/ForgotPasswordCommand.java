@@ -87,9 +87,15 @@ public class ForgotPasswordCommand implements CommandExecutor {
 
         Properties properties = new Properties();
         properties.setProperty("mail.smtp.host", emailConfig.getHost());
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.port", emailConfig.getPort());
-        properties.put("mail.smtp.starttls.enable", true);
+        properties.setProperty("mail.smtp.auth", "true");
+        properties.setProperty("mail.smtp.port", String.valueOf(emailConfig.getPort()));
+
+        //ssl
+        properties.setProperty("mail.smtp.socketFactory.port", String.valueOf(emailConfig.getPort()));
+        properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        properties.setProperty("mail.smtp.socketFactory.fallback", "false");
+        properties.setProperty("mail.smtp.starttls.enable", String.valueOf(true));
+        properties.setProperty("mail.smtp.ssl.checkserveridentity", "true");
 
         Session session = Session.getDefaultInstance(properties);
 

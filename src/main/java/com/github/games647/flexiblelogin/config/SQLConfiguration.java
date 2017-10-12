@@ -30,10 +30,11 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class SQLConfiguration {
 
-    @Setting(comment = "SQL server type. You can choose between h2, SQLite and MySQL")
+    @Setting(comment = "SQL server type. You can choose between h2, SQLite and MySQL/MariaDB")
     private SQLType type = SQLType.H2;
 
-    @Setting(comment = "Path where the database is located. This can be a file path (h2/SQLite) or an IP/Domain(MySQL)")
+    @Setting(comment = "Path where the database is located." +
+            " This can be a file path (h2/SQLite) or an IP/Domain (MySQL/MariaDB)")
     private String path = "%DIR%";
 
     @Setting(comment = "Port for example MySQL connections")
@@ -48,8 +49,8 @@ public class SQLConfiguration {
     @Setting(comment = "Password in order to login")
     private String password = "";
 
-    @Setting(comment = "It's strongly recommended to enable SSL and setup a SSL certificate if the MySQL server isn't "
-            + "running on the same machine")
+    @Setting(comment = "It's strongly recommended to enable SSL and setup a SSL certificate if the MySQL/MariaDB " +
+            "server isn't running on the same machine")
     private boolean useSSL;
 
     public SQLType getType() {

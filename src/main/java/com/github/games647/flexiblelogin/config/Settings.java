@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -72,18 +73,17 @@ public class Settings {
         }
     }
 
-    private void loadMapper(ObjectMapper<?>.BoundInstance mapper
+    private <T> void loadMapper(ObjectMapper<T>.BoundInstance mapper
             , ConfigurationLoader<CommentedConfigurationNode> loader) {
         CommentedConfigurationNode rootNode;
         if (mapper != null) {
             try {
-                rootNode = loader.load();
+                rootNode = loader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true));
 
                 //load the config into the object
                 mapper.populate(rootNode);
 
                 //add missing default values
-                mapper.serialize(rootNode);
                 loader.save(rootNode);
             } catch (ObjectMappingException objMappingExc) {
                 plugin.getLogger().error("Error loading the configuration", objMappingExc);

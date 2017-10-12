@@ -33,15 +33,17 @@ import com.warrenstrange.googleauth.KeyRepresentation;
 
 public class TOTP implements Hasher {
 
+    private static final String URL_FORMAT = "https://chart.googleapis.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl="
+            + "otpauth://totp/"
+            + "%s@%s%%3Fsecret%%3D%s";
+
     private final IGoogleAuthenticator gAuth = new GoogleAuthenticator(new GoogleAuthenticatorConfigBuilder()
             .setHmacHashFunction(HmacHashFunction.HmacSHA512)
             .setKeyRepresentation(KeyRepresentation.BASE64)
             .build());
 
     public static String getQRBarcodeURL(String user, String host, String secret) {
-        String format = "https://chart.googleapis.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl="
-                + "otpauth://totp/"
-                + "%s@%s%%3Fsecret%%3D%s";
+        String format = URL_FORMAT;
         return String.format(format, user, host, secret);
     }
 
