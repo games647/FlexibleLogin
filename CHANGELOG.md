@@ -2,6 +2,8 @@
 
 ###### 0.16
 
+* Enhance email SSL security
+* Revert BCrypt workaround
 * Use Instant for lastLogin
 * Remove code duplicates
 * Stronger TOTP code generation

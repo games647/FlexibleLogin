@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
@@ -32,21 +31,23 @@ import org.spongepowered.api.command.CommandSource;
 
 public class UnregisterTask implements Runnable {
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    private final FlexibleLogin plugin;
     private final CommandSource src;
 
     private final Object accountIndentifer;
 
-    public UnregisterTask(CommandSource src, UUID uuid) {
+    UnregisterTask(FlexibleLogin plugin, CommandSource src, Object accountIndentifer) {
+        this.plugin = plugin;
         this.src = src;
-
-        this.accountIndentifer = uuid;
+        this.accountIndentifer = accountIndentifer;
     }
 
-    public UnregisterTask(CommandSource src, String playerName) {
-        this.src = src;
+    public UnregisterTask(FlexibleLogin plugin, CommandSource src, UUID uuid) {
+        this(plugin, src, (Object) uuid);
+    }
 
-        this.accountIndentifer = playerName;
+    public UnregisterTask(FlexibleLogin plugin, CommandSource src, String playerName) {
+        this(plugin, src, (Object) playerName);
     }
 
     @Override

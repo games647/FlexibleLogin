@@ -34,13 +34,14 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
-public class ChangePasswordCommand implements CommandExecutor {
+public class ChangePasswordCommand extends AbstractCommand {
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    public ChangePasswordCommand(FlexibleLogin plugin) {
+        super(plugin, "changepw");
+    }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
@@ -49,13 +50,14 @@ public class ChangePasswordCommand implements CommandExecutor {
             return CommandResult.empty();
         }
 
-        plugin.checkPlayerPermission(src, "changepw");
+        checkPlayerPermission(src);
 
-        Account account = plugin.getDatabase().getAccountIfPresent((Player) src);
-        if (account == null || !account.isLoggedIn()) {
+        if (plugin.getDatabase().isLoggedin((Player) src)) {
             src.sendMessage(plugin.getConfigManager().getText().getNotLoggedIn());
             return CommandResult.empty();
         }
+
+        Account account = plugin.getDatabase().getAccount((Player) src).get();
 
         Collection<String> passwords = args.getAll("password");
         List<String> indexPasswords = Lists.newArrayList(passwords);

@@ -38,7 +38,11 @@ import org.spongepowered.api.world.World;
 public class ProtectionManager {
 
     private final Map<UUID, Location<World>> oldLocations = Maps.newHashMap();
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    private final FlexibleLogin plugin;
+
+    public ProtectionManager(FlexibleLogin plugin) {
+        this.plugin = plugin;
+    }
 
     public void protect(Player player) {
         SpawnTeleportConfig teleportConfig = plugin.getConfigManager().getGeneral().getTeleport();

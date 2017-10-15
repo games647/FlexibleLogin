@@ -34,15 +34,16 @@ import org.spongepowered.api.command.CommandSource;
 
 public class ForceRegTask implements Runnable {
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    private final FlexibleLogin plugin;
 
     private final CommandSource src;
     private final UUID accountIndentifer;
     private final String password;
 
-    public ForceRegTask(CommandSource src, UUID uuid, String password) {
+    public ForceRegTask(FlexibleLogin plugin, CommandSource src, UUID accountIndentifer, String password) {
+        this.plugin = plugin;
         this.src = src;
-        this.accountIndentifer = uuid;
+        this.accountIndentifer = accountIndentifer;
         this.password = password;
     }
 

@@ -39,12 +39,13 @@ import org.spongepowered.api.text.format.TextColors;
 
 public class RegisterTask implements Runnable {
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    private final FlexibleLogin plugin;
 
     private final Player player;
     private final String password;
 
-    public RegisterTask(Player player, String password) {
+    public RegisterTask(FlexibleLogin plugin, Player player, String password) {
+        this.plugin = plugin;
         this.player = player;
         this.password = password;
     }
@@ -52,7 +53,7 @@ public class RegisterTask implements Runnable {
     @Override
     public void run() {
         String name = player.getName();
-        if (plugin.getDatabase().loadAccount(player) == null && !plugin.getDatabase().exists(name)) {
+        if (!plugin.getDatabase().loadAccount(player).isPresent() && !plugin.getDatabase().exists(name)) {
             byte[] ipAddress = player.getConnection().getAddress().getAddress().getAddress();
             int regByIp = plugin.getDatabase().getRegistrationsCount(ipAddress);
             if (regByIp > plugin.getConfigManager().getGeneral().getMaxIpReg()) {

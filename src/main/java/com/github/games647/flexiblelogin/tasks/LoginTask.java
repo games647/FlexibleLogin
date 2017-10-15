@@ -36,14 +36,15 @@ import org.spongepowered.api.scheduler.Task;
 
 public class LoginTask implements Runnable {
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    private final FlexibleLogin plugin;
 
     private final Player player;
     private final String userInput;
 
-    public LoginTask(Player player, String password) {
+    public LoginTask(FlexibleLogin plugin, Player player, String userInput) {
+        this.plugin = plugin;
         this.player = player;
-        this.userInput = password;
+        this.userInput = userInput;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class LoginTask implements Runnable {
         }
 
         try {
-            Integer attempts = plugin.getAttempts().computeIfAbsent(player.getName(), (playerName) -> 0);
+            int attempts = plugin.getAttempts().computeIfAbsent(player.getName(), playerName -> 0);
             if (attempts > plugin.getConfigManager().getGeneral().getMaxAttempts()) {
                 player.sendMessage(plugin.getConfigManager().getText().getMaxAttempts());
                 String lockCommand = plugin.getConfigManager().getGeneral().getLockCommand();

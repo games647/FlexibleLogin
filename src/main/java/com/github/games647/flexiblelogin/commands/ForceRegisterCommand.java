@@ -35,19 +35,20 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
-public class ForceRegisterCommand implements CommandExecutor {
+public class ForceRegisterCommand extends AbstractCommand {
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    public ForceRegisterCommand(FlexibleLogin plugin) {
+        super(plugin);
+    }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         String accountId = args.<String>getOne("account").get();
         String password = args.<String>getOne("password").get();
-        if (plugin.isValidUUID(accountId)) {
+        if (isValidUUID(accountId)) {
             onUuidRegister(accountId, src, password);
 
             return CommandResult.success();
@@ -69,7 +70,7 @@ public class ForceRegisterCommand implements CommandExecutor {
             Task.builder()
                     //Async as it could run a SQL query
                     .async()
-                    .execute(new ForceRegTask(src, offlineUUID, password))
+                    .execute(new ForceRegTask(plugin, src, offlineUUID, password))
                     .submit(plugin);
         }
     }
@@ -84,7 +85,7 @@ public class ForceRegisterCommand implements CommandExecutor {
             Task.builder()
                     //Async as it could run a SQL query
                     .async()
-                    .execute(new ForceRegTask(src, uuid, password))
+                    .execute(new ForceRegTask(plugin, src, uuid, password))
                     .submit(plugin);
         }
     }

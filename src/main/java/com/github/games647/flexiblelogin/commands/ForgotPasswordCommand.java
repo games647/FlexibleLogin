@@ -26,11 +26,11 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfiguration;
-import com.github.games647.flexiblelogin.tasks.SaveTask;
 import com.github.games647.flexiblelogin.tasks.SendEmailTask;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.mail.Message.RecipientType;
@@ -44,13 +44,14 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
-public class ForgotPasswordCommand implements CommandExecutor {
+public class ForgotPasswordCommand extends AbstractCommand {
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    public ForgotPasswordCommand(FlexibleLogin plugin) {
+        super(plugin, "forgot");
+    }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
@@ -59,24 +60,28 @@ public class ForgotPasswordCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        plugin.checkPlayerPermission(src, "forgot");
+        checkPlayerPermission(src);
 
         if (!plugin.getConfigManager().getGeneral().getEmail().isEnabled()) {
             src.sendMessage(plugin.getConfigManager().getText().getEmailNotEnabled());
         }
 
         Player player = (Player) src;
-        Account account = plugin.getDatabase().getAccountIfPresent(player);
-        if (account == null) {
+        Optional<Account> optAccount = plugin.getDatabase().getAccount(player);
+        if (optAccount.isPresent()) {
+            if (optAccount.get().isLoggedIn()) {
+                src.sendMessage(plugin.getConfigManager().getText().getAlreadyLoggedIn());
+                return CommandResult.success();
+            }
+        } else {
             src.sendMessage(plugin.getConfigManager().getText().getAccountNotLoaded());
-            return CommandResult.success();
-        } else if (account.isLoggedIn()) {
-            src.sendMessage(plugin.getConfigManager().getText().getAlreadyLoggedIn());
             return CommandResult.success();
         }
 
-        String email = account.getEmail();
-        if (email == null || email.isEmpty()) {
+        Account account = optAccount.get();
+
+        Optional<String> optEmail = account.getEmail();
+        if (!optEmail.isPresent()) {
             src.sendMessage(plugin.getConfigManager().getText().getUncommittedEmailAddress());
             return CommandResult.success();
         }
@@ -105,7 +110,7 @@ public class ForgotPasswordCommand implements CommandExecutor {
             String senderEmail = emailConfig.getAccount();
             //sender email with an alias
             message.setFrom(new InternetAddress(senderEmail, emailConfig.getSenderName()));
-            message.setRecipient(RecipientType.TO, new InternetAddress(email, src.getName()));
+            message.setRecipient(RecipientType.TO, new InternetAddress(optEmail.get(), src.getName()));
             message.setSubject(replaceVariables(emailConfig.getSubject(), player, newPassword));
 
             //current time
@@ -118,14 +123,14 @@ public class ForgotPasswordCommand implements CommandExecutor {
             //send email
             Task.builder()
                     .async()
-                    .execute(new SendEmailTask(player, session, message))
+                    .execute(new SendEmailTask(plugin, player, session, message))
                     .submit(plugin);
 
             //set new password here if the email sending fails fails we have still the old password
             account.setPasswordHash(plugin.getHasher().hash(newPassword));
             Task.builder()
                     .async()
-                    .execute(new SaveTask(account))
+                    .execute(() -> plugin.getDatabase().save(account))
                     .submit(plugin);
         } catch (UnsupportedEncodingException ex) {
             //we can ignore this, because we will encode with UTF-8 which all Java platforms supports
@@ -143,7 +148,8 @@ public class ForgotPasswordCommand implements CommandExecutor {
                 .orElse("Minecraft Server");
 
         return text.replace("%player%", player.getName())
-                .replace("%server%", serverName).replace("%password%", newPassword);
+                .replace("%server%", serverName)
+                .replace("%password%", newPassword);
     }
 
     private String generatePassword() {

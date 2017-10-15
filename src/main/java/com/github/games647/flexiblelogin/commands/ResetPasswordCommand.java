@@ -35,12 +35,13 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.scheduler.Task;
 
-public class ResetPasswordCommand implements CommandExecutor {
+public class ResetPasswordCommand extends AbstractCommand {
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    public ResetPasswordCommand(FlexibleLogin plugin) {
+        super(plugin);
+    }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
@@ -48,11 +49,11 @@ public class ResetPasswordCommand implements CommandExecutor {
         String password = args.<String>getOne("password").get();
 
         ResetPwTask resetTask;
-        if (plugin.isValidUUID(accountId)) {
+        if (isValidUUID(accountId)) {
             UUID uuid = UUID.fromString(accountId);
-            resetTask = new UUIDResetPwTask(src, password, uuid);
+            resetTask = new UUIDResetPwTask(plugin, src, password, uuid);
         } else if (plugin.isValidName(accountId)) {
-            resetTask = new NameResetPwTask(src, password, accountId);
+            resetTask = new NameResetPwTask(plugin, src, password, accountId);
         } else {
             return CommandResult.empty();
         }

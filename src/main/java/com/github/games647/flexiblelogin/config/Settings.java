@@ -39,14 +39,14 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 public class Settings {
 
+    private final FlexibleLogin plugin;
     private final Path dataFolder;
-
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
 
     private ObjectMapper<Config>.BoundInstance configMapper;
     private ObjectMapper<TextConfig>.BoundInstance textMapper;
 
-    public Settings(Path dataFolder) {
+    public Settings(FlexibleLogin plugin, Path dataFolder) {
+        this.plugin = plugin;
         this.dataFolder = dataFolder;
 
         try {

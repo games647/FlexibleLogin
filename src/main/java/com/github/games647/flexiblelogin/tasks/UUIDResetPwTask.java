@@ -1,6 +1,7 @@
 package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.Account;
+import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -13,9 +14,8 @@ public class UUIDResetPwTask extends ResetPwTask {
 
     private final UUID uuid;
 
-    public UUIDResetPwTask(CommandSource src, String password, UUID uuid) {
-        super(src, password);
-
+    public UUIDResetPwTask(FlexibleLogin plugin, CommandSource src, String password, UUID uuid) {
+        super(plugin, src, password);
         this.uuid = uuid;
     }
 

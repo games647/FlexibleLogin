@@ -34,12 +34,13 @@ import org.spongepowered.api.entity.living.player.Player;
 
 public abstract class ResetPwTask implements Runnable {
 
-    protected final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    protected final FlexibleLogin plugin;
 
     private final CommandSource src;
     private final String password;
 
-    public ResetPwTask(CommandSource src, String password) {
+    public ResetPwTask(FlexibleLogin plugin, CommandSource src, String password) {
+        this.plugin = plugin;
         this.src = src;
         this.password = password;
     }
@@ -48,8 +49,7 @@ public abstract class ResetPwTask implements Runnable {
     public void run() {
         Optional<Player> player = getIfPresent();
         if (player.isPresent()) {
-            Account account = plugin.getDatabase().getAccountIfPresent(player.get());
-            resetPassword(Optional.ofNullable(account));
+            resetPassword(plugin.getDatabase().getAccount(player.get()));
         } else {
             resetPassword(loadAccount());
         }

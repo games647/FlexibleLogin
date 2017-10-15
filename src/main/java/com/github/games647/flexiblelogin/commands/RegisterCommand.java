@@ -34,13 +34,14 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
-public class RegisterCommand implements CommandExecutor {
+public class RegisterCommand extends AbstractCommand {
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    public RegisterCommand(FlexibleLogin plugin) {
+        super(plugin, "register");
+    }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
@@ -49,7 +50,7 @@ public class RegisterCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        plugin.checkPlayerPermission(src, "register");
+        checkPlayerPermission(src);
 
         //If the server is using TOTP, no password is required
         if (!args.hasAny("password")) {
@@ -83,7 +84,7 @@ public class RegisterCommand implements CommandExecutor {
         Task.builder()
                 //we are executing a SQL Query which is blocking
                 .async()
-                .execute(new RegisterTask((Player) source, password))
+                .execute(new RegisterTask(plugin, (Player) source, password))
                 .name("Register Query")
                 .submit(plugin);
     }

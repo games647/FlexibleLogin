@@ -23,7 +23,6 @@
  */
 package com.github.games647.flexiblelogin.commands;
 
-import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.LoginTask;
 
@@ -31,13 +30,14 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
-public class LoginCommand implements CommandExecutor {
+public class LoginCommand extends AbstractCommand {
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    public LoginCommand(FlexibleLogin plugin) {
+        super(plugin, "login");
+    }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
@@ -46,10 +46,9 @@ public class LoginCommand implements CommandExecutor {
             return CommandResult.empty();
         }
 
-        plugin.checkPlayerPermission(src, "login");
+        checkPlayerPermission(src);
 
-        Account account = plugin.getDatabase().getAccountIfPresent((Player) src);
-        if (account != null && account.isLoggedIn()) {
+        if (plugin.getDatabase().isLoggedin((Player) src)) {
             src.sendMessage(plugin.getConfigManager().getText().getAlreadyLoggedIn());
         }
 
@@ -59,7 +58,7 @@ public class LoginCommand implements CommandExecutor {
         Task.builder()
                 //we are executing a SQL Query which is blocking
                 .async()
-                .execute(new LoginTask((Player) src, password))
+                .execute(new LoginTask(plugin, (Player) src, password))
                 .name("Login Query")
                 .submit(plugin);
 

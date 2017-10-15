@@ -24,9 +24,7 @@
 
 package com.github.games647.flexiblelogin.commands;
 
-import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.tasks.SaveTask;
 
 import java.util.regex.Pattern;
 
@@ -34,14 +32,16 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
-public class SetEmailCommand implements CommandExecutor {
+public class SetEmailCommand extends AbstractCommand {
 
     private final Pattern emailPattern = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+");
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+
+    public SetEmailCommand(FlexibleLogin plugin) {
+        super(plugin, "email");
+    }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
@@ -50,19 +50,18 @@ public class SetEmailCommand implements CommandExecutor {
             return CommandResult.empty();
         }
 
-        plugin.checkPlayerPermission(src, "email");
+        checkPlayerPermission(src);
 
         String email = args.<String>getOne("email").get();
         if (emailPattern.matcher(email).matches()) {
-            Account account = plugin.getDatabase().getAccountIfPresent((Player) src);
-            if (account != null) {
+            plugin.getDatabase().getAccount((Player) src).ifPresent(account -> {
                 account.setEmail(email);
                 src.sendMessage(plugin.getConfigManager().getText().getEmailSet());
                 Task.builder()
                         .async()
-                        .execute(new SaveTask(account))
+                        .execute(() -> plugin.getDatabase().save(account))
                         .submit(plugin);
-            }
+            });
 
             return CommandResult.success();
         }

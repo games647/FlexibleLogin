@@ -59,8 +59,13 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 public class PreventListener {
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
-    private final PluginContainer pluginContainer = Sponge.getPluginManager().fromInstance(plugin).get();
+    private final FlexibleLogin plugin;
+    private final PluginContainer pluginContainer;
+
+    public PreventListener(FlexibleLogin plugin) {
+        this.plugin = plugin;
+        this.pluginContainer = Sponge.getPluginManager().fromInstance(plugin).get();
+    }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onPlayerMove(MoveEntityEvent playerMoveEvent, @First Player player) {
@@ -192,7 +197,7 @@ public class PreventListener {
 
         if (plugin.getConfigManager().getGeneral().isCommandOnlyProtection()) {
             //check if the user is already registered
-            if (plugin.getDatabase().getAccountIfPresent(player) == null
+            if (!plugin.getDatabase().getAccount(player).isPresent()
                     && player.hasPermission(PomData.ARTIFACT_ID + ".registerRequired")) {
                 event.setCancelled(true);
             }

@@ -50,7 +50,6 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
-import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
@@ -59,7 +58,6 @@ import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
@@ -69,24 +67,15 @@ import static org.spongepowered.api.command.args.GenericArguments.string;
         , url = PomData.URL, description = PomData.DESCRIPTION)
 public class FlexibleLogin {
 
-    private static FlexibleLogin instance;
-
-    public static FlexibleLogin getInstance() {
-        return instance;
-    }
-
     private final Logger logger;
-
     private final Pattern validNamePattern = Pattern.compile("^\\w{2,16}$");
-    private final Pattern uuidPattern = Pattern
-            .compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}");
 
     @Inject
     @ConfigDir(sharedRoot = false)
     //We will place more than one config there (i.e. H2/SQLite database)
     private Path dataFolder;
 
-    private final ProtectionManager protectionManager = new ProtectionManager();
+    private final ProtectionManager protectionManager = new ProtectionManager(this);
     private final Map<String, Integer> attempts = Maps.newConcurrentMap();
 
     private Settings configuration;
@@ -96,14 +85,12 @@ public class FlexibleLogin {
 
     @Inject
     public FlexibleLogin(Logger logger) {
-        instance = this;
-
         this.logger = logger;
     }
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
-        configuration = new Settings(dataFolder);
+        configuration = new Settings(this, dataFolder);
         init();
     }
 
@@ -113,12 +100,12 @@ public class FlexibleLogin {
         CommandManager commandDispatcher = Sponge.getCommandManager();
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new LoginCommand())
+                .executor(new LoginCommand(this))
                 .arguments(onlyOne(string(Text.of("password"))))
                 .build(), "login", "log");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new RegisterCommand())
+                .executor(new RegisterCommand(this))
                 .arguments(GenericArguments
                         .optional(GenericArguments
                                 .repeated(
@@ -126,43 +113,43 @@ public class FlexibleLogin {
                 .build(), "register", "reg");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new ChangePasswordCommand())
+                .executor(new ChangePasswordCommand(this))
                 .arguments(GenericArguments
                         .repeated(
                                 string(Text.of("password")), 2))
                 .build(), "changepassword", "changepw");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new SetEmailCommand())
+                .executor(new SetEmailCommand(this))
                 .arguments(onlyOne(string(Text.of("email"))))
                 .build(), "setemail", "email");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new ForgotPasswordCommand())
+                .executor(new ForgotPasswordCommand(this))
                 .build(), "forgotpassword", "forgot");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new LogoutCommand())
+                .executor(new LogoutCommand(this))
                 .build(), "logout");
 
         //admin commands
         commandDispatcher.register(this, CommandSpec.builder()
                 .permission(PomData.NAME + ".admin")
                 .child(CommandSpec.builder()
-                        .executor(new ReloadCommand())
+                        .executor(new ReloadCommand(this))
                         .build(), "reload", "rl")
                 .child(CommandSpec.builder()
-                        .executor(new UnregisterCommand())
+                        .executor(new UnregisterCommand(this))
                         .arguments(onlyOne(string(Text.of("account"))))
                         .build(), "unregister", "unreg")
                 .child(CommandSpec.builder()
-                        .executor(new ForceRegisterCommand())
+                        .executor(new ForceRegisterCommand(this))
                         .arguments(
                                 onlyOne(
                                         string(Text.of("account"))), string(Text.of("password")))
                         .build(), "register", "reg")
                 .child(CommandSpec.builder()
-                        .executor(new ResetPasswordCommand())
+                        .executor(new ResetPasswordCommand(this))
                         .arguments(
                                 onlyOne(
                                         string(Text.of("account"))), string(Text.of("password")))
@@ -170,8 +157,8 @@ public class FlexibleLogin {
                 .build(), PomData.NAME);
 
         //register events
-        Sponge.getEventManager().registerListeners(this, new ConnectionListener());
-        Sponge.getEventManager().registerListeners(this, new PreventListener());
+        Sponge.getEventManager().registerListeners(this, new ConnectionListener(this));
+        Sponge.getEventManager().registerListeners(this, new PreventListener(this));
     }
 
     @Listener
@@ -179,7 +166,6 @@ public class FlexibleLogin {
         //run this task sync in order let it finish before the process ends
         database.close();
         Sponge.getServer().getOnlinePlayers().forEach(protectionManager::unprotect);
-        instance = null;
     }
 
     public void onReload() {
@@ -197,7 +183,7 @@ public class FlexibleLogin {
     private void init() {
         configuration.load();
         try {
-            database = new Database();
+            database = new Database(this);
             database.createTable();
         } catch (SQLException sqlEx) {
             logger.error("Cannot connect to auth storage", sqlEx);
@@ -212,19 +198,8 @@ public class FlexibleLogin {
         }
     }
 
-    public void checkPlayerPermission(Subject player, String key) throws CommandPermissionException {
-        if (configuration.getGeneral().isPlayerPermissions()
-                && !player.hasPermission(PomData.ARTIFACT_ID + ".command." + key)) {
-            throw new CommandPermissionException();
-        }
-    }
-
     public boolean isValidName(String input) {
         return validNamePattern.matcher(input).matches();
-    }
-
-    public boolean isValidUUID(String input) {
-        return uuidPattern.matcher(input).matches();
     }
 
     public Settings getConfigManager() {

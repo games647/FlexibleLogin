@@ -35,7 +35,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,11 +49,13 @@ public class Database {
 
     public static final String USERS_TABLE = "flexiblelogin_users";
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    private final FlexibleLogin plugin;
     private final Map<UUID, Account> cache = Maps.newConcurrentMap();
     private final DataSource dataSource;
 
-    public Database() throws SQLException {
+    public Database(FlexibleLogin plugin) throws SQLException {
+        this.plugin = plugin;
+
         SQLConfiguration sqlConfig = plugin.getConfigManager().getGeneral().getSQL();
 
         Path configDir = plugin.getConfigManager().getConfigDir();
@@ -91,13 +92,17 @@ public class Database {
         this.dataSource = Sponge.getServiceManager().provideUnchecked(SqlService.class).getDataSource(jdbcUrl);
     }
 
+    @Deprecated
     public Account getAccountIfPresent(Player player) {
         return cache.get(player.getUniqueId());
     }
 
+    public Optional<Account> getAccount(Player player) {
+        return Optional.ofNullable(cache.get(player.getUniqueId()));
+    }
+
     public boolean isLoggedin(Player player) {
-        Account account = getAccountIfPresent(player);
-        return account != null && account.isLoggedIn();
+        return getAccount(player).map(Account::isLoggedIn).orElse(false);
     }
 
     public void createTable() {
@@ -248,7 +253,7 @@ public class Database {
     public boolean createAccount(Account account, boolean shouldCache) {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO " + USERS_TABLE
-                     + " (UUID, Username, Password, IP, Email, LastLogin) VALUES (?,?,?,?,?,?)")) {
+                     + " (UUID, Username, Password, IP, Email) VALUES (?,?,?,?,?)")) {
             UUID uuid = account.getUuid();
 
             stmt.setObject(1, toArray(uuid));
@@ -257,8 +262,7 @@ public class Database {
 
             stmt.setObject(4, account.getIp());
 
-            stmt.setString(5, account.getEmail());
-            stmt.setTimestamp(6, Timestamp.from(account.getLastLogin()));
+            stmt.setString(5, account.getEmail().orElse(null));
 
             stmt.execute();
 
@@ -304,17 +308,16 @@ public class Database {
     public boolean save(Account account) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("UPDATE " + USERS_TABLE
-                     + " SET Username=?, Password=?, IP=?, LastLogin=?, Email=? WHERE UUID=?")) {
+                     + " SET Username=?, Password=?, IP=?, LastLogin=CURRENT_TIMESTAMP, Email=? WHERE UUID=?")) {
             //username is now changeable by Mojang - so keep it up to date
             stmt.setString(1, account.getUsername());
             stmt.setString(2, account.getPassword());
             stmt.setObject(3, account.getIp());
 
-            stmt.setTimestamp(4, Timestamp.from(account.getLastLogin()));
-            stmt.setString(5, account.getEmail());
+            stmt.setString(4, account.getEmail().orElse(null));
 
             UUID uuid = account.getUuid();
-            stmt.setObject(6, toArray(uuid));
+            stmt.setObject(5, toArray(uuid));
 
             stmt.execute();
             cache.put(uuid, account);

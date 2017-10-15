@@ -34,7 +34,6 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -48,8 +47,11 @@ import org.spongepowered.api.scheduler.Task;
 
 public class ConnectionListener {
 
-    private final Pattern validNamePattern = Pattern.compile("^\\w{2,16}$");
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    private final FlexibleLogin plugin;
+
+    public ConnectionListener(FlexibleLogin plugin) {
+        this.plugin = plugin;
+    }
 
     @Listener
     public void onPlayerQuit(Disconnect playerQuitEvent, @First Player player) {
@@ -82,7 +84,7 @@ public class ConnectionListener {
     @Listener
     public void onPlayerAuth(Auth playerAuthEvent, @First GameProfile gameProfile) {
         String playerName = gameProfile.getName().get();
-        if (validNamePattern.matcher(playerName).matches()) {
+        if (plugin.isValidName(playerName)) {
             Sponge.getServer().getPlayer(playerName)
                     .map(Player::getName)
                     .filter(name -> name.equals(playerName))
@@ -136,7 +138,7 @@ public class ConnectionListener {
         if (!plugin.getConfigManager().getGeneral().isBypassPermission()
                 || !player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
             Task.builder()
-                    .execute(new LoginMessageTask(player))
+                    .execute(new LoginMessageTask(plugin, player))
                     .interval(plugin.getConfigManager().getGeneral().getMessageInterval(), TimeUnit.SECONDS)
                     .submit(plugin);
         }
@@ -152,8 +154,8 @@ public class ConnectionListener {
         if (!config.isCommandOnlyProtection() && config.getTimeoutLogin() != -1) {
             Task.builder()
                     .execute(() -> {
-                        Account account = plugin.getDatabase().getAccountIfPresent(player);
-                        if (account == null || !account.isLoggedIn()) {
+                        if (plugin.getDatabase().getAccount(player)
+                                .map(account -> !account.isLoggedIn()).orElse(false)) {
                             player.kick(plugin.getConfigManager().getText().getTimeoutReason());
                         }
                     })

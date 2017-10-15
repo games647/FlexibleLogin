@@ -29,6 +29,7 @@ import java.nio.ByteBuffer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -59,7 +60,7 @@ public class Account {
         this.username = username;
         this.passwordHash = password;
 
-        this.ip = ip;
+        this.ip = Arrays.copyOf(ip, ip.length);
         this.lastLogin = Instant.now();
     }
 
@@ -78,7 +79,7 @@ public class Account {
         this.email = resultSet.getString(7);
     }
 
-    public boolean checkPassword(FlexibleLogin plugin, String userInput) throws Exception {
+    public synchronized boolean checkPassword(FlexibleLogin plugin, String userInput) throws Exception {
         return plugin.getHasher().checkPassword(passwordHash, userInput);
     }
 
@@ -103,15 +104,11 @@ public class Account {
     }
 
     public synchronized void setIp(byte[] ip) {
-        this.ip = ip;
-    }
-
-    public synchronized void setLastLogin(Instant lastLogin) {
-        this.lastLogin = lastLogin;
+        this.ip = Arrays.copyOf(ip, ip.length);
     }
 
     public synchronized byte[] getIp() {
-        return ip;
+        return Arrays.copyOf(ip, ip.length);
     }
 
     public synchronized Optional<String> getIpString() {
@@ -126,8 +123,12 @@ public class Account {
         return lastLogin;
     }
 
-    public synchronized String getEmail() {
-        return email;
+    public synchronized Optional<String> getEmail() {
+        if (email == null || email.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(email);
     }
 
     public synchronized void setEmail(String email) {

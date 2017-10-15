@@ -33,23 +33,24 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.scheduler.Task;
 
-public class UnregisterCommand implements CommandExecutor {
+public class UnregisterCommand extends AbstractCommand {
 
-    private final FlexibleLogin plugin = FlexibleLogin.getInstance();
+    public UnregisterCommand(FlexibleLogin plugin) {
+        super(plugin);
+    }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         String account = args.<String>getOne("account").get();
-        if (plugin.isValidUUID(account)) {
+        if (isValidUUID(account)) {
             //check if the account is an UUID
             UUID uuid = UUID.fromString(account);
            Task.builder()
                     //Async as it could run a SQL query
                     .async()
-                    .execute(new UnregisterTask(src, uuid))
+                    .execute(new UnregisterTask(plugin, src, uuid))
                     .submit(plugin);
             return CommandResult.success();
         } else if (plugin.isValidName(account)) {
@@ -57,7 +58,7 @@ public class UnregisterCommand implements CommandExecutor {
             Task.builder()
                     //Async as it could run a SQL query
                     .async()
-                    .execute(new UnregisterTask(src, account))
+                    .execute(new UnregisterTask(plugin, src, account))
                     .submit(plugin);
             return CommandResult.success();
         }

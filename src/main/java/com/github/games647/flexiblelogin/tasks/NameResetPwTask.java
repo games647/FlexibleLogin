@@ -1,6 +1,7 @@
 package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.Account;
+import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import java.util.Optional;
 
@@ -12,9 +13,8 @@ public class NameResetPwTask extends ResetPwTask {
 
     private final String username;
 
-    public NameResetPwTask(CommandSource src, String password, String username) {
-        super(src, password);
-
+    public NameResetPwTask(FlexibleLogin plugin, CommandSource src, String password, String username) {
+        super(plugin, src, password);
         this.username = username;
     }
 
