@@ -38,11 +38,12 @@ import com.github.games647.flexiblelogin.hasher.BcryptHasher;
 import com.github.games647.flexiblelogin.hasher.Hasher;
 import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.github.games647.flexiblelogin.listener.ConnectionListener;
-import com.github.games647.flexiblelogin.listener.PreventListener;
+import com.github.games647.flexiblelogin.listener.prevent.GriefPreventListener;
+import com.github.games647.flexiblelogin.listener.prevent.PreventListener;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 
-import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -52,28 +53,24 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.text.Text;
 
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
 import static org.spongepowered.api.command.args.GenericArguments.string;
+import static org.spongepowered.api.text.Text.of;
 
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION
         , url = PomData.URL, description = PomData.DESCRIPTION)
 public class FlexibleLogin {
 
     private final Logger logger;
-    private final Pattern validNamePattern = Pattern.compile("^\\w{2,16}$");
+    private final Injector injector;
 
-    @Inject
-    @ConfigDir(sharedRoot = false)
-    //We will place more than one config there (i.e. H2/SQLite database)
-    private Path dataFolder;
+    private final Pattern validNamePattern = Pattern.compile("^\\w{2,16}$");
 
     private final ProtectionManager protectionManager = new ProtectionManager(this);
     private final Map<String, Integer> attempts = Maps.newConcurrentMap();
@@ -84,13 +81,14 @@ public class FlexibleLogin {
     private Hasher hasher;
 
     @Inject
-    public FlexibleLogin(Logger logger) {
+    public FlexibleLogin(Logger logger, Injector injector) {
         this.logger = logger;
+        this.injector = injector;
     }
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
-        configuration = new Settings(this, dataFolder);
+        configuration =  injector.getInstance(Settings.class);
         init();
     }
 
@@ -101,7 +99,7 @@ public class FlexibleLogin {
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new LoginCommand(this))
-                .arguments(onlyOne(string(Text.of("password"))))
+                .arguments(onlyOne(string(of("password"))))
                 .build(), "login", "log");
 
         commandDispatcher.register(this, CommandSpec.builder()
@@ -109,19 +107,19 @@ public class FlexibleLogin {
                 .arguments(GenericArguments
                         .optional(GenericArguments
                                 .repeated(
-                                        string(Text.of("password")), 2)))
+                                        string(of("password")), 2)))
                 .build(), "register", "reg");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new ChangePasswordCommand(this))
                 .arguments(GenericArguments
                         .repeated(
-                                string(Text.of("password")), 2))
+                                string(of("password")), 2))
                 .build(), "changepassword", "changepw");
 
         commandDispatcher.register(this, CommandSpec.builder()
                 .executor(new SetEmailCommand(this))
-                .arguments(onlyOne(string(Text.of("email"))))
+                .arguments(onlyOne(string(of("email"))))
                 .build(), "setemail", "email");
 
         commandDispatcher.register(this, CommandSpec.builder()
@@ -140,25 +138,29 @@ public class FlexibleLogin {
                         .build(), "reload", "rl")
                 .child(CommandSpec.builder()
                         .executor(new UnregisterCommand(this))
-                        .arguments(onlyOne(string(Text.of("account"))))
+                        .arguments(onlyOne(string(of("account"))))
                         .build(), "unregister", "unreg")
                 .child(CommandSpec.builder()
                         .executor(new ForceRegisterCommand(this))
                         .arguments(
                                 onlyOne(
-                                        string(Text.of("account"))), string(Text.of("password")))
+                                        string(of("account"))), string(of("password")))
                         .build(), "register", "reg")
                 .child(CommandSpec.builder()
                         .executor(new ResetPasswordCommand(this))
                         .arguments(
                                 onlyOne(
-                                        string(Text.of("account"))), string(Text.of("password")))
+                                        string(of("account"))), string(of("password")))
                         .build(), "resetpw", "resetpassword")
                 .build(), PomData.NAME);
 
         //register events
         Sponge.getEventManager().registerListeners(this, new ConnectionListener(this));
         Sponge.getEventManager().registerListeners(this, new PreventListener(this));
+
+        if (Sponge.getPluginManager().isLoaded("GriefPrevent")) {
+            Sponge.getEventManager().registerListeners(this, new GriefPreventListener(this));
+        }
     }
 
     @Listener

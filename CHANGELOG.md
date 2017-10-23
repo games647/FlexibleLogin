@@ -2,6 +2,7 @@
 
 ###### 0.16
 
+* Fix errors if GriefPrevention is loaded
 * Enhance email SSL security
 * Revert BCrypt workaround
 * Use Instant for lastLogin

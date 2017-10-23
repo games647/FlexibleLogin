@@ -22,23 +22,19 @@
  * SOFTWARE.
  */
 
-package com.github.games647.flexiblelogin.listener;
+package com.github.games647.flexiblelogin.listener.prevent;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.PomData;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import me.ryanhamshire.griefprevention.api.event.CreateClaimEvent;
-
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.InteractBlockEvent;
@@ -55,16 +51,11 @@ import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
-import org.spongepowered.api.plugin.PluginContainer;
 
-public class PreventListener {
-
-    private final FlexibleLogin plugin;
-    private final PluginContainer pluginContainer;
+public class PreventListener extends AbstractPreventListener {
 
     public PreventListener(FlexibleLogin plugin) {
-        this.plugin = plugin;
-        this.pluginContainer = Sponge.getPluginManager().fromInstance(plugin).get();
+        super(plugin);
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
@@ -93,7 +84,7 @@ public class PreventListener {
 
         //do not blacklist our own commands
         if (Sponge.getCommandManager()
-                .getOwnedBy(pluginContainer)
+                .getOwnedBy(plugin)
                 .stream()
                 .map(CommandMapping::getPrimaryAlias)
                 .collect(Collectors.toSet())
@@ -177,32 +168,6 @@ public class PreventListener {
         //check only if the event isn't already cancelled by the first call
         if (targetEntity instanceof Player) {
             checkLoginStatus(damageEntityEvent, (Player) damageEntityEvent.getTargetEntity());
-        }
-    }
-
-    /*
-    Third party plugins
-     */
-
-    @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onPlayerItemPickup(CreateClaimEvent createClaimEvent, @Root Player player) {
-        checkLoginStatus(createClaimEvent, player);
-    }
-
-    private void checkLoginStatus(Cancellable event, Player player) {
-        if (plugin.getConfigManager().getGeneral().isBypassPermission()
-                && player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
-            return;
-        }
-
-        if (plugin.getConfigManager().getGeneral().isCommandOnlyProtection()) {
-            //check if the user is already registered
-            if (!plugin.getDatabase().getAccount(player).isPresent()
-                    && player.hasPermission(PomData.ARTIFACT_ID + ".registerRequired")) {
-                event.setCancelled(true);
-            }
-        } else if (!plugin.getDatabase().isLoggedin(player)) {
-            event.setCancelled(true);
         }
     }
 }

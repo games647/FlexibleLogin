@@ -21,10 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.github.games647.flexiblelogin.config;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.google.inject.Inject;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,6 +37,8 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
+import org.spongepowered.api.config.ConfigDir;
+
 public class Settings {
 
     private final FlexibleLogin plugin;
@@ -45,7 +47,9 @@ public class Settings {
     private ObjectMapper<Config>.BoundInstance configMapper;
     private ObjectMapper<TextConfig>.BoundInstance textMapper;
 
-    public Settings(FlexibleLogin plugin, Path dataFolder) {
+    @Inject
+    //We will place more than one config there (i.e. H2/SQLite database)
+    public Settings(FlexibleLogin plugin, @ConfigDir(sharedRoot = false) Path dataFolder) {
         this.plugin = plugin;
         this.dataFolder = dataFolder;
 
