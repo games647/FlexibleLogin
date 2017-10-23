@@ -26,6 +26,7 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfiguration;
+import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.SendEmailTask;
 import com.google.inject.Inject;
 
@@ -34,7 +35,9 @@ import java.util.Calendar;
 import java.util.Optional;
 import java.util.Properties;
 
+import javax.mail.Message;
 import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -50,33 +53,35 @@ import org.spongepowered.api.scheduler.Task;
 
 public class ForgotPasswordCommand extends AbstractCommand {
 
+    private static final int PASSWORD_LENGTH = 16;
+
     @Inject
-    ForgotPasswordCommand(FlexibleLogin plugin) {
-        super(plugin, "forgot");
+    ForgotPasswordCommand(FlexibleLogin plugin, Settings settings) {
+        super(plugin, settings, "forgot");
     }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
+            src.sendMessage(settings.getText().getPlayersOnlyAction());
             return CommandResult.success();
         }
 
         checkPlayerPermission(src);
 
-        if (!plugin.getConfigManager().getGeneral().getEmail().isEnabled()) {
-            src.sendMessage(plugin.getConfigManager().getText().getEmailNotEnabled());
+        if (!settings.getGeneral().getEmail().isEnabled()) {
+            src.sendMessage(settings.getText().getEmailNotEnabled());
         }
 
         Player player = (Player) src;
         Optional<Account> optAccount = plugin.getDatabase().getAccount(player);
         if (optAccount.isPresent()) {
             if (optAccount.get().isLoggedIn()) {
-                src.sendMessage(plugin.getConfigManager().getText().getAlreadyLoggedIn());
+                player.sendMessage(settings.getText().getAlreadyLoggedIn());
                 return CommandResult.success();
             }
         } else {
-            src.sendMessage(plugin.getConfigManager().getText().getAccountNotLoaded());
+            player.sendMessage(settings.getText().getAccountNotLoaded());
             return CommandResult.success();
         }
 
@@ -84,43 +89,22 @@ public class ForgotPasswordCommand extends AbstractCommand {
 
         Optional<String> optEmail = account.getEmail();
         if (!optEmail.isPresent()) {
-            src.sendMessage(plugin.getConfigManager().getText().getUncommittedEmailAddress());
+            player.sendMessage(settings.getText().getUncommittedEmailAddress());
             return CommandResult.success();
         }
 
+        prepareSend(player, account, optEmail);
+        return CommandResult.success();
+    }
+
+    private void prepareSend(Player player, Account account, Optional<String> optEmail) {
         String newPassword = generatePassword();
 
-        EmailConfiguration emailConfig = plugin.getConfigManager().getGeneral().getEmail();
+        EmailConfiguration emailConfig = settings.getGeneral().getEmail();
+        Session session = buildSession(emailConfig);
 
-        Properties properties = new Properties();
-        properties.setProperty("mail.smtp.host", emailConfig.getHost());
-        properties.setProperty("mail.smtp.auth", "true");
-        properties.setProperty("mail.smtp.port", String.valueOf(emailConfig.getPort()));
-
-        //ssl
-        properties.setProperty("mail.smtp.socketFactory.port", String.valueOf(emailConfig.getPort()));
-        properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        properties.setProperty("mail.smtp.socketFactory.fallback", "false");
-        properties.setProperty("mail.smtp.starttls.enable", String.valueOf(true));
-        properties.setProperty("mail.smtp.ssl.checkserveridentity", "true");
-
-        Session session = Session.getDefaultInstance(properties);
-
-        //prepare email
-        MimeMessage message = new MimeMessage(session);
         try {
-            String senderEmail = emailConfig.getAccount();
-            //sender email with an alias
-            message.setFrom(new InternetAddress(senderEmail, emailConfig.getSenderName()));
-            message.setRecipient(RecipientType.TO, new InternetAddress(optEmail.get(), src.getName()));
-            message.setSubject(replaceVariables(emailConfig.getSubject(), player, newPassword));
-
-            //current time
-            message.setSentDate(Calendar.getInstance().getTime());
-
-            String textContent = replaceVariables(emailConfig.getText(), player, newPassword);
-            //allow html
-            message.setContent(textContent, "text/html");
+            Message message = buildMessage(player, optEmail.get(), newPassword, emailConfig, session);
 
             //send email
             Task.builder()
@@ -134,14 +118,46 @@ public class ForgotPasswordCommand extends AbstractCommand {
                     .async()
                     .execute(() -> plugin.getDatabase().save(account))
                     .submit(plugin);
-        } catch (UnsupportedEncodingException ex) {
-            //we can ignore this, because we will encode with UTF-8 which all Java platforms supports
         } catch (Exception ex) {
             plugin.getLogger().error("Error executing command", ex);
-            src.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
+            player.sendMessage(settings.getText().getErrorCommand());
         }
+    }
 
-        return CommandResult.success();
+    private Session buildSession(EmailConfiguration emailConfig) {
+        Properties properties = new Properties();
+        properties.setProperty("mail.smtp.host", emailConfig.getHost());
+        properties.setProperty("mail.smtp.auth", "true");
+        properties.setProperty("mail.smtp.port", String.valueOf(emailConfig.getPort()));
+
+        //ssl
+        properties.setProperty("mail.smtp.socketFactory.port", String.valueOf(emailConfig.getPort()));
+        properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        properties.setProperty("mail.smtp.socketFactory.fallback", "false");
+        properties.setProperty("mail.smtp.starttls.enable", String.valueOf(true));
+        properties.setProperty("mail.smtp.ssl.checkserveridentity", "true");
+
+        return Session.getDefaultInstance(properties);
+    }
+
+    private MimeMessage buildMessage(Player player, String email, String newPassword, EmailConfiguration emailConfig,
+                                     Session session)
+            throws MessagingException, UnsupportedEncodingException {
+        MimeMessage message = new MimeMessage(session);
+        String senderEmail = emailConfig.getAccount();
+
+        //sender email with an alias
+        message.setFrom(new InternetAddress(senderEmail, emailConfig.getSenderName()));
+        message.setRecipient(RecipientType.TO, new InternetAddress(email, player.getName()));
+        message.setSubject(replaceVariables(emailConfig.getSubject(), player, newPassword));
+
+        //current time
+        message.setSentDate(Calendar.getInstance().getTime());
+        String textContent = replaceVariables(emailConfig.getText(), player, newPassword);
+
+        //allow html
+        message.setContent(textContent, "text/html");
+        return message;
     }
 
     private String replaceVariables(String text, Player player, String newPassword) {
@@ -155,6 +171,6 @@ public class ForgotPasswordCommand extends AbstractCommand {
     }
 
     private String generatePassword() {
-        return RandomStringUtils.random(8);
+        return RandomStringUtils.random(PASSWORD_LENGTH);
     }
 }

@@ -24,6 +24,7 @@
 package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.RegisterTask;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -41,14 +42,14 @@ import org.spongepowered.api.scheduler.Task;
 public class RegisterCommand extends AbstractCommand {
 
     @Inject
-    RegisterCommand(FlexibleLogin plugin) {
-        super(plugin, "register");
+    RegisterCommand(FlexibleLogin plugin, Settings settings) {
+        super(plugin, settings, "register");
     }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
+            src.sendMessage(settings.getText().getPlayersOnlyAction());
             return CommandResult.success();
         }
 
@@ -56,10 +57,10 @@ public class RegisterCommand extends AbstractCommand {
 
         //If the server is using TOTP, no password is required
         if (!args.hasAny("password")) {
-            if ("totp".equals(plugin.getConfigManager().getGeneral().getHashAlgo())) {
+            if ("totp".equals(settings.getGeneral().getHashAlgo())) {
                 startTask(src, "");
             } else {
-                src.sendMessage(plugin.getConfigManager().getText().getTotpNotEnabled());
+                src.sendMessage(settings.getText().getTotpNotEnabled());
             }
 
             return CommandResult.success();
@@ -69,14 +70,14 @@ public class RegisterCommand extends AbstractCommand {
         List<String> indexPasswords = Lists.newArrayList(passwords);
         String password = indexPasswords.get(0);
         if (password.equals(indexPasswords.get(1))) {
-            if (password.length() >= plugin.getConfigManager().getGeneral().getMinPasswordLength()) {
+            if (password.length() >= settings.getGeneral().getMinPasswordLength()) {
                 //Check if the first two passwords are equal to prevent typos
                 startTask(src, password);
             } else {
-                src.sendMessage(plugin.getConfigManager().getText().getTooShortPassword());
+                src.sendMessage(settings.getText().getTooShortPassword());
             }
         } else {
-            src.sendMessage(plugin.getConfigManager().getText().getUnequalPasswords());
+            src.sendMessage(settings.getText().getUnequalPasswords());
         }
 
         return CommandResult.success();

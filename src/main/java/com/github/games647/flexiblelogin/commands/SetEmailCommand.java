@@ -25,6 +25,7 @@
 package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.config.Settings;
 import com.google.inject.Inject;
 
 import java.util.regex.Pattern;
@@ -41,14 +42,14 @@ public class SetEmailCommand extends AbstractCommand {
     private final Pattern emailPattern = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+");
 
     @Inject
-    SetEmailCommand(FlexibleLogin plugin) {
-        super(plugin, "email");
+    SetEmailCommand(FlexibleLogin plugin, Settings settings) {
+        super(plugin, settings, "email");
     }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
+            src.sendMessage(settings.getText().getPlayersOnlyAction());
             return CommandResult.empty();
         }
 
@@ -58,7 +59,7 @@ public class SetEmailCommand extends AbstractCommand {
         if (emailPattern.matcher(email).matches()) {
             plugin.getDatabase().getAccount((Player) src).ifPresent(account -> {
                 account.setEmail(email);
-                src.sendMessage(plugin.getConfigManager().getText().getEmailSet());
+                src.sendMessage(settings.getText().getEmailSet());
                 Task.builder()
                         .async()
                         .execute(() -> plugin.getDatabase().save(account))
@@ -68,7 +69,7 @@ public class SetEmailCommand extends AbstractCommand {
             return CommandResult.success();
         }
 
-        src.sendMessage(plugin.getConfigManager().getText().getNotEmail());
+        src.sendMessage(settings.getText().getNotEmail());
         return CommandResult.success();
     }
 }

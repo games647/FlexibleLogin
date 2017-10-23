@@ -27,6 +27,7 @@ import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.PomData;
 import com.github.games647.flexiblelogin.config.Config;
+import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
 import com.google.inject.Inject;
 
@@ -49,10 +50,12 @@ import org.spongepowered.api.scheduler.Task;
 public class ConnectionListener {
 
     private final FlexibleLogin plugin;
+    private final Settings settings;
 
     @Inject
-    ConnectionListener(FlexibleLogin plugin) {
+    ConnectionListener(FlexibleLogin plugin, Settings settings) {
         this.plugin = plugin;
+        this.settings = settings;
     }
 
     @Listener
@@ -66,7 +69,7 @@ public class ConnectionListener {
             //account is loaded -> mark the player as logout as it could remain in the cache
             account.setLoggedIn(false);
 
-            if (plugin.getConfigManager().getGeneral().isUpdateLoginStatus()) {
+            if (settings.getGeneral().isUpdateLoginStatus()) {
                 Task.builder()
                         .async().execute(() -> plugin.getDatabase().flushLoginStatus(account, false))
                         .submit(plugin);
@@ -91,12 +94,12 @@ public class ConnectionListener {
                     .map(Player::getName)
                     .filter(name -> name.equals(playerName))
                     .ifPresent(name -> {
-                        playerAuthEvent.setMessage(plugin.getConfigManager().getText().getAlreadyOnline());
+                        playerAuthEvent.setMessage(settings.getText().getAlreadyOnline());
                         playerAuthEvent.setCancelled(true);
                     });
         } else {
             //validate invalid characters
-            playerAuthEvent.setMessage(plugin.getConfigManager().getText().getInvalidUsername());
+            playerAuthEvent.setMessage(settings.getText().getInvalidUsername());
             playerAuthEvent.setCancelled(true);
         }
     }
@@ -105,7 +108,7 @@ public class ConnectionListener {
         Optional<Account> optAccount = plugin.getDatabase().loadAccount(player);
         byte[] newIp = player.getConnection().getAddress().getAddress().getAddress();
 
-        Config config = plugin.getConfigManager().getGeneral();
+        Config config = settings.getGeneral();
         if (optAccount.isPresent()) {
             Account account = optAccount.get();
 
@@ -114,7 +117,7 @@ public class ConnectionListener {
                     && Duration.between(lastLogin, Instant.now()).getSeconds() > TimeUnit.HOURS.toSeconds(12)
                     && !player.hasPermission(PomData.ARTIFACT_ID + ".no_auto_login")) {
                 //user will be auto logged in
-                player.sendMessage(plugin.getConfigManager().getText().getIpAutoLogin());
+                player.sendMessage(settings.getText().getIpAutoLogin());
                 account.setLoggedIn(true);
             } else {
                 //user has an account but isn't logged in
@@ -137,19 +140,18 @@ public class ConnectionListener {
 
     private void sendNotLoggedInMessage(Player player) {
         //send the message if the player only needs to login
-        if (!plugin.getConfigManager().getGeneral().isBypassPermission()
+        if (!settings.getGeneral().isBypassPermission()
                 || !player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
             Task.builder()
                     .execute(new LoginMessageTask(plugin, player))
-                    .interval(plugin.getConfigManager().getGeneral().getMessageInterval(), TimeUnit.SECONDS)
+                    .interval(settings.getGeneral().getMessageInterval(), TimeUnit.SECONDS)
                     .submit(plugin);
         }
     }
 
     private void scheduleTimeoutTask(Player player) {
-        Config config = plugin.getConfigManager().getGeneral();
-        if (plugin.getConfigManager().getGeneral().isBypassPermission()
-                && player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
+        Config config = settings.getGeneral();
+        if (config.isBypassPermission() && player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
             return;
         }
 
@@ -158,7 +160,7 @@ public class ConnectionListener {
                     .execute(() -> {
                         if (plugin.getDatabase().getAccount(player)
                                 .map(account -> !account.isLoggedIn()).orElse(false)) {
-                            player.kick(plugin.getConfigManager().getText().getTimeoutReason());
+                            player.kick(settings.getText().getTimeoutReason());
                         }
                     })
                     .delay(config.getTimeoutLogin(), TimeUnit.SECONDS)

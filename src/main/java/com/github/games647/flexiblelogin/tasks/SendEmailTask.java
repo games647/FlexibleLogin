@@ -27,10 +27,10 @@ package com.github.games647.flexiblelogin.tasks;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfiguration;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.MimeMessage;
 
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -38,11 +38,11 @@ public class SendEmailTask implements Runnable {
 
     private final FlexibleLogin plugin;
     private final Session session;
-    private final MimeMessage email;
+    private final Message email;
 
     private final Player player;
 
-    public SendEmailTask(FlexibleLogin plugin, Player player, Session session, MimeMessage email) {
+    public SendEmailTask(FlexibleLogin plugin, Player player, Session session, Message email) {
         this.plugin = plugin;
         this.session = session;
         this.email = email;

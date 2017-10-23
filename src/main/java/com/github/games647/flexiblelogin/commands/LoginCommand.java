@@ -24,6 +24,7 @@
 package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.LoginTask;
 import com.google.inject.Inject;
 
@@ -37,21 +38,21 @@ import org.spongepowered.api.scheduler.Task;
 public class LoginCommand extends AbstractCommand {
 
     @Inject
-    LoginCommand(FlexibleLogin plugin) {
-        super(plugin, "login");
+    LoginCommand(FlexibleLogin plugin, Settings settings) {
+        super(plugin, settings, "login");
     }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
+            src.sendMessage(settings.getText().getPlayersOnlyAction());
             return CommandResult.empty();
         }
 
         checkPlayerPermission(src);
 
         if (plugin.getDatabase().isLoggedin((Player) src)) {
-            src.sendMessage(plugin.getConfigManager().getText().getAlreadyLoggedIn());
+            src.sendMessage(settings.getText().getAlreadyLoggedIn());
         }
 
         //the arg isn't optional. We can be sure there is value

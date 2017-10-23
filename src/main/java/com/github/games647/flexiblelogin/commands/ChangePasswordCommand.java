@@ -25,6 +25,7 @@ package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.config.Settings;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
@@ -41,21 +42,21 @@ import org.spongepowered.api.scheduler.Task;
 public class ChangePasswordCommand extends AbstractCommand {
 
     @Inject
-    ChangePasswordCommand(FlexibleLogin plugin) {
-        super(plugin, "changepw");
+    ChangePasswordCommand(FlexibleLogin plugin, Settings settings) {
+        super(plugin, settings, "changepw");
     }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
+            src.sendMessage(settings.getText().getPlayersOnlyAction());
             return CommandResult.empty();
         }
 
         checkPlayerPermission(src);
 
         if (plugin.getDatabase().isLoggedin((Player) src)) {
-            src.sendMessage(plugin.getConfigManager().getText().getNotLoggedIn());
+            src.sendMessage(settings.getText().getNotLoggedIn());
             return CommandResult.empty();
         }
 
@@ -75,19 +76,19 @@ public class ChangePasswordCommand extends AbstractCommand {
                             account.setPasswordHash(hash);
                             boolean success = plugin.getDatabase().save(account);
                             if (success) {
-                                src.sendMessage(plugin.getConfigManager().getText().getChangePassword());
+                                src.sendMessage(settings.getText().getChangePassword());
                             } else {
-                                src.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
+                                src.sendMessage(settings.getText().getErrorCommand());
                             }
                         })
                         .name("Register Query")
                         .submit(plugin);
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash on change password", ex);
-                src.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
+                src.sendMessage(settings.getText().getErrorCommand());
             }
         } else {
-            src.sendMessage(plugin.getConfigManager().getText().getUnequalPasswords());
+            src.sendMessage(settings.getText().getUnequalPasswords());
         }
 
         return CommandResult.success();

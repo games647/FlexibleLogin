@@ -24,6 +24,7 @@
 package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.ForceRegTask;
 import com.google.common.base.Charsets;
 import com.google.inject.Inject;
@@ -42,8 +43,8 @@ import org.spongepowered.api.scheduler.Task;
 public class ForceRegisterCommand extends AbstractCommand {
 
     @Inject
-    ForceRegisterCommand(FlexibleLogin plugin) {
-        super(plugin);
+    ForceRegisterCommand(FlexibleLogin plugin, Settings settings) {
+        super(plugin, settings);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class ForceRegisterCommand extends AbstractCommand {
     private void onNameRegister(CommandSource src, String accountId, String password) {
         Optional<Player> player = Sponge.getServer().getPlayer(accountId);
         if (player.isPresent()) {
-            src.sendMessage(plugin.getConfigManager().getText().getForceRegisterOnline());
+            src.sendMessage(settings.getText().getForceRegisterOnline());
         } else {
             UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + accountId).getBytes(Charsets.UTF_8));
 
@@ -82,7 +83,7 @@ public class ForceRegisterCommand extends AbstractCommand {
         UUID uuid = UUID.fromString(accountId);
         Optional<Player> player = Sponge.getServer().getPlayer(uuid);
         if (player.isPresent()) {
-            src.sendMessage(plugin.getConfigManager().getText().getForceRegisterOnline());
+            src.sendMessage(settings.getText().getForceRegisterOnline());
         } else {
             Task.builder()
                     //Async as it could run a SQL query

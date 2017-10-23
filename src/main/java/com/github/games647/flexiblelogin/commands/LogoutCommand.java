@@ -25,6 +25,7 @@ package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.config.Settings;
 import com.google.inject.Inject;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -38,25 +39,25 @@ import org.spongepowered.api.scheduler.Task;
 public class LogoutCommand extends AbstractCommand {
 
     @Inject
-    LogoutCommand(FlexibleLogin plugin) {
-        super(plugin, "logout");
+    LogoutCommand(FlexibleLogin plugin, Settings settings) {
+        super(plugin, settings, "logout");
     }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(plugin.getConfigManager().getText().getPlayersOnlyAction());
+            src.sendMessage(settings.getText().getPlayersOnlyAction());
             return CommandResult.success();
         }
 
         checkPlayerPermission(src);
 
         if (plugin.getDatabase().isLoggedin((Player) src)) {
-            src.sendMessage(plugin.getConfigManager().getText().getNotLoggedIn());
+            src.sendMessage(settings.getText().getNotLoggedIn());
         } else {
             Account account = plugin.getDatabase().getAccount((Player) src).get();
 
-            src.sendMessage(plugin.getConfigManager().getText().getSuccessfullyLoggedOut());
+            src.sendMessage(settings.getText().getSuccessfullyLoggedOut());
             account.setLoggedIn(false);
             account.setIp(ArrayUtils.EMPTY_BYTE_ARRAY);
 
@@ -65,7 +66,7 @@ public class LogoutCommand extends AbstractCommand {
                     .execute(() -> {
                         //flushes the ip update
                         plugin.getDatabase().save(account);
-                        if (plugin.getConfigManager().getGeneral().isUpdateLoginStatus()) {
+                        if (settings.getGeneral().isUpdateLoginStatus()) {
                             plugin.getDatabase().flushLoginStatus(account, false);
                         }
                     })

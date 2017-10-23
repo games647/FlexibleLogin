@@ -25,6 +25,7 @@
 package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.UnregisterTask;
 import com.google.inject.Inject;
 
@@ -39,8 +40,8 @@ import org.spongepowered.api.scheduler.Task;
 public class UnregisterCommand extends AbstractCommand {
 
     @Inject
-    UnregisterCommand(FlexibleLogin plugin) {
-        super(plugin);
+    UnregisterCommand(FlexibleLogin plugin, Settings settings) {
+        super(plugin, settings);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class UnregisterCommand extends AbstractCommand {
             return CommandResult.success();
         }
 
-        src.sendMessage(plugin.getConfigManager().getText().getUnregisteringFailed());
+        src.sendMessage(settings.getText().getUnregisteringFailed());
 
         return CommandResult.success();
     }

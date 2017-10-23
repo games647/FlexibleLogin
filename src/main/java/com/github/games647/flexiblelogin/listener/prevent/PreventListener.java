@@ -26,11 +26,13 @@ package com.github.games647.flexiblelogin.listener.prevent;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.config.Settings;
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandMapping;
@@ -55,9 +57,17 @@ import org.spongepowered.api.event.message.MessageChannelEvent;
 
 public class PreventListener extends AbstractPreventListener {
 
+    private final Set<String> ignoredCommands;
+
     @Inject
-    PreventListener(FlexibleLogin plugin) {
-        super(plugin);
+    PreventListener(FlexibleLogin plugin, Settings settings) {
+        super(plugin, settings);
+
+        this.ignoredCommands = Sponge.getCommandManager()
+                .getOwnedBy(plugin)
+                .stream()
+                .map(CommandMapping::getPrimaryAlias)
+                .collect(ImmutableSet.toImmutableSet());
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
@@ -85,20 +95,15 @@ public class PreventListener extends AbstractPreventListener {
         }
 
         //do not blacklist our own commands
-        if (Sponge.getCommandManager()
-                .getOwnedBy(plugin)
-                .stream()
-                .map(CommandMapping::getPrimaryAlias)
-                .collect(Collectors.toSet())
-                .contains(command)) {
+        if (ignoredCommands.contains(command)) {
             return;
         }
 
-        if (plugin.getConfigManager().getGeneral().isCommandOnlyProtection()) {
-            List<String> protectedCommands = plugin.getConfigManager().getGeneral().getProtectedCommands();
+        if (settings.getGeneral().isCommandOnlyProtection()) {
+            List<String> protectedCommands = settings.getGeneral().getProtectedCommands();
             if ((protectedCommands.isEmpty() || protectedCommands.contains(command))) {
                 if (!plugin.getDatabase().isLoggedin(player)) {
-                    player.sendMessage(plugin.getConfigManager().getText().getProtectedCommand());
+                    player.sendMessage(settings.getText().getProtectedCommand());
                     commandEvent.setCancelled(true);
                 }
             }

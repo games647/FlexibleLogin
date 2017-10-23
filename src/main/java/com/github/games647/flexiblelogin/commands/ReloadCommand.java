@@ -24,6 +24,7 @@
 package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.config.Settings;
 import com.google.inject.Inject;
 
 import org.spongepowered.api.command.CommandException;
@@ -34,15 +35,15 @@ import org.spongepowered.api.command.args.CommandContext;
 public class ReloadCommand extends AbstractCommand {
 
     @Inject
-    ReloadCommand(FlexibleLogin plugin) {
-        super(plugin);
+    ReloadCommand(FlexibleLogin plugin, Settings settings) {
+        super(plugin, settings);
     }
 
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         plugin.onReload();
 
-        source.sendMessage(plugin.getConfigManager().getText().getReload());
+        source.sendMessage(settings.getText().getReload());
         return CommandResult.success();
     }
 }
