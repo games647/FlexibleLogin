@@ -26,6 +26,7 @@ package com.github.games647.flexiblelogin.listener.prevent;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.google.inject.Inject;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +55,8 @@ import org.spongepowered.api.event.message.MessageChannelEvent;
 
 public class PreventListener extends AbstractPreventListener {
 
-    public PreventListener(FlexibleLogin plugin) {
+    @Inject
+    PreventListener(FlexibleLogin plugin) {
         super(plugin);
     }
 

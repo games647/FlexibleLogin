@@ -25,6 +25,7 @@
 package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.google.inject.Inject;
 
 import java.util.regex.Pattern;
 
@@ -39,7 +40,8 @@ public class SetEmailCommand extends AbstractCommand {
 
     private final Pattern emailPattern = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+");
 
-    public SetEmailCommand(FlexibleLogin plugin) {
+    @Inject
+    SetEmailCommand(FlexibleLogin plugin) {
         super(plugin, "email");
     }
 

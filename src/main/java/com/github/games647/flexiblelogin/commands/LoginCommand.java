@@ -25,6 +25,7 @@ package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.LoginTask;
+import com.google.inject.Inject;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -35,7 +36,8 @@ import org.spongepowered.api.scheduler.Task;
 
 public class LoginCommand extends AbstractCommand {
 
-    public LoginCommand(FlexibleLogin plugin) {
+    @Inject
+    LoginCommand(FlexibleLogin plugin) {
         super(plugin, "login");
     }
 

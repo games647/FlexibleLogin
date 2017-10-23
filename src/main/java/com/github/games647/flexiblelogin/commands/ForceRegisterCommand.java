@@ -26,6 +26,7 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.ForceRegTask;
 import com.google.common.base.Charsets;
+import com.google.inject.Inject;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -40,7 +41,8 @@ import org.spongepowered.api.scheduler.Task;
 
 public class ForceRegisterCommand extends AbstractCommand {
 
-    public ForceRegisterCommand(FlexibleLogin plugin) {
+    @Inject
+    ForceRegisterCommand(FlexibleLogin plugin) {
         super(plugin);
     }
 

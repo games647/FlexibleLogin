@@ -28,6 +28,7 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.PomData;
 import com.github.games647.flexiblelogin.config.Config;
 import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
+import com.google.inject.Inject;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -49,7 +50,8 @@ public class ConnectionListener {
 
     private final FlexibleLogin plugin;
 
-    public ConnectionListener(FlexibleLogin plugin) {
+    @Inject
+    ConnectionListener(FlexibleLogin plugin) {
         this.plugin = plugin;
     }
 

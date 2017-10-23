@@ -26,6 +26,7 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.RegisterTask;
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,7 +40,8 @@ import org.spongepowered.api.scheduler.Task;
 
 public class RegisterCommand extends AbstractCommand {
 
-    public RegisterCommand(FlexibleLogin plugin) {
+    @Inject
+    RegisterCommand(FlexibleLogin plugin) {
         super(plugin, "register");
     }
 

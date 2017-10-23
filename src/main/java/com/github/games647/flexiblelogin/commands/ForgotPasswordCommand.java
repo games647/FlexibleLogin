@@ -27,6 +27,7 @@ import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfiguration;
 import com.github.games647.flexiblelogin.tasks.SendEmailTask;
+import com.google.inject.Inject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
@@ -49,7 +50,8 @@ import org.spongepowered.api.scheduler.Task;
 
 public class ForgotPasswordCommand extends AbstractCommand {
 
-    public ForgotPasswordCommand(FlexibleLogin plugin) {
+    @Inject
+    ForgotPasswordCommand(FlexibleLogin plugin) {
         super(plugin, "forgot");
     }
 

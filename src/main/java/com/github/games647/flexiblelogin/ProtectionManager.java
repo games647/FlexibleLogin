@@ -23,11 +23,12 @@
  */
 package com.github.games647.flexiblelogin;
 
+import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.config.SpawnTeleportConfig;
 import com.google.common.collect.Maps;
+import com.google.inject.Inject;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.spongepowered.api.Sponge;
@@ -37,18 +38,18 @@ import org.spongepowered.api.world.World;
 
 public class ProtectionManager {
 
+    private final Settings config;
     private final Map<UUID, Location<World>> oldLocations = Maps.newHashMap();
-    private final FlexibleLogin plugin;
 
-    public ProtectionManager(FlexibleLogin plugin) {
-        this.plugin = plugin;
+    @Inject
+    ProtectionManager(Settings config) {
+        this.config = config;
     }
 
     public void protect(Player player) {
-        SpawnTeleportConfig teleportConfig = plugin.getConfigManager().getGeneral().getTeleport();
+        SpawnTeleportConfig teleportConfig = config.getGeneral().getTeleport();
         if (teleportConfig.isEnabled()) {
-            Optional<Location<World>> spawnLocation = teleportConfig.getSpawnLocation();
-            spawnLocation.ifPresent(worldLocation -> {
+            teleportConfig.getSpawnLocation().ifPresent(worldLocation -> {
                 oldLocations.put(player.getUniqueId(), player.getLocation());
                 safeTeleport(player, worldLocation);
             });
@@ -70,7 +71,7 @@ public class ProtectionManager {
     }
 
     private void safeTeleport(Player player, Location<World> location) {
-        if (plugin.getConfigManager().getGeneral().isSafeLocation()) {
+        if (config.getGeneral().isSafeLocation()) {
             Sponge.getTeleportHelper().getSafeLocation(location).ifPresent(player::setLocation);
         } else {
             player.setLocation(location);

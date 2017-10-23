@@ -53,6 +53,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.event.EventManager;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
@@ -69,26 +70,27 @@ public class FlexibleLogin {
 
     private final Logger logger;
     private final Injector injector;
+    private final Settings configuration;
 
     private final Pattern validNamePattern = Pattern.compile("^\\w{2,16}$");
-
-    private final ProtectionManager protectionManager = new ProtectionManager(this);
     private final Map<String, Integer> attempts = Maps.newConcurrentMap();
 
-    private Settings configuration;
     private Database database;
+
+    @Inject
+    private ProtectionManager protectionManager;
 
     private Hasher hasher;
 
     @Inject
-    public FlexibleLogin(Logger logger, Injector injector) {
+    public FlexibleLogin(Logger logger, Injector injector, Settings settings) {
         this.logger = logger;
         this.injector = injector;
+        this.configuration = settings;
     }
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
-        configuration =  injector.getInstance(Settings.class);
         init();
     }
 
@@ -98,12 +100,12 @@ public class FlexibleLogin {
         CommandManager commandDispatcher = Sponge.getCommandManager();
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new LoginCommand(this))
+                .executor(injector.getInstance(LoginCommand.class))
                 .arguments(onlyOne(string(of("password"))))
                 .build(), "login", "log");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new RegisterCommand(this))
+                .executor(injector.getInstance(RegisterCommand.class))
                 .arguments(GenericArguments
                         .optional(GenericArguments
                                 .repeated(
@@ -111,55 +113,55 @@ public class FlexibleLogin {
                 .build(), "register", "reg");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new ChangePasswordCommand(this))
+                .executor(injector.getInstance(ChangePasswordCommand.class))
                 .arguments(GenericArguments
                         .repeated(
                                 string(of("password")), 2))
                 .build(), "changepassword", "changepw");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new SetEmailCommand(this))
+                .executor(injector.getInstance(SetEmailCommand.class))
                 .arguments(onlyOne(string(of("email"))))
                 .build(), "setemail", "email");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new ForgotPasswordCommand(this))
+                .executor(injector.getInstance(ForgotPasswordCommand.class))
                 .build(), "forgotpassword", "forgot");
 
         commandDispatcher.register(this, CommandSpec.builder()
-                .executor(new LogoutCommand(this))
+                .executor(injector.getInstance(LogoutCommand.class))
                 .build(), "logout");
 
         //admin commands
         commandDispatcher.register(this, CommandSpec.builder()
-                .permission(PomData.NAME + ".admin")
+                .permission(PomData.ARTIFACT_ID + ".admin")
                 .child(CommandSpec.builder()
-                        .executor(new ReloadCommand(this))
+                        .executor(injector.getInstance(ReloadCommand.class))
                         .build(), "reload", "rl")
                 .child(CommandSpec.builder()
-                        .executor(new UnregisterCommand(this))
+                        .executor(injector.getInstance(UnregisterCommand.class))
                         .arguments(onlyOne(string(of("account"))))
                         .build(), "unregister", "unreg")
                 .child(CommandSpec.builder()
-                        .executor(new ForceRegisterCommand(this))
+                        .executor(injector.getInstance(ForceRegisterCommand.class))
                         .arguments(
                                 onlyOne(
                                         string(of("account"))), string(of("password")))
                         .build(), "register", "reg")
                 .child(CommandSpec.builder()
-                        .executor(new ResetPasswordCommand(this))
+                        .executor(injector.getInstance(ResetPasswordCommand.class))
                         .arguments(
                                 onlyOne(
                                         string(of("account"))), string(of("password")))
                         .build(), "resetpw", "resetpassword")
-                .build(), PomData.NAME);
+                .build(), PomData.ARTIFACT_ID);
 
         //register events
-        Sponge.getEventManager().registerListeners(this, new ConnectionListener(this));
-        Sponge.getEventManager().registerListeners(this, new PreventListener(this));
-
-        if (Sponge.getPluginManager().isLoaded("GriefPrevent")) {
-            Sponge.getEventManager().registerListeners(this, new GriefPreventListener(this));
+        EventManager eventManager = Sponge.getEventManager();
+        eventManager.registerListeners(this, injector.getInstance(ConnectionListener.class));
+        eventManager.registerListeners(this, injector.getInstance(PreventListener.class));
+        if (Sponge.getPluginManager().isLoaded("GriefPrevention")) {
+            eventManager.registerListeners(this, injector.getInstance(GriefPreventListener.class));
         }
     }
 

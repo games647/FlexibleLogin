@@ -28,6 +28,7 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.tasks.NameResetPwTask;
 import com.github.games647.flexiblelogin.tasks.ResetPwTask;
 import com.github.games647.flexiblelogin.tasks.UUIDResetPwTask;
+import com.google.inject.Inject;
 
 import java.util.UUID;
 
@@ -39,7 +40,8 @@ import org.spongepowered.api.scheduler.Task;
 
 public class ResetPasswordCommand extends AbstractCommand {
 
-    public ResetPasswordCommand(FlexibleLogin plugin) {
+    @Inject
+    ResetPasswordCommand(FlexibleLogin plugin) {
         super(plugin);
     }
 

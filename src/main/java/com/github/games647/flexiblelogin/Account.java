@@ -38,13 +38,12 @@ import org.spongepowered.api.entity.living.player.Player;
 public class Account {
 
     private final UUID uuid;
+    private final Instant lastLogin;
 
     private String username;
     private String passwordHash;
 
     private byte[] ip;
-    private Instant lastLogin;
-
     private String email;
 
     private boolean loggedIn;

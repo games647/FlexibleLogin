@@ -23,7 +23,6 @@
  */
 package com.github.games647.flexiblelogin.config;
 
-import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.google.inject.Inject;
 
 import java.io.IOException;
@@ -37,11 +36,12 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.config.ConfigDir;
 
 public class Settings {
 
-    private final FlexibleLogin plugin;
+    private final Logger logger;
     private final Path dataFolder;
 
     private ObjectMapper<Config>.BoundInstance configMapper;
@@ -49,15 +49,15 @@ public class Settings {
 
     @Inject
     //We will place more than one config there (i.e. H2/SQLite database)
-    public Settings(FlexibleLogin plugin, @ConfigDir(sharedRoot = false) Path dataFolder) {
-        this.plugin = plugin;
+    public Settings(Logger logger, @ConfigDir(sharedRoot = false) Path dataFolder) {
+        this.logger = logger;
         this.dataFolder = dataFolder;
 
         try {
             configMapper = ObjectMapper.forClass(Config.class).bindToNew();
             textMapper = ObjectMapper.forClass(TextConfig.class).bindToNew();
         } catch (ObjectMappingException objMappingExc) {
-            plugin.getLogger().error("Invalid plugin structure", objMappingExc);
+            logger.error("Invalid plugin structure", objMappingExc);
         }
     }
 
@@ -72,7 +72,7 @@ public class Settings {
                 Path textFile = dataFolder.resolve("messages.conf");
                 loadMapper(textMapper, HoconConfigurationLoader.builder().setPath(textFile).build());
             } catch (IOException ioExc) {
-                plugin.getLogger().error("Error creating a new config file", ioExc);
+                logger.error("Error creating a new config file", ioExc);
             }
         }
     }
@@ -90,9 +90,9 @@ public class Settings {
                 //add missing default values
                 loader.save(rootNode);
             } catch (ObjectMappingException objMappingExc) {
-                plugin.getLogger().error("Error loading the configuration", objMappingExc);
+                logger.error("Error loading the configuration", objMappingExc);
             } catch (IOException ioExc) {
-                plugin.getLogger().error("Error saving the default configuration", ioExc);
+                logger.error("Error saving the default configuration", ioExc);
             }
         }
     }

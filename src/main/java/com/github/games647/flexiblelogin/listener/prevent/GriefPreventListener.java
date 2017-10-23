@@ -1,6 +1,7 @@
 package com.github.games647.flexiblelogin.listener.prevent;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.google.inject.Inject;
 
 import me.ryanhamshire.griefprevention.api.event.CreateClaimEvent;
 
@@ -11,7 +12,8 @@ import org.spongepowered.api.event.filter.cause.Root;
 
 public class GriefPreventListener extends AbstractPreventListener {
 
-    public GriefPreventListener(FlexibleLogin plugin) {
+    @Inject
+    GriefPreventListener(FlexibleLogin plugin) {
         super(plugin);
     }
 
