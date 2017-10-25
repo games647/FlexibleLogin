@@ -52,7 +52,7 @@ public class LogoutCommand extends AbstractCommand {
 
         checkPlayerPermission(src);
 
-        if (plugin.getDatabase().isLoggedin((Player) src)) {
+        if (plugin.getDatabase().isLoggedIn((Player) src)) {
             src.sendMessage(settings.getText().getNotLoggedIn());
         } else {
             Account account = plugin.getDatabase().getAccount((Player) src).get();

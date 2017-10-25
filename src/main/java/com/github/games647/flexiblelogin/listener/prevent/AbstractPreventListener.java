@@ -28,7 +28,7 @@ public abstract class AbstractPreventListener {
                     && player.hasPermission(PomData.ARTIFACT_ID + ".registerRequired")) {
                 event.setCancelled(true);
             }
-        } else if (!plugin.getDatabase().isLoggedin(player)) {
+        } else if (!plugin.getDatabase().isLoggedIn(player)) {
             event.setCancelled(true);
         }
     }

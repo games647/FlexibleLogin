@@ -62,7 +62,8 @@ public class Database {
         String storagePath = sqlConfig.getPath().replace("%DIR%", configDir.normalize().toString());
 
         StringBuilder urlBuilder = new StringBuilder("jdbc:")
-                .append(sqlConfig.getType().name().toLowerCase()).append("://");
+                .append(sqlConfig.getType().name().toLowerCase())
+                .append("://");
         switch (sqlConfig.getType()) {
             case SQLITE:
                 urlBuilder.append(storagePath).append(File.separatorChar).append("database.db");
@@ -101,7 +102,7 @@ public class Database {
         return Optional.ofNullable(cache.get(player.getUniqueId()));
     }
 
-    public boolean isLoggedin(Player player) {
+    public boolean isLoggedIn(Player player) {
         return getAccount(player).map(Account::isLoggedIn).orElse(false);
     }
 

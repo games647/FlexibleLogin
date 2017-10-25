@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.args.GenericArguments;
@@ -176,12 +177,14 @@ public class FlexibleLogin {
         //run this task sync in order let it finish before the process ends
         database.close();
 
-        Sponge.getServer().getOnlinePlayers().forEach(protectionManager::unprotect);
+        Server server = Sponge.getServer();
+        server.getOnlinePlayers().forEach(protectionManager::unprotect);
 
         init();
 
-        Sponge.getServer().getOnlinePlayers().forEach(protectionManager::protect);
-        Sponge.getServer().getOnlinePlayers().forEach(database::loadAccount);
+        server.getOnlinePlayers().stream()
+                .peek(protectionManager::protect)
+                .forEach(database::loadAccount);
     }
 
     private void init() {

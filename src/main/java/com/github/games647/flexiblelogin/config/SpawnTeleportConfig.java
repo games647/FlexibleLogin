@@ -65,15 +65,15 @@ public class SpawnTeleportConfig {
         return worldName;
     }
 
-    public int getCoordX() {
+    public int getX() {
         return coordX;
     }
 
-    public int getCoordY() {
+    public int getY() {
         return coordY;
     }
 
-    public int getCoordZ() {
+    public int getZ() {
         return coordZ;
     }
 
@@ -82,8 +82,7 @@ public class SpawnTeleportConfig {
             worldName = Sponge.getServer().getDefaultWorldName();
         }
 
-        Optional<World> optionalWorld = Sponge.getServer().getWorld(worldName);
-        return optionalWorld.map(world -> {
+        return Sponge.getServer().getWorld(worldName).map(world -> {
             if (defaultSpawn) {
                 return world.getSpawnLocation();
             }

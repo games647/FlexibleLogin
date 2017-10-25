@@ -27,14 +27,14 @@ package com.github.games647.flexiblelogin.listener.prevent;
 import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
@@ -57,17 +57,19 @@ import org.spongepowered.api.event.message.MessageChannelEvent;
 
 public class PreventListener extends AbstractPreventListener {
 
+    private final CommandManager commandManager;
     private final Set<String> ignoredCommands;
 
     @Inject
-    PreventListener(FlexibleLogin plugin, Settings settings) {
+    PreventListener(FlexibleLogin plugin, Settings settings, CommandManager commandManager) {
         super(plugin, settings);
+        this.commandManager = commandManager;
 
-        this.ignoredCommands = Sponge.getCommandManager()
+        this.ignoredCommands = commandManager
                 .getOwnedBy(plugin)
                 .stream()
                 .map(CommandMapping::getPrimaryAlias)
-                .collect(ImmutableSet.toImmutableSet());
+                .collect(Collectors.toSet());
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
@@ -89,7 +91,7 @@ public class PreventListener extends AbstractPreventListener {
     public void onCommand(SendCommandEvent commandEvent, @First Player player) {
         String command = commandEvent.getCommand();
 
-        Optional<? extends CommandMapping> commandOpt = Sponge.getCommandManager().get(command);
+        Optional<? extends CommandMapping> commandOpt = commandManager.get(command);
         if (commandOpt.isPresent()) {
             command = commandOpt.get().getPrimaryAlias();
         }
@@ -102,7 +104,7 @@ public class PreventListener extends AbstractPreventListener {
         if (settings.getGeneral().isCommandOnlyProtection()) {
             List<String> protectedCommands = settings.getGeneral().getProtectedCommands();
             if ((protectedCommands.isEmpty() || protectedCommands.contains(command))) {
-                if (!plugin.getDatabase().isLoggedin(player)) {
+                if (!plugin.getDatabase().isLoggedIn(player)) {
                     player.sendMessage(settings.getText().getProtectedCommand());
                     commandEvent.setCancelled(true);
                 }
