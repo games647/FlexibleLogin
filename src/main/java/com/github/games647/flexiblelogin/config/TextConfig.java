@@ -1,7 +1,9 @@
 /*
+ * This file is part of FlexibleLogin, licensed under the MIT License (MIT).
+ *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 games647 and contributors
+ * Copyright (c) 2015-2017 contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

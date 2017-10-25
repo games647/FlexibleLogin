@@ -2,7 +2,9 @@
 
 ###### 0.16
 
-* Fix errors if GriefPrevention is loaded
+* Safe teleport players outside of Nether portals (Fixes #81)
+* Cache flexiblelogin plugin commands that should be ignored for events
+* Fix errors if GriefPrevention isn't loaded
 * Enhance email SSL security
 * Revert BCrypt workaround
 * Use Instant for lastLogin
