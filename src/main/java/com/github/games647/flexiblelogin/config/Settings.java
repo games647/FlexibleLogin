@@ -28,7 +28,6 @@ package com.github.games647.flexiblelogin.config;
 import com.google.inject.Inject;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -65,18 +64,10 @@ public class Settings {
 
     public void load() {
         Path configFile = dataFolder.resolve("config.conf");
-        if (Files.notExists(configFile)) {
-            try {
-                Files.createDirectories(dataFolder);
+        loadMapper(configMapper, HoconConfigurationLoader.builder().setPath(configFile).build());
 
-                loadMapper(configMapper, HoconConfigurationLoader.builder().setPath(configFile).build());
-
-                Path textFile = dataFolder.resolve("messages.conf");
-                loadMapper(textMapper, HoconConfigurationLoader.builder().setPath(textFile).build());
-            } catch (IOException ioExc) {
-                logger.error("Error creating a new config file", ioExc);
-            }
-        }
+        Path textFile = dataFolder.resolve("messages.conf");
+        loadMapper(textMapper, HoconConfigurationLoader.builder().setPath(textFile).build());
     }
 
     private <T> void loadMapper(ObjectMapper<T>.BoundInstance mapper

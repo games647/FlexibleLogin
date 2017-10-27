@@ -86,7 +86,7 @@ public class FlexibleLogin {
     private Hasher hasher;
 
     @Inject
-    public FlexibleLogin(Logger logger, Injector injector, Settings settings) {
+    FlexibleLogin(Logger logger, Injector injector, Settings settings) {
         this.logger = logger;
         this.injector = injector;
         this.configuration = settings;

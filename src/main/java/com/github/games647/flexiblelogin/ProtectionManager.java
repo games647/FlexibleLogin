@@ -96,6 +96,7 @@ public class ProtectionManager {
 
         Location<World> safeLoc = optSafeLoc.get();
 
+        //Sponge 7.0 adds API support for additional teleport helpers
         Set<Location<World>> locations = Sets.newHashSetWithExpectedSize(DISTANCE * DISTANCE);
         if (safeLoc.getBlockType() == BlockTypes.PORTAL) {
             for (int distanceX = -DISTANCE; distanceX < DISTANCE; distanceX++) {
