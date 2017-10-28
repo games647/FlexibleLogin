@@ -158,6 +158,8 @@
             <groupId>me.ryanhamshire</groupId>
             <artifactId>griefprevention</artifactId>
             <version>1.12.1-4.3.0.480</version>
+            <!-- We only depend on the API -->
+            <classifier>api</classifier>
             <scope>provided</scope>
         </dependency>
 
