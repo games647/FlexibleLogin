@@ -27,7 +27,6 @@ package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.config.SQLConfiguration;
 import com.github.games647.flexiblelogin.config.SQLType;
-import com.google.common.collect.Maps;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -40,6 +39,7 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
@@ -49,10 +49,10 @@ import org.spongepowered.api.service.sql.SqlService;
 
 public class Database {
 
-    public static final String USERS_TABLE = "flexiblelogin_users";
+    private static final String USERS_TABLE = "flexiblelogin_users";
 
     private final FlexibleLogin plugin;
-    private final Map<UUID, Account> cache = Maps.newConcurrentMap();
+    private final Map<UUID, Account> cache = new ConcurrentHashMap<>();
     private final DataSource dataSource;
 
     public Database(FlexibleLogin plugin) throws SQLException {
@@ -81,9 +81,7 @@ public class Database {
                         .append(sqlConfig.getPort())
                         .append('/')
                         .append(sqlConfig.getDatabase())
-                        .append("?useSSL")
-                        .append('=')
-                        .append(sqlConfig.isUseSSL());
+                        .append("?useSSL").append('=').append(sqlConfig.isUseSSL());
                 break;
             case H2:
             default:
