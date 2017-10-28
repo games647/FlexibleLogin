@@ -1,5 +1,5 @@
 /*
- * This file is part of FlexibleLogin, licensed under the MIT License (MIT).
+ * This file is part of FlexibleLogin
  *
  * The MIT License (MIT)
  *
