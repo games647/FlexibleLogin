@@ -93,7 +93,7 @@ a password you choose or with a time based password created from a secret key, g
         database=flexiblelogin
         # Password in order to login
         password=""
-        # Path where the database is located. This can be a file path (h2/SQLite) or an IP/Domain(MySQL)
+        # Path where the database is located. This can be a file path (h2/SQLite) or an IP/Domain(MySQL/MariaDB)
         path="%DIR%"
         # Port for example MySQL connections
         port=3306

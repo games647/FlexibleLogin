@@ -182,7 +182,7 @@ public class Database {
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().error("Error deleting user account", sqlEx);
+            plugin.getLogger().error("Error checking if user account exists", sqlEx);
         }
 
         return true;

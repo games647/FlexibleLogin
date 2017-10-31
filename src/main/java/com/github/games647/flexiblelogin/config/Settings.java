@@ -28,6 +28,7 @@ package com.github.games647.flexiblelogin.config;
 import com.google.inject.Inject;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -64,9 +65,23 @@ public class Settings {
 
     public void load() {
         Path configFile = dataFolder.resolve("config.conf");
-        loadMapper(configMapper, HoconConfigurationLoader.builder().setPath(configFile).build());
-
         Path textFile = dataFolder.resolve("messages.conf");
+
+        try {
+            Files.createDirectories(dataFolder);
+
+            if (Files.notExists(configFile)) {
+                Files.createFile(configFile);
+            }
+
+            if (Files.notExists(textFile)) {
+                Files.createFile(textFile);
+            }
+        } catch (IOException ioEx) {
+            logger.error("Failed to create default config file", ioEx);
+        }
+
+        loadMapper(configMapper, HoconConfigurationLoader.builder().setPath(configFile).build());
         loadMapper(textMapper, HoconConfigurationLoader.builder().setPath(textFile).build());
     }
 
