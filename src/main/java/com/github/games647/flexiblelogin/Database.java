@@ -106,13 +106,13 @@ public class Database {
         return getAccount(player).map(Account::isLoggedIn).orElse(false);
     }
 
-    public void createTable() {
+    public void createTable() throws SQLException {
         try (Connection con = dataSource.getConnection();
              Statement statement = con.createStatement()) {
             String createTable = "CREATE TABLE IF NOT EXISTS " + USERS_TABLE + " ( "
                     + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
                     + "`UUID` BINARY(16) NOT NULL, "
-                    + "`Username` VARCHAR, "
+                    + "`Username` VARCHAR(16), "
                     + "`Password` VARCHAR(64) NOT NULL, "
                     + "`IP` BINARY(32) NOT NULL, "
                     + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
@@ -125,8 +125,6 @@ public class Database {
             }
 
             statement.execute(createTable);
-        } catch (SQLException sqlEx) {
-            plugin.getLogger().error("Error creating database table", sqlEx);
         }
     }
 
@@ -262,7 +260,6 @@ public class Database {
             stmt.setString(3, account.getPassword());
 
             stmt.setObject(4, account.getIp());
-
             stmt.setString(5, account.getEmail().orElse(null));
 
             stmt.execute();
