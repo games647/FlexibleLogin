@@ -1,5 +1,9 @@
 # Changelog
 
+###### 0.16.1
+
+* Fix SQL syntax for new tables
+
 ###### 0.16
 
 * Safe teleport players outside of Nether portals (Fixes #81)
