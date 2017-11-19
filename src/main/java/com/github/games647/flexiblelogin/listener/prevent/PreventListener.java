@@ -35,7 +35,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.entity.Entity;
@@ -63,9 +62,9 @@ public class PreventListener extends AbstractPreventListener {
     private final Set<String> ignoredCommands;
 
     @Inject
-    PreventListener(FlexibleLogin plugin, Settings settings) {
+    PreventListener(FlexibleLogin plugin, Settings settings, CommandManager commandManager) {
         super(plugin, settings);
-        this.commandManager = Sponge.getCommandManager();
+        this.commandManager = commandManager;
 
         this.ignoredCommands = commandManager
                 .getOwnedBy(plugin)

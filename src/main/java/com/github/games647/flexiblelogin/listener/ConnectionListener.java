@@ -141,14 +141,15 @@ public class ConnectionListener {
     }
 
     private void sendNotLoggedInMessage(Player player) {
-        //send the message if the player only needs to login
-        if (!settings.getGeneral().isBypassPermission()
-                || !player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
-            Task.builder()
-                    .execute(new LoginMessageTask(plugin, player))
-                    .interval(settings.getGeneral().getMessageInterval(), TimeUnit.SECONDS)
-                    .submit(plugin);
+        if (settings.getGeneral().isBypassPermission() && player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
+            //send the message if the player only needs to login
+            return;
         }
+
+        Task.builder()
+                .execute(new LoginMessageTask(plugin, player))
+                .interval(settings.getGeneral().getMessageInterval(), TimeUnit.SECONDS)
+                .submit(plugin);
     }
 
     private void scheduleTimeoutTask(Player player) {

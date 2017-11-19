@@ -26,6 +26,7 @@
 package com.github.games647.flexiblelogin.config;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -41,6 +42,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.config.ConfigDir;
 
+@Singleton
 public class Settings {
 
     private final Logger logger;

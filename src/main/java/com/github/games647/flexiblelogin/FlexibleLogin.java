@@ -43,6 +43,7 @@ import com.github.games647.flexiblelogin.listener.ConnectionListener;
 import com.github.games647.flexiblelogin.listener.prevent.GriefPreventListener;
 import com.github.games647.flexiblelogin.listener.prevent.PreventListener;
 import com.google.common.collect.Maps;
+import com.google.inject.ConfigurationException;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
@@ -88,8 +89,16 @@ public class FlexibleLogin {
     @Inject
     FlexibleLogin(Logger logger, Injector injector, Settings settings) {
         this.logger = logger;
-        this.injector = injector;
         this.configuration = settings;
+
+        try {
+            injector.getBinding(CommandManager.class);
+        } catch (ConfigurationException configEx) {
+            injector = injector.createChildInjector(binder -> binder.bind(CommandManager.class)
+                    .toInstance(Sponge.getCommandManager()));
+        }
+
+        this.injector = injector;
     }
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config

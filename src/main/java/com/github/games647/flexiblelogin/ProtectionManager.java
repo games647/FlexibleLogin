@@ -30,6 +30,7 @@ import com.github.games647.flexiblelogin.config.SpawnTeleportConfig;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.util.Map;
 import java.util.Optional;
@@ -42,6 +43,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
 
+@Singleton
 public class ProtectionManager {
 
     private static final int DISTANCE = 3;
