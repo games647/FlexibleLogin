@@ -73,7 +73,7 @@ public class ConnectionListener {
 
             if (settings.getGeneral().isUpdateLoginStatus()) {
                 Task.builder()
-                        .async().execute(() -> plugin.getDatabase().flushLoginStatus(account, false))
+                        .async().execute(() -> plugin.getDatabase().save(account))
                         .submit(plugin);
             }
         }

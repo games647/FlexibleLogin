@@ -2,7 +2,9 @@
 
 ###### 0.16.4
 
-* Downgrade to SHA256 for compatibility with Google Authenticator
+* Update lastlogin on password login not on Minecraft login
+* Downgrade to SHA256 for compatibility Base64
+* Perform invalid case check earlier (Fixes #88)
 
 ###### 0.16.3
 

@@ -279,7 +279,7 @@ public class Database {
     public void flushLoginStatus(Account account, boolean loggedIn) {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("UPDATE " + USERS_TABLE
-                     + " SET LoggedIn=? WHERE UUID=?")) {
+                     + " SET  WHERE UUID=?")) {
             stmt.setInt(1, loggedIn ? 1 : 0);
 
             UUID uuid = account.getUuid();
@@ -306,16 +306,19 @@ public class Database {
     public boolean save(Account account) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("UPDATE " + USERS_TABLE
-                     + " SET Username=?, Password=?, IP=?, LastLogin=CURRENT_TIMESTAMP, Email=? WHERE UUID=?")) {
+                     + " SET Username=?, Password=?, IP=?, LastLogin=?, Email=?, LoggedIn=? WHERE UUID=?")) {
             //username is now changeable by Mojang - so keep it up to date
             stmt.setString(1, account.getUsername());
             stmt.setString(2, account.getPassword());
             stmt.setObject(3, account.getIp());
 
-            stmt.setString(4, account.getEmail().orElse(null));
+            stmt.setLong(4, account.getLastLogin().toEpochMilli());
+            stmt.setString(5, account.getEmail().orElse(null));
+
+            stmt.setBoolean(6, account.isLoggedIn());
 
             UUID uuid = account.getUuid();
-            stmt.setObject(5, toArray(uuid));
+            stmt.setObject(7, toArray(uuid));
 
             stmt.execute();
             cache.put(uuid, account);

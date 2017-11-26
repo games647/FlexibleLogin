@@ -40,7 +40,6 @@ import org.spongepowered.api.entity.living.player.Player;
 public class Account {
 
     private final UUID uuid;
-    private final Instant lastLogin;
 
     private String username;
     private String passwordHash;
@@ -49,6 +48,7 @@ public class Account {
     private String email;
 
     private boolean loggedIn;
+    private Instant lastLogin;
 
     public Account(Player player, String password) {
         this(player.getUniqueId()
@@ -143,6 +143,10 @@ public class Account {
     }
 
     public synchronized void setLoggedIn(boolean loggedIn) {
+        if (loggedIn) {
+            lastLogin = Instant.now();
+        }
+
         this.loggedIn = loggedIn;
     }
 }

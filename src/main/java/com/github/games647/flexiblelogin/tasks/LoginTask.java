@@ -86,9 +86,6 @@ public class LoginTask implements Runnable {
 
                 //flushes the ip update
                 plugin.getDatabase().save(account);
-                if (plugin.getConfigManager().getGeneral().isUpdateLoginStatus()) {
-                    plugin.getDatabase().flushLoginStatus(account, true);
-                }
             } else {
                 attempts++;
                 plugin.getAttempts().put(player.getName(), attempts);
