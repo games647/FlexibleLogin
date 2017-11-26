@@ -39,13 +39,13 @@ public class TOTP implements Hasher {
             + "%s@%s%%3Fsecret%%3D%s";
 
     private final IGoogleAuthenticator gAuth = new GoogleAuthenticator(new GoogleAuthenticatorConfigBuilder()
-            .setHmacHashFunction(HmacHashFunction.HmacSHA512)
+            .setHmacHashFunction(HmacHashFunction.HmacSHA256)
+            //HmacSHA512 is not yet compatible with Base64
             .setKeyRepresentation(KeyRepresentation.BASE64)
             .build());
 
     public static String getQRBarcodeURL(String user, String host, String secret) {
-        String format = URL_FORMAT;
-        return String.format(format, user, host, secret);
+        return String.format(URL_FORMAT, user, host, secret);
     }
 
     @Override

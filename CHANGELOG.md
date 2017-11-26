@@ -1,5 +1,9 @@
 # Changelog
 
+###### 0.16.4
+
+* Downgrade to SHA256 for compatibility with Google Authenticator
+
 ###### 0.16.3
 
 * Whitelist all aliases by FlexibleLogin
