@@ -1,5 +1,14 @@
 # Changelog
 
+###### 0.16.3
+
+* Whitelist all aliases by FlexibleLogin
+
+###### 0.16.2
+
+* Remove CommandManager injection to support older Sponge versions
+* Fix dependency injection
+
 ###### 0.16.1
 
 * Fix SQL syntax for new tables

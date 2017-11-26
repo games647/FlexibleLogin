@@ -30,6 +30,7 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.google.inject.Inject;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -69,7 +70,8 @@ public class PreventListener extends AbstractPreventListener {
         this.ignoredCommands = commandManager
                 .getOwnedBy(plugin)
                 .stream()
-                .map(CommandMapping::getPrimaryAlias)
+                .map(CommandMapping::getAllAliases)
+                .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
     }
 
