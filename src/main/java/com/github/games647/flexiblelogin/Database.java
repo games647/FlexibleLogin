@@ -168,22 +168,22 @@ public class Database {
         return false;
     }
 
-    public boolean exists(String username) {
+    public Optional<String> exists(String username) {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT USERNAME FROM " + USERS_TABLE
                      + " WHERE LOWER(USERNAME) = ?")) {
             stmt.setString(1, username.toLowerCase());
 
             try (ResultSet resultSet = stmt.executeQuery()) {
-                if (!resultSet.next()) {
-                    return false;
+                if (resultSet.next()) {
+                    return Optional.of(resultSet.getString(1));
                 }
             }
         } catch (SQLException sqlEx) {
             plugin.getLogger().error("Error checking if user account exists", sqlEx);
         }
 
-        return true;
+        return Optional.empty();
     }
 
     public Optional<Account> loadAccount(Player player) {

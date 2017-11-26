@@ -103,6 +103,12 @@ public class TextConfig {
             TextColors.DARK_GREEN, "Deleted account of ", TextColors.YELLOW, arg("account").optional(), "!"
     );
 
+    @Setting(comment = "Kick message if the case sensitive compare between the already registered " +
+            "and the joining player failed")
+    private TextTemplate invalidCase = of(
+            TextColors.RED, "Invalid username. Please join as ", TextColors.YELLOW, arg("username").optional(), "!"
+    );
+
     @Setting(comment = "When an account already exists, and therefore cannot be created.")
     private String accountAlreadyExists = "&4Account already exists";
 
@@ -285,6 +291,10 @@ public class TextConfig {
 
     public Text getAlreadyOnline() {
         return fromString(alreadyOnline);
+    }
+
+    public Text getInvalidCase(String username) {
+        return invalidCase.apply(ImmutableMap.of("username", username)).build();
     }
 
     public Text getEmailNotEnabled() {

@@ -55,7 +55,7 @@ public class RegisterTask implements Runnable {
     @Override
     public void run() {
         String name = player.getName();
-        if (!plugin.getDatabase().loadAccount(player).isPresent() && !plugin.getDatabase().exists(name)) {
+        if (!plugin.getDatabase().loadAccount(player).isPresent()) {
             byte[] ipAddress = player.getConnection().getAddress().getAddress().getAddress();
             int regByIp = plugin.getDatabase().getRegistrationsCount(ipAddress);
             if (regByIp > plugin.getConfigManager().getGeneral().getMaxIpReg()) {

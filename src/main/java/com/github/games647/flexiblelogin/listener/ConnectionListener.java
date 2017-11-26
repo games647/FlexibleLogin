@@ -92,11 +92,19 @@ public class ConnectionListener {
     public void onPlayerAuth(Auth playerAuthEvent, @First GameProfile gameProfile) {
         String playerName = gameProfile.getName().get();
         if (plugin.isValidName(playerName)) {
-            Sponge.getServer().getPlayer(playerName)
+            if (Sponge.getServer().getPlayer(playerName)
                     .map(Player::getName)
                     .filter(name -> name.equals(playerName))
-                    .ifPresent(name -> {
-                        playerAuthEvent.setMessage(settings.getText().getAlreadyOnline());
+                    .isPresent()) {
+                playerAuthEvent.setMessage(settings.getText().getAlreadyOnline());
+                playerAuthEvent.setCancelled(true);
+                return;
+            }
+
+            plugin.getDatabase().exists(playerName)
+                    .filter(databaseName -> !playerName.equals(databaseName))
+                    .ifPresent(databaseName -> {
+                        playerAuthEvent.setMessage(settings.getText().getInvalidCase(databaseName));
                         playerAuthEvent.setCancelled(true);
                     });
         } else {
