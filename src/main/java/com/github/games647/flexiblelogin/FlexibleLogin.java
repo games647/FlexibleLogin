@@ -28,6 +28,7 @@ package com.github.games647.flexiblelogin;
 import com.github.games647.flexiblelogin.commands.ChangePasswordCommand;
 import com.github.games647.flexiblelogin.commands.ForceRegisterCommand;
 import com.github.games647.flexiblelogin.commands.ForgotPasswordCommand;
+import com.github.games647.flexiblelogin.commands.LastLoginCommand;
 import com.github.games647.flexiblelogin.commands.LoginCommand;
 import com.github.games647.flexiblelogin.commands.LogoutCommand;
 import com.github.games647.flexiblelogin.commands.RegisterCommand;
@@ -109,6 +110,18 @@ public class FlexibleLogin {
     @Listener //Commands register + events
     public void onInit(GameInitializationEvent initEvent) {
         //register commands
+        registerCommands();
+
+        //register events
+        EventManager eventManager = Sponge.getEventManager();
+        eventManager.registerListeners(this, injector.getInstance(ConnectionListener.class));
+        eventManager.registerListeners(this, injector.getInstance(PreventListener.class));
+        if (Sponge.getPluginManager().isLoaded("GriefPrevention")) {
+            eventManager.registerListeners(this, injector.getInstance(GriefPreventListener.class));
+        }
+    }
+
+    private void registerCommands() {
         CommandManager commandDispatcher = Sponge.getCommandManager();
 
         commandDispatcher.register(this, CommandSpec.builder()
@@ -161,20 +174,16 @@ public class FlexibleLogin {
                                         string(of("account"))), string(of("password")))
                         .build(), "register", "reg")
                 .child(CommandSpec.builder()
+                        .executor(injector.getInstance(LastLoginCommand.class))
+                        .arguments(onlyOne(string(of("account"))))
+                        .build(), "lastlogin")
+                .child(CommandSpec.builder()
                         .executor(injector.getInstance(ResetPasswordCommand.class))
                         .arguments(
                                 onlyOne(
                                         string(of("account"))), string(of("password")))
                         .build(), "resetpw", "resetpassword")
                 .build(), PomData.ARTIFACT_ID);
-
-        //register events
-        EventManager eventManager = Sponge.getEventManager();
-        eventManager.registerListeners(this, injector.getInstance(ConnectionListener.class));
-        eventManager.registerListeners(this, injector.getInstance(PreventListener.class));
-        if (Sponge.getPluginManager().isLoaded("GriefPrevention")) {
-            eventManager.registerListeners(this, injector.getInstance(GriefPreventListener.class));
-        }
     }
 
     @Listener
