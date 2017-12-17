@@ -36,6 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -312,7 +313,7 @@ public class Database {
             stmt.setString(2, account.getPassword());
             stmt.setObject(3, account.getIp());
 
-            stmt.setLong(4, account.getLastLogin().toEpochMilli());
+            stmt.setTimestamp(4, Timestamp.from(account.getLastLogin()));
             stmt.setString(5, account.getEmail().orElse(null));
 
             stmt.setBoolean(6, account.isLoggedIn());
