@@ -2,6 +2,7 @@
 
 ###### 0.16.4
 
+* Fix account saving because of timestamp parsing
 * Update lastlogin on password login not on Minecraft login
 * Downgrade to SHA256 for compatibility Base64
 * Perform invalid case check earlier (Fixes #88)
