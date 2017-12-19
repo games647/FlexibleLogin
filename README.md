@@ -1,9 +1,9 @@
 # FlexibleLogin
 
-**Security Notice:** If you use a version 0.16.X version, update immediately to 0.16.5 or disable the change password
-command. 0.16.X fixed 
+> ## **Security Notice:** If you use a version 0.16.X version, update immediately to 0.16.5 or disable the change 
+password command. 0.16.X fixed 
 [this security bug](https://github.com/games647/FlexibleLogin/commit/43f74a466e73b0f2cfa522b5bfd68480010a7934). 
-Older versions of 0.16.X are not affected. 
+Older versions of 0.16.X are not affected.
 
 ### Description
 
