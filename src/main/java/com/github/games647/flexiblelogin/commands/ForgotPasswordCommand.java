@@ -40,6 +40,8 @@ import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
+import javax.mail.Provider;
+import javax.mail.Provider.Type;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -139,7 +141,12 @@ public class ForgotPasswordCommand extends AbstractCommand {
         properties.setProperty("mail.smtp.starttls.enable", String.valueOf(true));
         properties.setProperty("mail.smtp.ssl.checkserveridentity", "true");
 
-        return Session.getDefaultInstance(properties);
+        //explicit add smtp provider
+        Session session = Session.getDefaultInstance(properties);
+        Provider provider = new Provider(Type.TRANSPORT, "smtps", "com.sun.mail.smtp.SMTPSSLTransport",
+                "Oracle", "1.6.0");
+        session.addProvider(provider);
+        return session;
     }
 
     private MimeMessage buildMessage(Player player, String email, String newPassword, EmailConfiguration emailConfig,
