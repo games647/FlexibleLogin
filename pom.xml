@@ -35,7 +35,7 @@
     <packaging>jar</packaging>
 
     <name>FlexibleLogin</name>
-    <version>0.16.5</version>
+    <version>0.16.6</version>
     <description>Second Auth plugin for Sponge minecraft servers</description>
     <url>https://github.com/games647/FlexibleLogin</url>
 
@@ -45,7 +45,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <junit.jupiter.version>5.0.1</junit.jupiter.version>
+        <junit.jupiter.version>5.0.2</junit.jupiter.version>
 
         <spongeVersion>5.1.0</spongeVersion>
     </properties>
@@ -65,6 +65,24 @@
                             <include>com.warrenstrange:googleauth</include>
                         </includes>
                     </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>com.sun.mail</pattern>
+                            <shadedPattern>flexiblelogin.sun.mail</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>javax.mail</pattern>
+                            <shadedPattern>flexiblelogin.javax.mail</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>de.svenkubiak</pattern>
+                            <shadedPattern>flexiblelogin.bcrypt</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.warrenstrange</pattern>
+                            <shadedPattern>flexiblelogin.googleauth</shadedPattern>
+                        </relocation>
+                    </relocations>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                 </configuration>
                 <executions>
@@ -117,7 +135,7 @@
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.20</version>
+                <version>2.20.1</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.junit.platform</groupId>
@@ -127,7 +145,7 @@
                     <dependency>
                         <groupId>org.junit.jupiter</groupId>
                         <artifactId>junit-jupiter-engine</artifactId>
-                        <version>5.0.1</version>
+                        <version>${junit.jupiter.version}</version>
                    </dependency>
                 </dependencies>
             </plugin>
@@ -174,7 +192,7 @@
         <dependency>
             <groupId>com.warrenstrange</groupId>
             <artifactId>googleauth</artifactId>
-            <version>1.1.4</version>
+            <version>1.1.5</version>
         </dependency>
 
         <!-- Java Email API -->

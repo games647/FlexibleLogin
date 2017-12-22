@@ -1,5 +1,13 @@
 # Changelog
 
+###### 0.16.6
+
+* Relocate libraries for version conflicts
+
+###### 0.16.5
+
+* Fix security check in the change password command
+
 ###### 0.16.4
 
 * Fix account saving because of timestamp parsing
