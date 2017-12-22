@@ -28,8 +28,11 @@ package com.github.games647.flexiblelogin.tasks;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfiguration;
 
+import java.util.Arrays;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Transport;
 
@@ -53,7 +56,7 @@ public class SendEmailTask implements Runnable {
     @Override
     public void run() {
         //we only need to send the message so we use smtp
-        try (Transport transport = session.getTransport("smtp")) {
+        try (Transport transport = session.getTransport("smtps")) {
             EmailConfiguration emailConfig = plugin.getConfigManager().getGeneral().getEmail();
 
             //connect to host and send message
@@ -64,8 +67,13 @@ public class SendEmailTask implements Runnable {
 
             transport.sendMessage(email, email.getAllRecipients());
             player.sendMessage(plugin.getConfigManager().getText().getMailSent());
-        } catch (MessagingException ex) {
-            plugin.getLogger().error("Error sending email", ex);
+        } catch (NoSuchProviderException providerEx) {
+            plugin.getLogger().error("STMPS provider not found", providerEx);
+            plugin.getLogger().error("Registered providers: {}", Arrays.asList(session.getProviders()));
+
+            player.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
+        } catch (MessagingException messagingEx) {
+            plugin.getLogger().error("Error sending email", messagingEx);
             player.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
         }
     }

@@ -1,9 +1,9 @@
 # FlexibleLogin
 
-> ## **Security Notice:** If you use a version 0.16.X version, update immediately to 0.16.5 or disable the change 
-password command. 0.16.X fixed 
-[this security bug](https://github.com/games647/FlexibleLogin/commit/43f74a466e73b0f2cfa522b5bfd68480010a7934). 
-Older versions of 0.16.X are not affected.
+> ## **Security Notice:** If you use a version 0.16.X version, update immediately to 0.16.5+ or disable the change
+password command. 0.16.5 fixed this security bug occurred in this
+[commit](https://github.com/games647/FlexibleLogin/commit/43f74a466e73b0f2cfa522b5bfd68480010a7934). Older versions of
+0.16.X are not affected.
 
 ### Description
 
@@ -16,7 +16,7 @@ a password you choose or with a time based password created from a secret key, g
 
 ### Requirements
 
-* Sponge 6.0 or 7.0
+* Sponge 5.1, 6.0 or 7.0
 
 ### Commands
 

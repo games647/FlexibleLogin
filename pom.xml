@@ -35,7 +35,7 @@
     <packaging>jar</packaging>
 
     <name>FlexibleLogin</name>
-    <version>0.16.6</version>
+    <version>0.16.7</version>
     <description>Second Auth plugin for Sponge minecraft servers</description>
     <url>https://github.com/games647/FlexibleLogin</url>
 
@@ -75,11 +75,11 @@
                             <shadedPattern>flexiblelogin.javax.mail</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>de.svenkubiak</pattern>
+                            <pattern>org.mindrot</pattern>
                             <shadedPattern>flexiblelogin.bcrypt</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>com.warrenstrange</pattern>
+                            <pattern>com.warrenstrange.googleauth</pattern>
                             <shadedPattern>flexiblelogin.googleauth</shadedPattern>
                         </relocation>
                     </relocations>
