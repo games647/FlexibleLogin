@@ -28,6 +28,7 @@ package com.github.games647.flexiblelogin.listener;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.PomData;
+import com.github.games647.flexiblelogin.ProtectionManager;
 import com.github.games647.flexiblelogin.config.Config;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
@@ -53,18 +54,20 @@ public class ConnectionListener {
 
     private final FlexibleLogin plugin;
     private final Settings settings;
+    private final ProtectionManager protectionManager;
 
     @Inject
-    ConnectionListener(FlexibleLogin plugin, Settings settings) {
+    public ConnectionListener(FlexibleLogin plugin, Settings settings, ProtectionManager protectionManager) {
         this.plugin = plugin;
         this.settings = settings;
+        this.protectionManager = protectionManager;
     }
 
     @Listener
     public void onPlayerQuit(Disconnect playerQuitEvent, @First Player player) {
         Account account = plugin.getDatabase().remove(player);
 
-        plugin.getProtectionManager().unprotect(player);
+        protectionManager.unprotect(player);
 
         if (account != null) {
             plugin.getAttempts().remove(player.getName());
@@ -81,7 +84,7 @@ public class ConnectionListener {
 
     @Listener
     public void onPlayerJoin(Join playerJoinEvent, @First Player player) {
-        plugin.getProtectionManager().protect(player);
+        protectionManager.protect(player);
         Task.builder()
                 .async()
                 .execute(() -> onAccountLoaded(player))

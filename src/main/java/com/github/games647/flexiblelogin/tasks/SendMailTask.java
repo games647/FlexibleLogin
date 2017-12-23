@@ -38,7 +38,7 @@ import javax.mail.Transport;
 
 import org.spongepowered.api.entity.living.player.Player;
 
-public class SendEmailTask implements Runnable {
+public class SendMailTask implements Runnable {
 
     private final FlexibleLogin plugin;
     private final Session session;
@@ -46,7 +46,7 @@ public class SendEmailTask implements Runnable {
 
     private final Player player;
 
-    public SendEmailTask(FlexibleLogin plugin, Player player, Session session, Message email) {
+    public SendMailTask(FlexibleLogin plugin, Player player, Session session, Message email) {
         this.plugin = plugin;
         this.session = session;
         this.email = email;
@@ -55,8 +55,8 @@ public class SendEmailTask implements Runnable {
 
     @Override
     public void run() {
-        //we only need to send the message so we use smtp
-        try (Transport transport = session.getTransport("smtps")) {
+        //we only need to send the message so we use smtps
+        try (Transport transport = session.getTransport()) {
             EmailConfiguration emailConfig = plugin.getConfigManager().getGeneral().getEmail();
 
             //connect to host and send message
@@ -68,7 +68,7 @@ public class SendEmailTask implements Runnable {
             transport.sendMessage(email, email.getAllRecipients());
             player.sendMessage(plugin.getConfigManager().getText().getMailSent());
         } catch (NoSuchProviderException providerEx) {
-            plugin.getLogger().error("STMPS provider not found", providerEx);
+            plugin.getLogger().error("Transport provider not found", providerEx);
             plugin.getLogger().error("Registered providers: {}", Arrays.asList(session.getProviders()));
 
             player.sendMessage(plugin.getConfigManager().getText().getErrorCommand());

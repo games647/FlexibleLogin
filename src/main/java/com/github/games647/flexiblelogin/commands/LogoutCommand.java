@@ -31,6 +31,7 @@ import com.github.games647.flexiblelogin.config.Settings;
 import com.google.inject.Inject;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -41,8 +42,8 @@ import org.spongepowered.api.scheduler.Task;
 public class LogoutCommand extends AbstractCommand {
 
     @Inject
-    LogoutCommand(FlexibleLogin plugin, Settings settings) {
-        super(plugin, settings, "logout");
+    LogoutCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+        super(plugin, logger, settings, "logout");
     }
 
     @Override

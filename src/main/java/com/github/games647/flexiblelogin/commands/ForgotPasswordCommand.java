@@ -29,7 +29,7 @@ import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfiguration;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.tasks.SendEmailTask;
+import com.github.games647.flexiblelogin.tasks.SendMailTask;
 import com.google.inject.Inject;
 
 import java.io.UnsupportedEncodingException;
@@ -40,6 +40,7 @@ import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
 import javax.mail.Provider;
 import javax.mail.Provider.Type;
 import javax.mail.Session;
@@ -47,6 +48,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -60,8 +62,8 @@ public class ForgotPasswordCommand extends AbstractCommand {
     private static final int PASSWORD_LENGTH = 16;
 
     @Inject
-    ForgotPasswordCommand(FlexibleLogin plugin, Settings settings) {
-        super(plugin, settings, "forgot");
+    ForgotPasswordCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+        super(plugin, logger, settings, "forgot");
     }
 
     @Override
@@ -113,7 +115,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
             //send email
             Task.builder()
                     .async()
-                    .execute(new SendEmailTask(plugin, player, session, message))
+                    .execute(new SendMailTask(plugin, player, session, message))
                     .submit(plugin);
 
             //set new password here if the email sending fails fails we have still the old password
@@ -123,7 +125,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
                     .execute(() -> plugin.getDatabase().save(account))
                     .submit(plugin);
         } catch (Exception ex) {
-            plugin.getLogger().error("Error executing command", ex);
+            logger.error("Error executing command", ex);
             player.sendMessage(settings.getText().getErrorCommand());
         }
     }
@@ -141,11 +143,17 @@ public class ForgotPasswordCommand extends AbstractCommand {
         properties.setProperty("mail.smtp.starttls.enable", String.valueOf(true));
         properties.setProperty("mail.smtp.ssl.checkserveridentity", "true");
 
-        //explicit add smtp provider
+        properties.setProperty("mail.transport.protocol", "stmps");
+
         Session session = Session.getDefaultInstance(properties);
-        Provider provider = new Provider(Type.TRANSPORT, "smtps", "com.sun.mail.smtp.SMTPSSLTransport",
-                "Oracle", "1.6.0");
-        session.addProvider(provider);
+        //explicit override stmp provider because of issues with relocation
+        try {
+            session.setProvider( new Provider(Type.TRANSPORT, "smtps",
+                    "flexiblelogin.sun.mail.smtp.SMTPSSLTransport","Oracle", "1.6.0"));
+        } catch (NoSuchProviderException noSuchProvider) {
+            logger.error("Failed to add STMP provider", noSuchProvider);
+        }
+
         return session;
     }
 

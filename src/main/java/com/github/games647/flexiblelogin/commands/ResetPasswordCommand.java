@@ -34,6 +34,7 @@ import com.google.inject.Inject;
 
 import java.util.UUID;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -43,8 +44,8 @@ import org.spongepowered.api.scheduler.Task;
 public class ResetPasswordCommand extends AbstractCommand {
 
     @Inject
-    ResetPasswordCommand(FlexibleLogin plugin, Settings settings) {
-        super(plugin, settings);
+    ResetPasswordCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+        super(plugin, logger, settings);
     }
 
     @Override

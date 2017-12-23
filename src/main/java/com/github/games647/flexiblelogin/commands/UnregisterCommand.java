@@ -32,6 +32,7 @@ import com.google.inject.Inject;
 
 import java.util.UUID;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -41,8 +42,8 @@ import org.spongepowered.api.scheduler.Task;
 public class UnregisterCommand extends AbstractCommand {
 
     @Inject
-    UnregisterCommand(FlexibleLogin plugin, Settings settings) {
-        super(plugin, settings);
+    UnregisterCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+        super(plugin, logger, settings);
     }
 
     @Override

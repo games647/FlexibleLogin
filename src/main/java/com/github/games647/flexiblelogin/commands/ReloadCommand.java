@@ -29,6 +29,7 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.google.inject.Inject;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -37,8 +38,8 @@ import org.spongepowered.api.command.args.CommandContext;
 public class ReloadCommand extends AbstractCommand {
 
     @Inject
-    ReloadCommand(FlexibleLogin plugin, Settings settings) {
-        super(plugin, settings);
+    ReloadCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+        super(plugin, logger, settings);
     }
 
     @Override

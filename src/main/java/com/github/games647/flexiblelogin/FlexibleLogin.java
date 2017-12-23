@@ -93,6 +93,7 @@ public class FlexibleLogin {
         this.configuration = settings;
 
         try {
+            //if we are on old sponge version the command manager doesn't exist for injections
             injector.getBinding(CommandManager.class);
         } catch (ConfigurationException configEx) {
             injector = injector.createChildInjector(binder -> binder.bind(CommandManager.class)

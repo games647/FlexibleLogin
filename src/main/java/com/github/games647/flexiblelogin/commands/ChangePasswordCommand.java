@@ -34,6 +34,7 @@ import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -44,8 +45,8 @@ import org.spongepowered.api.scheduler.Task;
 public class ChangePasswordCommand extends AbstractCommand {
 
     @Inject
-    ChangePasswordCommand(FlexibleLogin plugin, Settings settings) {
-        super(plugin, settings, "changepw");
+    ChangePasswordCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+        super(plugin, logger, settings, "changepw");
     }
 
     @Override
@@ -86,7 +87,7 @@ public class ChangePasswordCommand extends AbstractCommand {
                         .name("Register Query")
                         .submit(plugin);
             } catch (Exception ex) {
-                plugin.getLogger().error("Error creating hash on change password", ex);
+                logger.error("Error creating hash on change password", ex);
                 src.sendMessage(settings.getText().getErrorCommand());
             }
         } else {

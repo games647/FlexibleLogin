@@ -30,6 +30,7 @@ import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.LoginTask;
 import com.google.inject.Inject;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -40,8 +41,8 @@ import org.spongepowered.api.scheduler.Task;
 public class LoginCommand extends AbstractCommand {
 
     @Inject
-    LoginCommand(FlexibleLogin plugin, Settings settings) {
-        super(plugin, settings, "login");
+    LoginCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+        super(plugin, logger, settings, "login");
     }
 
     @Override

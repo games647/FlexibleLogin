@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -23,8 +24,8 @@ import org.spongepowered.api.text.channel.MessageReceiver;
 public class LastLoginCommand extends AbstractCommand {
 
     @Inject
-    LastLoginCommand(FlexibleLogin plugin, Settings settings) {
-        super(plugin, settings);
+    LastLoginCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+        super(plugin, logger, settings);
     }
 
     @Override
@@ -66,10 +67,10 @@ public class LastLoginCommand extends AbstractCommand {
 
             String username = account.getUsername();
             String timeFormat = DateTimeFormatter.ISO_DATE_TIME.format(account.getLastLogin());
-            Text message = plugin.getConfigManager().getText().getLastOnline(username, timeFormat);
+            Text message = settings.getText().getLastOnline(username, timeFormat);
             receiver.sendMessage(message);
         } else {
-            receiver.sendMessage(plugin.getConfigManager().getText().getAccountNotFound());
+            receiver.sendMessage(settings.getText().getAccountNotFound());
         }
     }
 }

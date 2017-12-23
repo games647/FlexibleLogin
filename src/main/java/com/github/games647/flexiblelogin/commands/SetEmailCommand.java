@@ -31,6 +31,7 @@ import com.google.inject.Inject;
 
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -43,8 +44,8 @@ public class SetEmailCommand extends AbstractCommand {
     private final Pattern emailPattern = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+");
 
     @Inject
-    SetEmailCommand(FlexibleLogin plugin, Settings settings) {
-        super(plugin, settings, "email");
+    SetEmailCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+        super(plugin, logger, settings, "email");
     }
 
     @Override

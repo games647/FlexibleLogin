@@ -34,6 +34,7 @@ import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -44,8 +45,8 @@ import org.spongepowered.api.scheduler.Task;
 public class RegisterCommand extends AbstractCommand {
 
     @Inject
-    RegisterCommand(FlexibleLogin plugin, Settings settings) {
-        super(plugin, settings, "register");
+    RegisterCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+        super(plugin, logger, settings, "register");
     }
 
     @Override
