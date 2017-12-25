@@ -45,7 +45,9 @@ import javax.mail.Provider;
 import javax.mail.Provider.Type;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -143,13 +145,16 @@ public class ForgotPasswordCommand extends AbstractCommand {
         properties.setProperty("mail.smtp.starttls.enable", String.valueOf(true));
         properties.setProperty("mail.smtp.ssl.checkserveridentity", "true");
 
-        properties.setProperty("mail.transport.protocol", "stmps");
+        properties.setProperty("mail.transport.protocol", "flexiblelogin");
 
         Session session = Session.getDefaultInstance(properties);
         //explicit override stmp provider because of issues with relocation
         try {
-            session.setProvider( new Provider(Type.TRANSPORT, "smtps",
-                    "flexiblelogin.sun.mail.smtp.SMTPSSLTransport","Oracle", "1.6.0"));
+            session.setProvider(new Provider(Type.TRANSPORT, "smtps",
+                    "flexiblelogin.sun.mail.smtp.SMTPSSLTransport", "Oracle", "1.6.0"));
+
+            session.setProvider(new Provider(Type.TRANSPORT, "flexiblelogin",
+                    "flexiblelogin.sun.mail.smtp.SMTPSSLTransport", "Oracle", "1.6.0"));
         } catch (NoSuchProviderException noSuchProvider) {
             logger.error("Failed to add STMP provider", noSuchProvider);
         }
@@ -172,8 +177,18 @@ public class ForgotPasswordCommand extends AbstractCommand {
         message.setSentDate(Calendar.getInstance().getTime());
         String textContent = replaceVariables(emailConfig.getText(), player, newPassword);
 
-        //allow html
-        message.setContent(textContent, "text/html");
+        //plain text
+        MimeBodyPart textPart = new MimeBodyPart();
+        textPart.setContent(textContent, "text/html");
+
+        //html part
+        MimeBodyPart htmlPart = new MimeBodyPart();
+        htmlPart.setContent(textContent, "text/html");
+
+        MimeMultipart alternative = new MimeMultipart("alternative");
+        alternative.addBodyPart(htmlPart);
+        alternative.addBodyPart(textPart);
+        message.setContent(alternative);
         return message;
     }
 
