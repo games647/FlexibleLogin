@@ -77,7 +77,7 @@ public class FlexibleLogin {
     private final Injector injector;
     private final Settings configuration;
 
-    private final Pattern validNamePattern = Pattern.compile("^\\w{2,16}$");
+    private final Pattern validNamePattern = Pattern.compile("^[\\w\u4e00-\u9fa5]{2,16}$");
     private final Map<String, Integer> attempts = Maps.newConcurrentMap();
 
     private Database database;
