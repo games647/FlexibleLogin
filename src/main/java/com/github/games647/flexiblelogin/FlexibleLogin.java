@@ -77,10 +77,10 @@ public class FlexibleLogin {
     private final Injector injector;
     private final Settings configuration;
 
-    private final Pattern validNamePattern = Pattern.compile("^\\w{2,16}$");
     private final Map<String, Integer> attempts = Maps.newConcurrentMap();
 
     private Database database;
+    private Pattern validNamePattern;
 
     @Inject
     private ProtectionManager protectionManager;
@@ -224,6 +224,8 @@ public class FlexibleLogin {
             //use bcrypt as fallback for now
             hasher = new BcryptHasher();
         }
+
+        validNamePattern = Pattern.compile(configuration.getGeneral().getValidNames());
     }
 
     public boolean isValidName(String input) {

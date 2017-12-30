@@ -42,6 +42,9 @@ public class Config {
     @Setting(comment = "Algorithms for hashing user passwords. You can also choose totp")
     private String hashAlgo = "bcrypt";
 
+    @Setting(comment = "Regular expression for verifying validate player names. Default is a-zA-Z with 2-16 length")
+    private String validNames = "^\\w{2,16}$";
+
     @Setting(comment = "Should the plugin login users automatically if it's the same account from the same IP")
     private boolean ipAutoLogin;
 
@@ -75,7 +78,7 @@ public class Config {
     @Setting(comment = "Custom command that should run after the user tried to make too many attempts")
     private String lockCommand = "";
 
-    @Setting(comment = "How many accounts are allowed per ip-addres. Use 0 to disable it")
+    @Setting(comment = "How many accounts are allowed per ip-address. Use 0 to disable it")
     private int maxIpReg;
 
     @Setting(comment = "Interval where the please login will be printed to the user")
@@ -150,6 +153,10 @@ public class Config {
         }
 
         return maxIpReg;
+    }
+
+    public String getValidNames() {
+        return validNames;
     }
 
     public boolean isSafeLocation() {
