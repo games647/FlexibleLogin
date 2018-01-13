@@ -25,6 +25,7 @@
  */
 package com.github.games647.flexiblelogin;
 
+import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.config.SpawnTeleportConfig;
 import com.google.common.collect.Maps;
@@ -99,26 +100,33 @@ public class ProtectionManager {
         Location<World> safeLoc = optSafeLoc.get();
 
         //Sponge 7.0 adds API support for additional teleport helpers
-        Set<Location<World>> locations = Sets.newHashSetWithExpectedSize(DISTANCE * DISTANCE);
-        if (safeLoc.getBlockType() == BlockTypes.PORTAL) {
+        if (!isSafe(safeLoc)) {
+            Set<Location<World>> locations = Sets.newHashSetWithExpectedSize(DISTANCE * DISTANCE);
             for (int distanceX = -DISTANCE; distanceX < DISTANCE; distanceX++) {
                 for (int distanceZ = -DISTANCE; distanceZ < DISTANCE; distanceZ++) {
                     if (distanceX == 0 && distanceZ == 0) {
                         continue;
                     }
 
-                    locations.add(safeLoc.copy().add(distanceX, 0, distanceZ));
+                    int newX = safeLoc.getBlockX() + distanceX;
+                    int newZ = safeLoc.getBlockZ() + distanceZ;
+                    Vector3d newPos = new Vector3d(newX, safeLoc.getY(), newZ);
+                    locations.add(safeLoc.setPosition(newPos));
                 }
             }
 
             return locations.stream()
-                    .filter(loc -> loc.getBlockType() != BlockTypes.PORTAL)
                     .map(teleportHelper::getSafeLocation)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
+                    .filter(this::isSafe)
                     .findFirst();
         }
 
         return Optional.of(safeLoc);
+    }
+
+    private boolean isSafe(Location<World> loc) {
+        return loc.getBlockType() != BlockTypes.PORTAL;
     }
 }

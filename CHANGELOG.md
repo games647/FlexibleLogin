@@ -1,5 +1,21 @@
 # Changelog
 
+###### 0.16.8
+
+* Ignore teleports for prevent listener otherwise we prevent our own teleports
+* Override smtp provider (Related #92)
+* Add support for plain text messages
+* Make valid usernames configurable (Fixes #94)
+
+###### 0.16.7
+
+* Relocate BCrypt and GoogleAuth correctly
+* Explicit add smtp provider (Related #92)
+
+###### 0.16.9
+
+safeLoc.setPosition(newPos)
+
 ###### 0.16.6
 
 * Relocate libraries for version conflicts

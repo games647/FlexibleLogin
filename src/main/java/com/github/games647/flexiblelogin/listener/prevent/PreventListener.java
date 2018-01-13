@@ -77,6 +77,10 @@ public class PreventListener extends AbstractPreventListener {
 
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onPlayerMove(MoveEntityEvent playerMoveEvent, @First Player player) {
+        if (playerMoveEvent instanceof MoveEntityEvent.Teleport) {
+            return;
+        }
+
         Vector3d oldLocation = playerMoveEvent.getFromTransform().getPosition();
         Vector3d newLocation = playerMoveEvent.getToTransform().getPosition();
         if ((oldLocation.getFloorX() != newLocation.getFloorX()
