@@ -63,14 +63,18 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
 import static org.spongepowered.api.command.args.GenericArguments.string;
 import static org.spongepowered.api.text.Text.of;
 
-@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION
-        , url = PomData.URL, description = PomData.DESCRIPTION)
+@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
+        url = PomData.URL, description = PomData.DESCRIPTION,
+        dependencies = {
+                @Dependency(id = "griefprevention", version = "[4.3.0,)", optional = true)
+        })
 public class FlexibleLogin {
 
     private final Logger logger;
