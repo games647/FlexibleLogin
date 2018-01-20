@@ -47,7 +47,7 @@
 
         <junit.jupiter.version>5.0.2</junit.jupiter.version>
 
-        <spongeVersion>5.1.0</spongeVersion>
+        <spongeVersion>6.1.0-20170814.171949-4</spongeVersion>
     </properties>
 
     <build>
