@@ -180,7 +180,7 @@
         <dependency>
             <groupId>me.ryanhamshire</groupId>
             <artifactId>griefprevention</artifactId>
-            <version>1.12.1-4.3.0.480</version>
+            <version>1.12.2-4.3.0.527</version>
             <!-- We only depend on the API -->
             <classifier>api</classifier>
             <scope>provided</scope>

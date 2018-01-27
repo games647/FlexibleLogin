@@ -28,11 +28,11 @@ package com.github.games647.flexiblelogin;
 import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.config.SpawnTeleportConfig;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -51,7 +51,7 @@ public class ProtectionManager {
 
     private final Settings config;
     private final TeleportHelper teleportHelper;
-    private final Map<UUID, Location<World>> oldLocations = Maps.newHashMap();
+    private final Map<UUID, Location<World>> oldLocations = new HashMap<>();
 
     @Inject
     ProtectionManager(Settings config, TeleportHelper teleportHelper) {

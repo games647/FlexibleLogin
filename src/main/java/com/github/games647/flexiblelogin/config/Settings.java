@@ -70,7 +70,9 @@ public class Settings {
         Path textFile = dataFolder.resolve("messages.conf");
 
         try {
-            Files.createDirectories(dataFolder);
+            if (Files.notExists(dataFolder)) {
+                Files.createDirectories(dataFolder);
+            }
 
             if (Files.notExists(configFile)) {
                 Files.createFile(configFile);

@@ -43,13 +43,13 @@ import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.github.games647.flexiblelogin.listener.ConnectionListener;
 import com.github.games647.flexiblelogin.listener.prevent.GriefPreventListener;
 import com.github.games647.flexiblelogin.listener.prevent.PreventListener;
-import com.google.common.collect.Maps;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -72,16 +72,14 @@ import static org.spongepowered.api.text.Text.of;
 
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
         url = PomData.URL, description = PomData.DESCRIPTION,
-        dependencies = {
-                @Dependency(id = "griefprevention", version = "[4.3.0,)", optional = true)
-        })
+        dependencies = @Dependency(id = "griefprevention", version = "[4.3.0,)", optional = true))
 public class FlexibleLogin {
 
     private final Logger logger;
     private final Injector injector;
     private final Settings configuration;
 
-    private final Map<String, Integer> attempts = Maps.newConcurrentMap();
+    private final Map<String, Integer> attempts = new ConcurrentHashMap<>();
 
     private Database database;
     private Pattern validNamePattern;

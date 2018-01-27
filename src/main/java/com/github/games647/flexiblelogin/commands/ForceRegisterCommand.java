@@ -28,9 +28,9 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.ForceRegTask;
-import com.google.common.base.Charsets;
 import com.google.inject.Inject;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -71,7 +71,7 @@ public class ForceRegisterCommand extends AbstractCommand {
         if (player.isPresent()) {
             src.sendMessage(settings.getText().getForceRegisterOnline());
         } else {
-            UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + accountId).getBytes(Charsets.UTF_8));
+            UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + accountId).getBytes(StandardCharsets.UTF_8));
 
             Task.builder()
                     //Async as it could run a SQL query
