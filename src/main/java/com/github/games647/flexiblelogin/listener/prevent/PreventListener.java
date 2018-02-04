@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandMapping;
@@ -57,6 +56,8 @@ import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 
+import static java.util.stream.Collectors.toSet;
+
 public class PreventListener extends AbstractPreventListener {
 
     private final CommandManager commandManager;
@@ -72,7 +73,7 @@ public class PreventListener extends AbstractPreventListener {
                 .stream()
                 .map(CommandMapping::getAllAliases)
                 .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+                .collect(toSet());
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)

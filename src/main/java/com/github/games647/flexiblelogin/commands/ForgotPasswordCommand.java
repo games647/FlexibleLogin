@@ -30,6 +30,7 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfiguration;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.SendMailTask;
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 
 import java.io.UnsupportedEncodingException;
@@ -165,17 +166,24 @@ public class ForgotPasswordCommand extends AbstractCommand {
     private MimeMessage buildMessage(Player player, String email, String newPassword, EmailConfiguration emailConfig,
                                      Session session)
             throws MessagingException, UnsupportedEncodingException {
+        String serverName = Sponge.getServer().getBoundAddress()
+                .map(inetSocketAddress -> inetSocketAddress.getAddress().getHostAddress())
+                .orElse("Minecraft Server");
+        ImmutableMap<String, String> variables = ImmutableMap.of("player", player.getName(),
+                "server", serverName,
+                "password", newPassword);
+
         MimeMessage message = new MimeMessage(session);
         String senderEmail = emailConfig.getAccount();
 
         //sender email with an alias
         message.setFrom(new InternetAddress(senderEmail, emailConfig.getSenderName()));
         message.setRecipient(RecipientType.TO, new InternetAddress(email, player.getName()));
-        message.setSubject(replaceVariables(emailConfig.getSubject(), player, newPassword));
+        message.setSubject(emailConfig.getSubject().apply(variables).toText().toPlain());
 
         //current time
         message.setSentDate(Calendar.getInstance().getTime());
-        String textContent = replaceVariables(emailConfig.getText(), player, newPassword);
+        String textContent = emailConfig.getText().apply(variables).toText().toPlain();
 
         //plain text
         MimeBodyPart textPart = new MimeBodyPart();
@@ -190,16 +198,6 @@ public class ForgotPasswordCommand extends AbstractCommand {
         alternative.addBodyPart(textPart);
         message.setContent(alternative);
         return message;
-    }
-
-    private String replaceVariables(String text, Player player, String newPassword) {
-        String serverName = Sponge.getServer().getBoundAddress()
-                .map(inetSocketAddress -> inetSocketAddress.getAddress().getHostAddress())
-                .orElse("Minecraft Server");
-
-        return text.replace("%player%", player.getName())
-                .replace("%server%", serverName)
-                .replace("%password%", newPassword);
     }
 
     private String generatePassword() {

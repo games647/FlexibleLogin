@@ -28,6 +28,11 @@ package com.github.games647.flexiblelogin.config;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+import org.spongepowered.api.text.TextTemplate;
+
+import static org.spongepowered.api.text.TextTemplate.arg;
+import static org.spongepowered.api.text.TextTemplate.of;
+
 @ConfigSerializable
 public class EmailConfiguration {
 
@@ -50,10 +55,11 @@ public class EmailConfiguration {
     private String senderName = "Your minecraft server name";
 
     @Setting(comment = "Email subject/title")
-    private String subject = "Your new Password";
+    private TextTemplate subject = of("Your new Password");
 
     @Setting(comment = "Email contents. You can use HTML here")
-    private String text = "New password for %player% on Minecraft server %server%: %password%";
+    private TextTemplate text = of("New password for " + arg("player").optional() +
+            " on Minecraft server " + arg("server").optional() + ": " + arg(password).optional());
 
     public boolean isEnabled() {
         return enabled;
@@ -79,11 +85,11 @@ public class EmailConfiguration {
         return senderName;
     }
 
-    public String getSubject() {
+    public TextTemplate getSubject() {
         return subject;
     }
 
-    public String getText() {
+    public TextTemplate getText() {
         return text;
     }
 }
