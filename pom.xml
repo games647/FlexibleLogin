@@ -4,7 +4,7 @@
 
     The MIT License (MIT)
 
-    Copyright (c) 2015-2017 contributors
+    Copyright (c) 2015-2018 contributors
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <junit.jupiter.version>5.0.2</junit.jupiter.version>
+        <junit.jupiter.version>5.0.3</junit.jupiter.version>
 
         <spongeVersion>6.1.0-20170814.171949-4</spongeVersion>
     </properties>
@@ -143,7 +143,7 @@
                     <dependency>
                         <groupId>org.junit.platform</groupId>
                         <artifactId>junit-platform-surefire-provider</artifactId>
-                        <version>1.0.2</version>
+                        <version>1.0.3</version>
                     </dependency>
                     <dependency>
                         <groupId>org.junit.jupiter</groupId>
