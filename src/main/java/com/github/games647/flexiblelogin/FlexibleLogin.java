@@ -192,7 +192,10 @@ public class FlexibleLogin {
     @Listener
     public void onDisable(GameStoppingServerEvent stoppingEvent) {
         //run this task sync in order let it finish before the process ends
-        database.close();
+        if (database != null) {
+            database.close();
+        }
+
         Sponge.getServer().getOnlinePlayers().forEach(protectionManager::unprotect);
     }
 

@@ -123,7 +123,7 @@ public class PreventListener extends AbstractPreventListener {
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onPlayerItemDrop(DropItemEvent.Dispense dropItemEvent, @First Player player) {
+    public void onPlayerItemDrop(DropItemEvent dropItemEvent, @First Player player) {
         checkLoginStatus(dropItemEvent, player);
     }
 
@@ -155,11 +155,6 @@ public class PreventListener extends AbstractPreventListener {
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onInventoryClick(ClickInventoryEvent clickInventoryEvent, @First Player player) {
         checkLoginStatus(clickInventoryEvent, player);
-    }
-
-    @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onInventoryDrop(DropItemEvent.Dispense dropItemEvent, @First Player player) {
-        checkLoginStatus(dropItemEvent, player);
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)

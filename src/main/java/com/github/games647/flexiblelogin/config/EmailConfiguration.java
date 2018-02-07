@@ -55,10 +55,10 @@ public class EmailConfiguration {
     private String senderName = "Your minecraft server name";
 
     @Setting(comment = "Email subject/title")
-    private TextTemplate subject = of("Your new Password");
+    private TextTemplate subjectTemplate = of("Your new Password");
 
     @Setting(comment = "Email contents. You can use HTML here")
-    private TextTemplate text = of("New password for " + arg("player").optional() +
+    private TextTemplate contentTemplate = of("New password for " + arg("player").optional() +
             " on Minecraft server " + arg("server").optional() + ": " + arg(password).optional());
 
     public boolean isEnabled() {
@@ -86,10 +86,10 @@ public class EmailConfiguration {
     }
 
     public TextTemplate getSubject() {
-        return subject;
+        return subjectTemplate;
     }
 
     public TextTemplate getText() {
-        return text;
+        return contentTemplate;
     }
 }
