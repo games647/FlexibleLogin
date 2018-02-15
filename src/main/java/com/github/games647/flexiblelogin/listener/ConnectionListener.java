@@ -104,12 +104,14 @@ public class ConnectionListener {
                 return;
             }
 
-            plugin.getDatabase().exists(playerName)
-                    .filter(databaseName -> !playerName.equals(databaseName))
-                    .ifPresent(databaseName -> {
-                        playerAuthEvent.setMessage(settings.getText().getInvalidCase(databaseName));
-                        playerAuthEvent.setCancelled(true);
-                    });
+            if (plugin.getConfigManager().getGeneral().isCaseSensitiveNameCheck()) {
+                plugin.getDatabase().exists(playerName)
+                        .filter(databaseName -> !playerName.equals(databaseName))
+                        .ifPresent(databaseName -> {
+                            playerAuthEvent.setMessage(settings.getText().getInvalidCase(databaseName));
+                            playerAuthEvent.setCancelled(true);
+                        });
+            }
         } else {
             //validate invalid characters
             playerAuthEvent.setMessage(settings.getText().getInvalidUsername());

@@ -45,6 +45,9 @@ public class Config {
     @Setting(comment = "Regular expression for verifying validate player names. Default is a-zA-Z with 2-16 length")
     private String validNames = "^\\w{2,16}$";
 
+    @Setting(comment = "Should the player name always be case sensitive equal to the time the player registered?")
+    private boolean caseSensitiveNameCheck = true;
+
     @Setting(comment = "Should the plugin login users automatically if it's the same account from the same IP")
     private boolean ipAutoLogin;
 
@@ -169,5 +172,9 @@ public class Config {
 
     public int getMessageInterval() {
         return messageInterval;
+    }
+
+    public boolean isCaseSensitiveNameCheck() {
+        return caseSensitiveNameCheck;
     }
 }
