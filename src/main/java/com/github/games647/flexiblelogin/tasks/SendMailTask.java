@@ -26,7 +26,7 @@
 package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.config.EmailConfiguration;
+import com.github.games647.flexiblelogin.config.EmailConfig;
 
 import java.util.Arrays;
 
@@ -57,7 +57,7 @@ public class SendMailTask implements Runnable {
     public void run() {
         //we only need to send the message so we use smtps
         try (Transport transport = session.getTransport()) {
-            EmailConfiguration emailConfig = plugin.getConfigManager().getGeneral().getEmail();
+            EmailConfig emailConfig = plugin.getConfigManager().getGeneral().getEmail();
 
             //connect to host and send message
             if (!transport.isConnected()) {

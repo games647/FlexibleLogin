@@ -29,7 +29,7 @@ import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 @ConfigSerializable
-public class SQLConfiguration {
+public class SQLConfig {
 
     @Setting(comment = "SQL server type. You can choose between h2, SQLite and MySQL/MariaDB")
     private SQLType type = SQLType.H2;

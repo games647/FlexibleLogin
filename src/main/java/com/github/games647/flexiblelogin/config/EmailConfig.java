@@ -34,7 +34,7 @@ import static org.spongepowered.api.text.TextTemplate.arg;
 import static org.spongepowered.api.text.TextTemplate.of;
 
 @ConfigSerializable
-public class EmailConfiguration {
+public class EmailConfig {
 
     @Setting(comment = "Is password recovery using an email allowed")
     private boolean enabled;
@@ -52,7 +52,7 @@ public class EmailConfiguration {
     private String password = "";
 
     @Setting(comment = "Displays as sender in the email client")
-    private String senderName = "Your minecraft server name";
+    private String senderName = "Your Minecraft server name";
 
     @Setting(comment = "Email subject/title")
     private TextTemplate subjectTemplate = of("Your new Password");

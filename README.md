@@ -7,7 +7,7 @@ password command. 0.16.5 fixed this security bug occurred in this
 
 ### Description
 
-A Sponge minecraft server plugin for second authentication. It has a built-in
+A Sponge Minecraft server plugin for second authentication. It has a built-in
 TOTP support.
 
 Do you want to let your players protect their account (from hackers/login stealers) and keep playing 
@@ -66,7 +66,7 @@ a password you choose or with a time based password created from a secret key, g
         # SMTP Port for outgoing messages
         port=465
         # Displays as sender in the email client
-        senderName="Your minecraft server name"
+        senderName="Your Minecraft server name"
         # Email subject/title
         subject="Your new Password"
         # Email contents. You can use HTML here

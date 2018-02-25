@@ -41,10 +41,7 @@ import static org.spongepowered.api.text.TextTemplate.of;
 @ConfigSerializable
 public class TextConfig {
 
-    @Setting(comment = "You can use the Github wiki for example configurations: "
-            + "https://github.com/games647/FlexibleLogin/wiki"
-            + '\n'
-            + "When a non-player (i.e. Console, Command Block) tries to do a player only action.")
+    @Setting(comment = "When a non-player (i.e. Console, Command Block) tries to do a player only action.")
     private String playersOnly = "&4Only players can do this!";
 
     @Setting(comment = "When the account does not exist on the account database.")

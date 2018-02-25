@@ -71,7 +71,7 @@ public class ForceRegisterCommand extends AbstractCommand {
         if (player.isPresent()) {
             src.sendMessage(settings.getText().getForceRegisterOnline());
         } else {
-            UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + accountId).getBytes(StandardCharsets.UTF_8));
+            UUID offlineUUID = getOfflineUUID(accountId);
 
             Task.builder()
                     //Async as it could run a SQL query
@@ -79,6 +79,10 @@ public class ForceRegisterCommand extends AbstractCommand {
                     .execute(new ForceRegTask(plugin, src, offlineUUID, password))
                     .submit(plugin);
         }
+    }
+
+    private UUID getOfflineUUID(String playerName) {
+        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8));
     }
 
     private void onUuidRegister(String accountId, CommandSource src, String password) {

@@ -60,6 +60,8 @@ public abstract class ResetPwTask implements Runnable {
         if (account.isPresent()) {
             try {
                 account.get().setPasswordHash(plugin.getHasher().hash(password));
+                plugin.getDatabase().save(account.get());
+
                 src.sendMessage(plugin.getConfigManager().getText().getChangePassword());
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash", ex);

@@ -31,13 +31,13 @@ import java.util.List;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 
-public class Config {
+public class General {
 
     @Setting(comment = "Database configuration")
-    private SQLConfiguration sqlConfiguration = new SQLConfiguration();
+    private SQLConfig sqlConfiguration = new SQLConfig();
 
     @Setting(comment = "Email configuration for password recovery")
-    private EmailConfiguration emailConfiguration = new EmailConfiguration();
+    private EmailConfig emailConfiguration = new EmailConfig();
 
     @Setting(comment = "Algorithms for hashing user passwords. You can also choose totp")
     private String hashAlgo = "bcrypt";
@@ -94,11 +94,11 @@ public class Config {
             + " all commands are protected")
     private List<String> protectedCommands = Lists.newArrayList("op", "pex");
 
-    public EmailConfiguration getEmail() {
+    public EmailConfig getEmail() {
         return emailConfiguration;
     }
 
-    public SQLConfiguration getSQL() {
+    public SQLConfig getSQL() {
         return sqlConfiguration;
     }
 

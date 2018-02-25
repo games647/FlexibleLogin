@@ -149,4 +149,16 @@ public class Account {
 
         this.loggedIn = loggedIn;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "uuid=" + uuid +
+                ", username='" + username + '\'' +
+                ", ip=" + Arrays.toString(ip) +
+                ", email='" + email + '\'' +
+                ", loggedIn=" + loggedIn +
+                ", lastLogin=" + lastLogin +
+                '}';
+    }
 }

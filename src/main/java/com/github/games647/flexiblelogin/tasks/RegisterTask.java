@@ -36,8 +36,9 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
+
+import static org.spongepowered.api.text.action.TextActions.openUrl;
 
 public class RegisterTask implements Runnable {
 
@@ -106,7 +107,7 @@ public class RegisterTask implements Runnable {
                     .append(Text.builder(" / ").color(TextColors.DARK_BLUE).build())
                     .append(Text.builder()
                             .append(plugin.getConfigManager().getText().getScanQr())
-                            .onClick(TextActions.openUrl(barcodeUrl))
+                            .onClick(openUrl(barcodeUrl))
                             .build())
                     .build());
         } catch (MalformedURLException ex) {

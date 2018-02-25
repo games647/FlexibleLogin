@@ -72,7 +72,9 @@ import static org.spongepowered.api.text.Text.of;
 
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
         url = PomData.URL, description = PomData.DESCRIPTION,
-        dependencies = @Dependency(id = "griefprevention", version = "[4.0.1,)", optional = true))
+        dependencies = {
+                @Dependency(id = "griefprevention", version = "[4.0.1,)", optional = true)
+        })
 public class FlexibleLogin {
 
     private final Logger logger;

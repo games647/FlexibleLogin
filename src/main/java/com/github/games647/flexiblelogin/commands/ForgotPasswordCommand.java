@@ -27,7 +27,7 @@ package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.config.EmailConfiguration;
+import com.github.games647.flexiblelogin.config.EmailConfig;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.SendMailTask;
 import com.google.common.collect.ImmutableMap;
@@ -109,7 +109,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
     private void prepareSend(Player player, Account account, Optional<String> optEmail) {
         String newPassword = generatePassword();
 
-        EmailConfiguration emailConfig = settings.getGeneral().getEmail();
+        EmailConfig emailConfig = settings.getGeneral().getEmail();
         Session session = buildSession(emailConfig);
 
         try {
@@ -133,7 +133,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
         }
     }
 
-    private Session buildSession(EmailConfiguration emailConfig) {
+    private Session buildSession(EmailConfig emailConfig) {
         Properties properties = new Properties();
         properties.setProperty("mail.smtp.host", emailConfig.getHost());
         properties.setProperty("mail.smtp.auth", "true");
@@ -163,7 +163,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
         return session;
     }
 
-    private MimeMessage buildMessage(Player player, String email, String newPassword, EmailConfiguration emailConfig,
+    private MimeMessage buildMessage(Player player, String email, String newPassword, EmailConfig emailConfig,
                                      Session session)
             throws MessagingException, UnsupportedEncodingException {
         String serverName = Sponge.getServer().getBoundAddress()

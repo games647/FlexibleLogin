@@ -29,7 +29,7 @@ import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.PomData;
 import com.github.games647.flexiblelogin.ProtectionManager;
-import com.github.games647.flexiblelogin.config.Config;
+import com.github.games647.flexiblelogin.config.General;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
 import com.google.inject.Inject;
@@ -123,7 +123,7 @@ public class ConnectionListener {
         Optional<Account> optAccount = plugin.getDatabase().loadAccount(player);
         byte[] newIp = player.getConnection().getAddress().getAddress().getAddress();
 
-        Config config = settings.getGeneral();
+        General config = settings.getGeneral();
         if (optAccount.isPresent()) {
             Account account = optAccount.get();
 
@@ -166,7 +166,7 @@ public class ConnectionListener {
     }
 
     private void scheduleTimeoutTask(Player player) {
-        Config config = settings.getGeneral();
+        General config = settings.getGeneral();
         if (config.isBypassPermission() && player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
             return;
         }

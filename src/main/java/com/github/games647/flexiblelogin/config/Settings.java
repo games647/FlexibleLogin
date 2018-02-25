@@ -48,7 +48,7 @@ public class Settings {
     private final Logger logger;
     private final Path dataFolder;
 
-    private ObjectMapper<Config>.BoundInstance configMapper;
+    private ObjectMapper<General>.BoundInstance configMapper;
     private ObjectMapper<TextConfig>.BoundInstance textMapper;
 
     @Inject
@@ -58,7 +58,7 @@ public class Settings {
         this.dataFolder = dataFolder;
 
         try {
-            configMapper = ObjectMapper.forClass(Config.class).bindToNew();
+            configMapper = ObjectMapper.forClass(General.class).bindToNew();
             textMapper = ObjectMapper.forClass(TextConfig.class).bindToNew();
         } catch (ObjectMappingException objMappingExc) {
             logger.error("Invalid plugin structure", objMappingExc);
@@ -109,7 +109,7 @@ public class Settings {
         }
     }
 
-    public Config getGeneral() {
+    public General getGeneral() {
         return configMapper.getInstance();
     }
 

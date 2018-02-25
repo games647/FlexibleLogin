@@ -25,7 +25,7 @@
  */
 package com.github.games647.flexiblelogin;
 
-import com.github.games647.flexiblelogin.config.SQLConfiguration;
+import com.github.games647.flexiblelogin.config.SQLConfig;
 import com.github.games647.flexiblelogin.config.SQLType;
 
 import java.io.File;
@@ -59,7 +59,7 @@ public class Database {
     public Database(FlexibleLogin plugin) throws SQLException {
         this.plugin = plugin;
 
-        SQLConfiguration sqlConfig = plugin.getConfigManager().getGeneral().getSQL();
+        SQLConfig sqlConfig = plugin.getConfigManager().getGeneral().getSQL();
 
         Path configDir = plugin.getConfigManager().getConfigDir();
         String storagePath = sqlConfig.getPath().replace("%DIR%", configDir.normalize().toString());
