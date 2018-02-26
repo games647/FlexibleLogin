@@ -67,7 +67,7 @@ public class Settings {
 
     public void load() {
         Path configFile = dataFolder.resolve("config.conf");
-        Path textFile = dataFolder.resolve("messages.conf");
+        Path textFile = dataFolder.resolve("locale.conf");
 
         try {
             if (Files.notExists(dataFolder)) {

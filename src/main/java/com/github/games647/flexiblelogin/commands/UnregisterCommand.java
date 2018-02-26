@@ -68,7 +68,7 @@ public class UnregisterCommand extends AbstractCommand {
             return CommandResult.success();
         }
 
-        src.sendMessage(settings.getText().getUnregisteringFailed());
+        src.sendMessage(settings.getText().getUnregisterFailed());
 
         return CommandResult.success();
     }

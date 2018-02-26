@@ -72,7 +72,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(settings.getText().getPlayersOnlyAction());
+            src.sendMessage(settings.getText().getPlayersOnly());
             return CommandResult.success();
         }
 
@@ -129,7 +129,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
                     .submit(plugin);
         } catch (Exception ex) {
             logger.error("Error executing command", ex);
-            player.sendMessage(settings.getText().getErrorCommand());
+            player.sendMessage(settings.getText().getErrorExecutingCommand());
         }
     }
 

@@ -32,269 +32,285 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextTemplate;
+import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
+import static org.spongepowered.api.text.Text.builder;
 import static org.spongepowered.api.text.TextTemplate.arg;
 import static org.spongepowered.api.text.TextTemplate.of;
 
 @ConfigSerializable
 public class TextConfig {
 
+    private static final TextColor WARNING_COLOR = TextColors.DARK_RED;
+    private static final TextColor INFO_COLOR = TextColors.DARK_GREEN;
+
     @Setting(comment = "When a non-player (i.e. Console, Command Block) tries to do a player only action.")
-    private String playersOnly = "&4Only players can do this!";
+    private Text playersOnly = builder("Only players can do this!").color(WARNING_COLOR).build();
 
     @Setting(comment = "When the account does not exist on the account database.")
-    private String playersAccountNotLoaded = "&4Your account cannot be loaded.";
+    private Text accountNotLoaded = builder("Your account cannot be loaded.").color(INFO_COLOR).build();
 
     @Setting(comment = "If the player is logged in, it is then pointless to use the forgot password command")
-    private String playersAccountAlreadyLoggedIn = "&4You are already logged in!";
+    private Text alreadyLoggedIn = builder("You are already logged in!").color(WARNING_COLOR).build();
 
     @Setting(comment = "When the player did not or forgot to submit an email address used to recover a password.")
-    private String uncommittedEmailAddress = "&4You did not submit an email address!";
+    private Text uncommittedEmailAddress = builder("You did not submit an email address!").color(WARNING_COLOR).build();
 
     @Setting(comment = "When an unexpected error occurs. (Should not happen)")
-    private String errorExecutingCommand = "&4Error executing command, see console.";
+    private Text errorExecutingCommand = builder("Error executing command, see console.").color(WARNING_COLOR).build();
 
     @Setting(comment = "Whe the player successfully logs out of his/her account.")
-    private String loggedOut = "&2Logged out.";
+    private Text loggedOut = builder("Logged out.").color(INFO_COLOR).build();
 
     @Setting(comment = "When the player is not logged in of his/her account.")
-    private String notLoggedIn = "&4Not logged in. Type /login to login in";
+    private Text notLoggedIn = builder("Not logged in. Type /login to login in").color(WARNING_COLOR).build();
 
     @Setting(comment = "When the player is not logged in of his/her account.")
-    private String notRegistered = "&4Not registered. Type /register to register";
+    private Text notRegistered = builder("Not registered. Type /register to register").color(WARNING_COLOR).build();
 
     @Setting(comment = "When totp is not enabled.")
-    private String totpNotEnabled = "&4Totp is not enabled. You have to enter two passwords.";
+    private Text totpNotEnabled = builder("Totp is not enabled. You have to enter two passwords.")
+            .color(WARNING_COLOR).build();
 
     @Setting(comment = "When the two passwords typed do not match each other.")
-    private String unevenPasswords = "&4The passwords are not equal.";
+    private Text unequalPasswords = builder("The passwords are not equal.").color(WARNING_COLOR).build();
 
     @Setting(comment = "When the player successfully used the set email command and set his/her email.")
-    private String emailSet = "&2Your email was set.";
+    private Text emailSet = builder("Your email was set.").color(INFO_COLOR).build();
 
     @Setting(comment = "When the player enters an email that does not exist.")
-    private String notEmail = "&4You have entered in an invalid email!";
+    private Text notEmail = builder("You have entered in an invalid email!").color(WARNING_COLOR).build();
 
     @Setting(comment = "When the unregister process failed.")
-    private String unregisterFailed = "&4Your request is neither a player name or uuid.";
+    private Text unregisterFailed = builder("Your request is neither a player name or uuid.")
+            .color(WARNING_COLOR).build();
 
     @Setting(comment = "When a player successfully logs in.")
-    private String loggedIn = "&2Logged in";
+    private Text loggedIn = builder("Logged in").color(INFO_COLOR).build();
 
     @Setting(comment = "When a player enters an incorrect password.")
-    private String incorrectPassword = "&4Incorrect password";
+    private Text incorrectPassword = builder("Incorrect password").color(WARNING_COLOR).build();
 
     @Setting(comment = "When the recovery email was sent!")
-    private String mailSent = "&2Email sent";
+    private Text mailSent = builder("Email sent").color(INFO_COLOR).build();
 
     @Setting(comment = "When a player's account does not exist.")
-    private String accountNotFound = "&4Account not found";
+    private Text accountNotFound = builder("Account not found").color(WARNING_COLOR).build();
 
     @Setting(comment = "When a player joined with a non Mojang valid username")
-    private String invalidUsername = "&4Invalid username - Choose characters a-z,A-Z,0-9 and a length between 2 and 16";
+    private Text invalidUsername = builder(
+            "Invalid username - Choose characters a-z,A-Z,0-9 and a length between 2 and 16"
+    ).color(WARNING_COLOR).build();
 
     @Setting(comment = "When an account was successfully deleted")
     private TextTemplate accountDelete = of(
-            TextColors.DARK_GREEN, "Deleted account of ", TextColors.YELLOW, arg("account").optional(), "!"
+            INFO_COLOR, "Deleted account of ", TextColors.YELLOW, arg("account").optional(), "!"
     );
 
     @Setting(comment = "Kick message if the case sensitive compare between the already registered " +
             "and the joining player failed")
     private TextTemplate invalidCase = of(
-            TextColors.RED, "Invalid username. Please join as ", TextColors.YELLOW, arg("username").optional(), "!"
+            WARNING_COLOR, "Invalid username. Please join as ", TextColors.YELLOW, arg("username").optional(), "!"
     );
 
     @Setting(comment = "Kick message if the case sensitive compare between the already registered " +
             "and the joining player failed")
     private TextTemplate lastOnline = of(
-            TextColors.DARK_GREEN, "Account: ", TextColors.YELLOW, arg("username").optional(),
-            TextColors.DARK_GREEN, " was last online at ", TextColors.YELLOW, arg("time")
+            INFO_COLOR, "Account: ", TextColors.YELLOW, arg("username").optional(),
+            INFO_COLOR, " was last online at ", TextColors.YELLOW, arg("time")
     );
 
     @Setting(comment = "When an account already exists, and therefore cannot be created.")
-    private String accountAlreadyExists = "&4Account already exists";
+    private Text accountAlreadyExists = builder("Account already exists").color(WARNING_COLOR).build();
 
     @Setting(comment = "When the player successfully created his/her account.")
-    private String accountCreated = "&2Account created";
+    private Text accountCreated = builder("Account created").color(INFO_COLOR).build();
 
     @Setting(comment = "When a secret-key is created (header).")
-    private String keyGenerated = "&2SecretKey generated: ";
+    private TextTemplate keyGenerated = of(
+            INFO_COLOR, "SecretKey generated: ", TextColors.YELLOW, arg("code")
+    );
 
     @Setting(comment = "When a player registered using TOTP and the code can be scanned by clicking on it")
-    private String scanQr = "&6Click here to scan the QR-Code";
+    private Text scanQr = builder("Click here to scan the QR-Code").color(TextColors.YELLOW).build();
 
     @Setting(comment = "When the user tries to execute a protected command if command only protection is enabled")
-    private String protectedCommand = "&4This command is protected. Please login";
+    private Text protectedCommand = builder("This command is protected. Please login").color(WARNING_COLOR).build();
 
     @Setting(comment = "When the player is auto logged in by using the same ip as the last login")
-    private String ipAutoLogin = "&2Auto logged in";
+    private Text ipAutoLogin = builder("Auto logged in").color(INFO_COLOR).build();
 
     @Setting(comment = "Kick message if the player doesn't logged during the configured time out seconds")
-    private String timeoutReason = "&4Login timeout";
+    private Text timeoutReason = builder("Login timeout").color(WARNING_COLOR).build();
 
     @Setting(comment = "Message if the player changed his account password successfully")
-    private String changePassword = "&2Successful changed password";
+    private Text changePassword = builder("Successful changed password").color(INFO_COLOR).build();
 
     @Setting(comment = "Message if the player has to register with a longer password")
-    private String tooShortPassword = "&2Your password is too short";
+    private Text tooShortPassword = builder("Your password is too short").color(INFO_COLOR).build();
 
     @Setting(comment = "User reached max attempts")
-    private String maxAttempts = "&2You entered too many times a wrong password";
+    private Text maxAttempts = builder("You entered too many times a wrong password").color(WARNING_COLOR).build();
 
     @Setting(comment = "User reached the max ip registrations")
-    private String maxIpReg = "&2You reached the max amount of registrations for this ip-address";
+    private Text maxIpReg = builder("You reached the max amount of registrations for this ip-address")
+            .color(WARNING_COLOR).build();
 
     @Setting(comment = "Admin reloaded the plugin")
-    private String onReload = "&4Successful reloaded plugin";
+    private Text onReload = builder("Successful reloaded plugin").color(INFO_COLOR).build();
 
     @Setting(comment = "Force register failed because the player is online")
-    private String forceRegisterOnline = "&2Cannot force register player. That player is online";
+    private Text forceRegisterOnline = builder("Cannot force register player. That player is online")
+            .color(INFO_COLOR).build();
 
     @Setting(comment = "Successfull force registered an account")
-    private String forceRegisterSuccess = "&4Force register success";
+    private Text forceRegisterSuccess = builder("Force register success").color(INFO_COLOR).build();
 
     @Setting(comment = "Another player with the same name tried to join the server while that player is still online")
-    private String alreadyOnline = "&2You are already online";
+    private Text alreadyOnline = builder("You are already online").color(INFO_COLOR).build();
 
     @Setting(comment = "If email recovery is not enabled")
-    private String emailNotEnabled = "&2Email recovery is not enabled.";
+    private Text emailNotEnabled = builder("Email recovery is not enabled.").color(INFO_COLOR).build();
 
-    public Text getAccountAlreadyExists() {
-        return fromString(accountAlreadyExists);
-    }
-
-    public Text getInvalidUsername() {
-        return fromString(invalidUsername);
-    }
-
-    public Text getAccountCreated() {
-        return fromString(accountCreated);
-    }
-
-    public Text getKeyGenerated() {
-        return fromString(keyGenerated);
-    }
-
-    public Text getScanQr() {
-        return fromString(scanQr);
-    }
-
-    public Text getIncorrectPassword() {
-        return fromString(incorrectPassword);
-    }
-
-    public Text getLoggedIn() {
-        return fromString(loggedIn);
-    }
-
-    public Text getAccountNotFound() {
-        return fromString(accountNotFound);
-    }
-
-    public Text getMailSent() {
-        return fromString(mailSent);
-    }
-
-    public Text getPlayersOnlyAction() {
-        return fromString(playersOnly);
+    public Text getPlayersOnly() {
+        return playersOnly;
     }
 
     public Text getAccountNotLoaded() {
-        return fromString(playersAccountNotLoaded);
+        return accountNotLoaded;
     }
 
     public Text getAlreadyLoggedIn() {
-        return fromString(playersAccountAlreadyLoggedIn);
+        return alreadyLoggedIn;
     }
 
     public Text getUncommittedEmailAddress() {
-        return fromString(uncommittedEmailAddress);
+        return uncommittedEmailAddress;
     }
 
-    public Text getErrorCommand() {
-        return fromString(errorExecutingCommand);
+    public Text getErrorExecutingCommand() {
+        return errorExecutingCommand;
     }
 
-    public Text getSuccessfullyLoggedOut() {
-        return fromString(loggedOut);
-    }
-
-    public Text getNotRegistered() {
-        return fromString(notRegistered);
+    public Text getLoggedOut() {
+        return loggedOut;
     }
 
     public Text getNotLoggedIn() {
-        return fromString(notLoggedIn);
+        return notLoggedIn;
+    }
+
+    public Text getNotRegistered() {
+        return notRegistered;
     }
 
     public Text getTotpNotEnabled() {
-        return fromString(totpNotEnabled);
+        return totpNotEnabled;
     }
 
     public Text getUnequalPasswords() {
-        return fromString(unevenPasswords);
+        return unequalPasswords;
     }
 
     public Text getEmailSet() {
-        return fromString(emailSet);
+        return emailSet;
     }
 
     public Text getNotEmail() {
-        return fromString(notEmail);
+        return notEmail;
     }
 
-    public Text getUnregisteringFailed() {
-        return fromString(unregisterFailed);
+    public Text getUnregisterFailed() {
+        return unregisterFailed;
+    }
+
+    public Text getLoggedIn() {
+        return loggedIn;
+    }
+
+    public Text getIncorrectPassword() {
+        return incorrectPassword;
+    }
+
+    public Text getMailSent() {
+        return mailSent;
+    }
+
+    public Text getAccountNotFound() {
+        return accountNotFound;
+    }
+
+    public Text getInvalidUsername() {
+        return invalidUsername;
+    }
+
+    public Text getAccountAlreadyExists() {
+        return accountAlreadyExists;
+    }
+
+    public Text getAccountCreated() {
+        return accountCreated;
+    }
+
+    public Text getScanQr() {
+        return scanQr;
+    }
+
+    public Text getProtectedCommand() {
+        return protectedCommand;
+    }
+
+    public Text getIpAutoLogin() {
+        return ipAutoLogin;
+    }
+
+    public Text getTimeoutReason() {
+        return timeoutReason;
+    }
+
+    public Text getChangePassword() {
+        return changePassword;
+    }
+
+    public Text getTooShortPassword() {
+        return tooShortPassword;
+    }
+
+    public Text getMaxAttempts() {
+        return maxAttempts;
+    }
+
+    public Text getMaxIpReg() {
+        return maxIpReg;
+    }
+
+    public Text getOnReload() {
+        return onReload;
+    }
+
+    public Text getForceRegisterOnline() {
+        return forceRegisterOnline;
+    }
+
+    public Text getForceRegisterSuccess() {
+        return forceRegisterSuccess;
+    }
+
+    public Text getAlreadyOnline() {
+        return alreadyOnline;
+    }
+
+    public Text getEmailNotEnabled() {
+        return emailNotEnabled;
     }
 
     public Text getAccountDeleted(String account) {
         return accountDelete.apply(ImmutableMap.of("account", account)).build();
     }
 
-    public Text getProtectedCommand() {
-        return fromString(protectedCommand);
-    }
-
-    public Text getIpAutoLogin() {
-        return fromString(ipAutoLogin);
-    }
-
-    public Text getTimeoutReason() {
-        return fromString(timeoutReason);
-    }
-
-    public Text getChangePassword() {
-        return fromString(changePassword);
-    }
-
-    public Text getTooShortPassword() {
-        return fromString(tooShortPassword);
-    }
-
-    public Text getMaxAttempts() {
-        return fromString(maxAttempts);
-    }
-
-    public Text getMaxIpReg() {
-        return fromString(maxIpReg);
-    }
-
-    public Text getReload() {
-        return fromString(onReload);
-    }
-
-    public Text getForceRegisterOnline() {
-        return fromString(forceRegisterOnline);
-    }
-
-    public Text getForceRegisterSuccess() {
-        return fromString(forceRegisterSuccess);
-    }
-
-    public Text getAlreadyOnline() {
-        return fromString(alreadyOnline);
+    public Text getKeyGenerated(String code) {
+        return keyGenerated.apply(ImmutableMap.of("code", code)).build();
     }
 
     public Text getInvalidCase(String username) {
@@ -303,13 +319,5 @@ public class TextConfig {
 
     public Text getLastOnline(String username, String time) {
         return lastOnline.apply(ImmutableMap.of("username", username, "time", time)).build();
-    }
-
-    public Text getEmailNotEnabled() {
-        return fromString(emailNotEnabled);
-    }
-
-    private Text fromString(String textString) {
-        return TextSerializers.FORMATTING_CODE.deserialize(textString);
     }
 }

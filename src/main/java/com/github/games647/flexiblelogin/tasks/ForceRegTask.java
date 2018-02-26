@@ -63,7 +63,7 @@ public class ForceRegTask implements Runnable {
                 src.sendMessage(plugin.getConfigManager().getText().getForceRegisterSuccess());
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash", ex);
-                src.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
+                src.sendMessage(plugin.getConfigManager().getText().getErrorExecutingCommand());
             }
         }
     }

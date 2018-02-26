@@ -94,7 +94,7 @@ public class LoginTask implements Runnable {
             }
         } catch (Exception ex) {
             plugin.getLogger().error("Unexpected error while password checking", ex);
-            player.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
+            player.sendMessage(plugin.getConfigManager().getText().getErrorExecutingCommand());
         }
     }
 }

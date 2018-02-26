@@ -52,7 +52,7 @@ public class ChangePasswordCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(settings.getText().getPlayersOnlyAction());
+            src.sendMessage(settings.getText().getPlayersOnly());
             return CommandResult.empty();
         }
 
@@ -81,14 +81,14 @@ public class ChangePasswordCommand extends AbstractCommand {
                             if (success) {
                                 src.sendMessage(settings.getText().getChangePassword());
                             } else {
-                                src.sendMessage(settings.getText().getErrorCommand());
+                                src.sendMessage(settings.getText().getErrorExecutingCommand());
                             }
                         })
                         .name("Register Query")
                         .submit(plugin);
             } catch (Exception ex) {
                 logger.error("Error creating hash on change password", ex);
-                src.sendMessage(settings.getText().getErrorCommand());
+                src.sendMessage(settings.getText().getErrorExecutingCommand());
             }
         } else {
             src.sendMessage(settings.getText().getUnequalPasswords());

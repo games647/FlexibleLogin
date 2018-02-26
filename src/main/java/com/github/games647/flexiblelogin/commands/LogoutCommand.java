@@ -49,7 +49,7 @@ public class LogoutCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(settings.getText().getPlayersOnlyAction());
+            src.sendMessage(settings.getText().getPlayersOnly());
             return CommandResult.success();
         }
 
@@ -58,7 +58,7 @@ public class LogoutCommand extends AbstractCommand {
         if (plugin.getDatabase().isLoggedIn((Player) src)) {
             Account account = plugin.getDatabase().getAccount((Player) src).get();
 
-            src.sendMessage(settings.getText().getSuccessfullyLoggedOut());
+            src.sendMessage(settings.getText().getLoggedOut());
             account.setLoggedIn(false);
             account.setIp(ArrayUtils.EMPTY_BYTE_ARRAY);
 

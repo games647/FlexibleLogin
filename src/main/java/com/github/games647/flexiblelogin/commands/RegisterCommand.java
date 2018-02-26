@@ -52,7 +52,7 @@ public class RegisterCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(settings.getText().getPlayersOnlyAction());
+            src.sendMessage(settings.getText().getPlayersOnly());
             return CommandResult.success();
         }
 

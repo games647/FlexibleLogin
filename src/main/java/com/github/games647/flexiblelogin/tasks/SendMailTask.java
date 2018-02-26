@@ -71,10 +71,10 @@ public class SendMailTask implements Runnable {
             plugin.getLogger().error("Transport provider not found", providerEx);
             plugin.getLogger().error("Registered providers: {}", Arrays.asList(session.getProviders()));
 
-            player.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
+            player.sendMessage(plugin.getConfigManager().getText().getErrorExecutingCommand());
         } catch (MessagingException messagingEx) {
             plugin.getLogger().error("Error sending email", messagingEx);
-            player.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
+            player.sendMessage(plugin.getConfigManager().getText().getErrorExecutingCommand());
         }
     }
 }

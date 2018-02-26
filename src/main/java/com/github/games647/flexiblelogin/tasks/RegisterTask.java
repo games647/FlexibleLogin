@@ -29,6 +29,8 @@ import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.hasher.TOTP;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -36,7 +38,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import static org.spongepowered.api.text.action.TextActions.openUrl;
 
@@ -87,7 +88,7 @@ public class RegisterTask implements Runnable {
                         .submit(plugin);
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash", ex);
-                player.sendMessage(plugin.getConfigManager().getText().getErrorCommand());
+                player.sendMessage(plugin.getConfigManager().getText().getErrorExecutingCommand());
             }
         } else {
             player.sendMessage(plugin.getConfigManager().getText().getAccountAlreadyExists());
@@ -97,19 +98,16 @@ public class RegisterTask implements Runnable {
     private void sendTotpHint(String secretCode) {
         //I assume this thread-safe, because PlayerChat is also in an async task
         String hostName = Sponge.getServer().getBoundAddress()
-                .map(inetSocketAddress -> inetSocketAddress.getAddress().getCanonicalHostName())
+                .map(InetSocketAddress::getAddress)
+                .map(InetAddress::getCanonicalHostName)
                 .orElse("Minecraft Server");
         try {
             URL barcodeUrl = new URL(TOTP.getQRBarcodeURL(player.getName(), hostName, secretCode));
-            player.sendMessage(plugin.getConfigManager().getText().getKeyGenerated());
-            player.sendMessage(Text.builder(secretCode)
-                    .color(TextColors.GOLD)
-                    .append(Text.builder(" / ").color(TextColors.DARK_BLUE).build())
-                    .append(Text.builder()
-                            .append(plugin.getConfigManager().getText().getScanQr())
+            Text keyGenerated = plugin.getConfigManager().getText().getKeyGenerated(secretCode);
+            player.sendMessage(keyGenerated);
+            player.sendMessage(plugin.getConfigManager().getText().getScanQr().toBuilder()
                             .onClick(openUrl(barcodeUrl))
-                            .build())
-                    .build());
+                            .build());
         } catch (MalformedURLException ex) {
             plugin.getLogger().error("Malformed TOTP url link", ex);
         }
