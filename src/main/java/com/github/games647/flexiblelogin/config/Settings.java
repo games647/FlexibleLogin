@@ -32,8 +32,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
@@ -89,9 +89,8 @@ public class Settings {
         loadMapper(textMapper, HoconConfigurationLoader.builder().setPath(textFile).build());
     }
 
-    private <T> void loadMapper(ObjectMapper<T>.BoundInstance mapper
-            , ConfigurationLoader<CommentedConfigurationNode> loader) {
-        CommentedConfigurationNode rootNode;
+    private <T> void loadMapper(ObjectMapper<T>.BoundInstance mapper, ConfigurationLoader<?> loader) {
+        ConfigurationNode rootNode;
         if (mapper != null) {
             try {
                 rootNode = loader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true));
