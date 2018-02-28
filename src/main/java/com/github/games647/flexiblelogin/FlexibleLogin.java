@@ -56,7 +56,6 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
-import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.event.EventManager;
 import org.spongepowered.api.event.Listener;
@@ -65,10 +64,6 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
-
-import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
-import static org.spongepowered.api.command.args.GenericArguments.string;
-import static org.spongepowered.api.text.Text.of;
 
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
         url = PomData.URL, description = PomData.DESCRIPTION,
@@ -127,67 +122,25 @@ public class FlexibleLogin {
     }
 
     private void registerCommands() {
-        CommandManager commandDispatcher = Sponge.getCommandManager();
+        CommandManager commandManager = Sponge.getCommandManager();
 
-        commandDispatcher.register(this, CommandSpec.builder()
-                .executor(injector.getInstance(LoginCommand.class))
-                .arguments(onlyOne(string(of("password"))))
-                .build(), "login", "log");
-
-        commandDispatcher.register(this, CommandSpec.builder()
-                .executor(injector.getInstance(RegisterCommand.class))
-                .arguments(GenericArguments
-                        .optional(GenericArguments
-                                .repeated(
-                                        string(of("password")), 2)))
-                .build(), "register", "reg");
-
-        commandDispatcher.register(this, CommandSpec.builder()
-                .executor(injector.getInstance(ChangePasswordCommand.class))
-                .arguments(GenericArguments
-                        .repeated(
-                                string(of("password")), 2))
-                .build(), "changepassword", "changepw");
-
-        commandDispatcher.register(this, CommandSpec.builder()
-                .executor(injector.getInstance(SetEmailCommand.class))
-                .arguments(onlyOne(string(of("email"))))
-                .build(), "setemail", "email");
-
-        commandDispatcher.register(this, CommandSpec.builder()
-                .executor(injector.getInstance(ForgotPasswordCommand.class))
-                .build(), "forgotpassword", "forgot");
-
-        commandDispatcher.register(this, CommandSpec.builder()
-                .executor(injector.getInstance(LogoutCommand.class))
-                .build(), "logout");
+        commandManager.register(this, injector.getInstance(LoginCommand.class).buildSpec(), "login", "log");
+        commandManager.register(this, injector.getInstance(RegisterCommand.class).buildSpec(), "register", "reg");
+        commandManager.register(this, injector.getInstance(LogoutCommand.class).buildSpec(), "logout");
+        commandManager.register(this, injector.getInstance(SetEmailCommand.class).buildSpec(), "setemail", "email");
+        commandManager.register(this, injector.getInstance(ChangePasswordCommand.class)
+                .buildSpec(), "changepassword", "changepw");
+        commandManager.register(this, injector.getInstance(ForgotPasswordCommand.class)
+                .buildSpec(), "forgotpassword", "forgot");
 
         //admin commands
-        commandDispatcher.register(this, CommandSpec.builder()
+        commandManager.register(this, CommandSpec.builder()
                 .permission(PomData.ARTIFACT_ID + ".admin")
-                .child(CommandSpec.builder()
-                        .executor(injector.getInstance(ReloadCommand.class))
-                        .build(), "reload", "rl")
-                .child(CommandSpec.builder()
-                        .executor(injector.getInstance(UnregisterCommand.class))
-                        .arguments(onlyOne(string(of("account"))))
-                        .build(), "unregister", "unreg")
-                .child(CommandSpec.builder()
-                        .executor(injector.getInstance(ForceRegisterCommand.class))
-                        .arguments(
-                                onlyOne(
-                                        string(of("account"))), string(of("password")))
-                        .build(), "register", "reg")
-                .child(CommandSpec.builder()
-                        .executor(injector.getInstance(LastLoginCommand.class))
-                        .arguments(onlyOne(string(of("account"))))
-                        .build(), "lastlogin")
-                .child(CommandSpec.builder()
-                        .executor(injector.getInstance(ResetPasswordCommand.class))
-                        .arguments(
-                                onlyOne(
-                                        string(of("account"))), string(of("password")))
-                        .build(), "resetpw", "resetpassword")
+                .child(injector.getInstance(ReloadCommand.class).buildSpec(), "reload", "rl")
+                .child(injector.getInstance(UnregisterCommand.class).buildSpec(), "unregister", "unreg")
+                .child(injector.getInstance(ForceRegisterCommand.class).buildSpec(), "register", "reg")
+                .child(injector.getInstance(LastLoginCommand.class).buildSpec(), "lastlogin")
+                .child(injector.getInstance(ResetPasswordCommand.class).buildSpec(), "resetpw", "resetpassword")
                 .build(), PomData.ARTIFACT_ID);
     }
 

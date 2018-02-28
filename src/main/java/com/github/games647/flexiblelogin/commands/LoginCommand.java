@@ -35,8 +35,13 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
+
+import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
+import static org.spongepowered.api.command.args.GenericArguments.string;
+import static org.spongepowered.api.text.Text.of;
 
 public class LoginCommand extends AbstractCommand {
 
@@ -69,5 +74,13 @@ public class LoginCommand extends AbstractCommand {
                 .submit(plugin);
 
         return CommandResult.success();
+    }
+
+    @Override
+    public CommandSpec buildSpec() {
+        return CommandSpec.builder()
+                .executor(this)
+                .arguments(onlyOne(string(of("password"))))
+                .build();
     }
 }

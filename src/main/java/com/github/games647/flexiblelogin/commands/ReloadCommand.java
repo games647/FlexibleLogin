@@ -34,6 +34,7 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandSpec;
 
 public class ReloadCommand extends AbstractCommand {
 
@@ -48,5 +49,12 @@ public class ReloadCommand extends AbstractCommand {
 
         source.sendMessage(settings.getText().getOnReload());
         return CommandResult.success();
+    }
+
+    @Override
+    public CommandSpec buildSpec() {
+        return CommandSpec.builder()
+                .executor(this)
+                .build();
     }
 }

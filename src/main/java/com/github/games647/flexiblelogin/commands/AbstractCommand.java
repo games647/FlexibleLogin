@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.service.permission.Subject;
 
 import static com.github.games647.flexiblelogin.PomData.ARTIFACT_ID;
@@ -67,4 +68,6 @@ public abstract class AbstractCommand implements CommandExecutor {
     public boolean isValidUUID(String input) {
         return uuidPattern.matcher(input).matches();
     }
+
+    public abstract CommandSpec buildSpec();
 }
