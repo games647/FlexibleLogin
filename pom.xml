@@ -156,9 +156,16 @@
             <url>https://repo.spongepowered.org/maven</url>
         </repository>
 
+        <!--GriefPrevention-->
         <repository>
             <id>forge-repo</id>
             <url>https://files.minecraftforge.net/maven</url>
+        </repository>
+
+        <!--Google auth-->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -189,11 +196,15 @@
         <dependency>
             <groupId>com.warrenstrange</groupId>
             <artifactId>googleauth</artifactId>
-            <version>1.1.5</version>
+            <version>1.2.0-SMALL</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
                     <artifactId>httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
