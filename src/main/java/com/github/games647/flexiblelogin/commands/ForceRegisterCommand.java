@@ -27,6 +27,8 @@ package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
+import com.github.games647.flexiblelogin.validation.NamePredicate;
+import com.github.games647.flexiblelogin.validation.UUIDPredicate;
 import com.github.games647.flexiblelogin.tasks.ForceRegTask;
 import com.google.inject.Inject;
 
@@ -50,6 +52,10 @@ import static org.spongepowered.api.text.Text.of;
 
 public class ForceRegisterCommand extends AbstractCommand {
 
+    @Inject private UUIDPredicate uuidPredicate;
+
+    @Inject private NamePredicate namePredicate;
+
     @Inject
     ForceRegisterCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
         super(plugin, logger, settings);
@@ -59,11 +65,11 @@ public class ForceRegisterCommand extends AbstractCommand {
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         String accountId = args.<String>getOne("account").get();
         String password = args.<String>getOne("password").get();
-        if (isValidUUID(accountId)) {
+        if (uuidPredicate.test(accountId)) {
             onUuidRegister(accountId, src, password);
 
             return CommandResult.success();
-        } else if (plugin.isValidName(accountId)) {
+        } else if (namePredicate.test(accountId)) {
             onNameRegister(src, accountId, password);
             return CommandResult.success();
         }

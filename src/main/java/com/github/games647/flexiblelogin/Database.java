@@ -26,7 +26,8 @@
 package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.config.SQLConfig;
-import com.github.games647.flexiblelogin.config.SQLType;
+import com.github.games647.flexiblelogin.config.SQLConfig.SQLType;
+import com.github.games647.flexiblelogin.config.Settings;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -44,6 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.sql.SqlService;
@@ -52,16 +54,17 @@ public class Database {
 
     private static final String USERS_TABLE = "flexiblelogin_users";
 
-    private final FlexibleLogin plugin;
+    private final Logger logger;
+
     private final Map<UUID, Account> cache = new ConcurrentHashMap<>();
     private final DataSource dataSource;
 
-    public Database(FlexibleLogin plugin) throws SQLException {
-        this.plugin = plugin;
+    public Database(Logger logger, Settings settings) throws SQLException {
+        this.logger = logger;
 
-        SQLConfig sqlConfig = plugin.getConfigManager().getGeneral().getSQL();
+        SQLConfig sqlConfig = settings.getGeneral().getSQL();
 
-        Path configDir = plugin.getConfigManager().getConfigDir();
+        Path configDir = settings.getConfigDir();
         String storagePath = sqlConfig.getPath().replace("%DIR%", configDir.normalize().toString());
 
         StringBuilder urlBuilder = new StringBuilder("jdbc:")
@@ -107,7 +110,7 @@ public class Database {
         return getAccount(player).map(Account::isLoggedIn).orElse(false);
     }
 
-    public void createTable() throws SQLException {
+    public void createTable(SQLType type) throws SQLException {
         try (Connection con = dataSource.getConnection();
              Statement statement = con.createStatement()) {
             String createTable = "CREATE TABLE IF NOT EXISTS " + USERS_TABLE + " ( "
@@ -121,7 +124,7 @@ public class Database {
                     + "`LoggedIn` BOOLEAN DEFAULT 0, "
                     + "UNIQUE (`UUID`) "
                     + ')';
-            if (plugin.getConfigManager().getGeneral().getSQL().getType() == SQLType.SQLITE) {
+            if (type == SQLType.SQLITE) {
                 createTable = createTable.replace("AUTO_INCREMENT", "");
             }
 
@@ -144,7 +147,7 @@ public class Database {
             //min one account was found
             return affectedRows > 0;
         } catch (SQLException ex) {
-            plugin.getLogger().error("Error deleting user account", ex);
+            logger.error("Error deleting user account", ex);
         }
 
         return false;
@@ -163,7 +166,7 @@ public class Database {
             //min one account was found
             return affectedRows > 0;
         } catch (SQLException sqlEx) {
-            plugin.getLogger().error("Error deleting user account", sqlEx);
+            logger.error("Error deleting user account", sqlEx);
         }
 
         return false;
@@ -181,7 +184,7 @@ public class Database {
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().error("Error checking if user account exists", sqlEx);
+            logger.error("Error checking if user account exists", sqlEx);
         }
 
         return Optional.empty();
@@ -210,7 +213,7 @@ public class Database {
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().error("Error loading account", sqlEx);
+            logger.error("Error loading account", sqlEx);
         }
 
         return Optional.empty();
@@ -227,7 +230,7 @@ public class Database {
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().error("Error loading account", sqlEx);
+            logger.error("Error loading account", sqlEx);
         }
 
         return Optional.empty();
@@ -244,7 +247,7 @@ public class Database {
                 }
             }
         } catch (SQLException sqlEx) {
-            plugin.getLogger().error("Error loading count of registrations", sqlEx);
+            logger.error("Error loading count of registrations", sqlEx);
         }
 
         return -1;
@@ -271,7 +274,7 @@ public class Database {
 
             return true;
         } catch (SQLException sqlEx) {
-            plugin.getLogger().error("Error registering account", sqlEx);
+            logger.error("Error registering account", sqlEx);
         }
 
         return false;
@@ -288,7 +291,7 @@ public class Database {
 
             stmt.execute();
         } catch (SQLException ex) {
-            plugin.getLogger().error("Error updating login status", ex);
+            logger.error("Error updating login status", ex);
         }
     }
 
@@ -300,7 +303,7 @@ public class Database {
             //set all player accounts existing in the database to unlogged
             stmt.execute("UPDATE " + USERS_TABLE + " SET LoggedIn=0");
         } catch (SQLException ex) {
-            plugin.getLogger().error("Error updating login status", ex);
+            logger.error("Error updating login status", ex);
         }
     }
 
@@ -325,7 +328,7 @@ public class Database {
             cache.put(uuid, account);
             return true;
         } catch (SQLException ex) {
-            plugin.getLogger().error("Error updating user account", ex);
+            logger.error("Error updating user account", ex);
             return false;
         }
     }

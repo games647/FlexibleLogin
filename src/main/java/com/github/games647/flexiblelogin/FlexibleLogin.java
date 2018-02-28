@@ -36,6 +36,7 @@ import com.github.games647.flexiblelogin.commands.ReloadCommand;
 import com.github.games647.flexiblelogin.commands.ResetPasswordCommand;
 import com.github.games647.flexiblelogin.commands.SetEmailCommand;
 import com.github.games647.flexiblelogin.commands.UnregisterCommand;
+import com.github.games647.flexiblelogin.config.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;
 import com.github.games647.flexiblelogin.hasher.Hasher;
@@ -48,9 +49,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Server;
@@ -76,15 +74,11 @@ public class FlexibleLogin {
     private final Injector injector;
     private final Settings configuration;
 
-    private final Map<String, Integer> attempts = new ConcurrentHashMap<>();
-
     private Database database;
-    private Pattern validNamePattern;
+    private Hasher hasher;
 
     @Inject
     private ProtectionManager protectionManager;
-
-    private Hasher hasher;
 
     @Inject
     FlexibleLogin(Logger logger, Injector injector, Settings settings) {
@@ -114,6 +108,7 @@ public class FlexibleLogin {
 
         //register events
         EventManager eventManager = Sponge.getEventManager();
+        eventManager.registerListeners(this, protectionManager);
         eventManager.registerListeners(this, injector.getInstance(ConnectionListener.class));
         eventManager.registerListeners(this, injector.getInstance(PreventListener.class));
         if (Sponge.getPluginManager().isLoaded("GriefPrevention")) {
@@ -150,8 +145,6 @@ public class FlexibleLogin {
         if (database != null) {
             database.close();
         }
-
-        Sponge.getServer().getOnlinePlayers().forEach(protectionManager::unprotect);
     }
 
     public void onReload() {
@@ -171,25 +164,18 @@ public class FlexibleLogin {
     private void init() {
         configuration.load();
         try {
-            database = new Database(this);
-            database.createTable();
+            database = new Database(logger, configuration);
+            database.createTable(configuration.getGeneral().getSQL().getType());
         } catch (SQLException sqlEx) {
             logger.error("Cannot connect to auth storage", sqlEx);
             Sponge.getServer().shutdown();
         }
 
-        if ("totp".equalsIgnoreCase(configuration.getGeneral().getHashAlgo())) {
+        //use bcrypt as fallback for now
+        hasher = new BcryptHasher();
+        if (configuration.getGeneral().getHashAlgo() == HashingAlgorithm.TOTP) {
             hasher = new TOTP();
-        } else {
-            //use bcrypt as fallback for now
-            hasher = new BcryptHasher();
         }
-
-        validNamePattern = Pattern.compile(configuration.getGeneral().getValidNames());
-    }
-
-    public boolean isValidName(String input) {
-        return validNamePattern.matcher(input).matches();
     }
 
     public Settings getConfigManager() {
@@ -202,10 +188,6 @@ public class FlexibleLogin {
 
     public Database getDatabase() {
         return database;
-    }
-
-    public Map<String, Integer> getAttempts() {
-        return attempts;
     }
 
     public ProtectionManager getProtectionManager() {

@@ -30,6 +30,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 import ninja.leaping.configurate.objectmapping.Setting;
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 public class General {
 
@@ -40,7 +41,7 @@ public class General {
     private EmailConfig emailConfiguration = new EmailConfig();
 
     @Setting(comment = "Algorithms for hashing user passwords. You can also choose totp")
-    private String hashAlgo = "bcrypt";
+    private HashingAlgorithm hashAlgo = HashingAlgorithm.BCrypt;
 
     @Setting(comment = "Regular expression for verifying validate player names. Default is a-zA-Z with 2-16 length")
     private String validNames = "^\\w{2,16}$";
@@ -88,7 +89,7 @@ public class General {
     private int messageInterval = 2;
 
     @Setting
-    private SpawnTeleportConfig teleportConfig = new SpawnTeleportConfig();
+    private TeleportConfig teleportConfig = new TeleportConfig();
 
     @Setting(comment = "If command only protection is enabled, these commands are protected. If the list is empty"
             + " all commands are protected")
@@ -102,7 +103,7 @@ public class General {
         return sqlConfiguration;
     }
 
-    public String getHashAlgo() {
+    public HashingAlgorithm getHashAlgo() {
         return hashAlgo;
     }
 
@@ -134,7 +135,7 @@ public class General {
         return bypassPermission;
     }
 
-    public SpawnTeleportConfig getTeleport() {
+    public TeleportConfig getTeleport() {
         return teleportConfig;
     }
 
@@ -176,5 +177,13 @@ public class General {
 
     public boolean isCaseSensitiveNameCheck() {
         return caseSensitiveNameCheck;
+    }
+
+    @ConfigSerializable
+    public enum HashingAlgorithm {
+
+        BCrypt,
+
+        TOTP
     }
 }

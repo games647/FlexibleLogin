@@ -25,16 +25,22 @@
  */
 package com.github.games647.flexiblelogin.commands;
 
+import com.github.games647.flexiblelogin.AttemptManager;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.LoginTask;
 import com.google.inject.Inject;
 
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
@@ -45,9 +51,13 @@ import static org.spongepowered.api.text.Text.of;
 
 public class LoginCommand extends AbstractCommand {
 
+    private final AttemptManager attemptManager;
+
     @Inject
-    LoginCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+    LoginCommand(FlexibleLogin plugin, Logger logger, Settings settings, AttemptManager attemptManager) {
         super(plugin, logger, settings, "login");
+
+        this.attemptManager = attemptManager;
     }
 
     @Override
@@ -59,9 +69,29 @@ public class LoginCommand extends AbstractCommand {
 
         checkPlayerPermission(src);
 
-        if (plugin.getDatabase().isLoggedIn((Player) src)) {
+        Player player = (Player) src;
+
+        if (plugin.getDatabase().isLoggedIn(player)) {
             src.sendMessage(settings.getText().getAlreadyLoggedIn());
         }
+
+        UUID uniqueId = player.getUniqueId();
+        if (attemptManager.isAllowed(uniqueId)) {
+            src.sendMessage(settings.getText().getMaxAttempts());
+            String lockCommand = settings.getGeneral().getLockCommand();
+            if (!lockCommand.isEmpty()) {
+                ConsoleSource console = Sponge.getServer().getConsole();
+                Sponge.getCommandManager().process(console, lockCommand);
+            }
+
+            Task.builder()
+                    .delay(settings.getGeneral().getWaitTime(), TimeUnit.SECONDS)
+                    .execute(() -> attemptManager.clearAttempts(uniqueId))
+                    .submit(plugin);
+            return CommandResult.success();
+        }
+
+        attemptManager.increaseAttempt(uniqueId);
 
         //the arg isn't optional. We can be sure there is value
         String password = args.<String>getOne("password").get();
@@ -69,7 +99,7 @@ public class LoginCommand extends AbstractCommand {
         Task.builder()
                 //we are executing a SQL Query which is blocking
                 .async()
-                .execute(new LoginTask(plugin, (Player) src, password))
+                .execute(new LoginTask(plugin, attemptManager, (Player) src, password))
                 .name("Login Query")
                 .submit(plugin);
 

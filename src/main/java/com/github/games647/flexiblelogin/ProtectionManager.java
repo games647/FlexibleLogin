@@ -27,7 +27,7 @@ package com.github.games647.flexiblelogin;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.config.SpawnTeleportConfig;
+import com.github.games647.flexiblelogin.config.TeleportConfig;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -38,8 +38,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
+import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
@@ -60,7 +66,7 @@ public class ProtectionManager {
     }
 
     public void protect(Player player) {
-        SpawnTeleportConfig teleportConfig = config.getGeneral().getTeleport();
+        TeleportConfig teleportConfig = config.getGeneral().getTeleport();
         if (teleportConfig.isEnabled()) {
             teleportConfig.getSpawnLocation().ifPresent(worldLocation -> {
                 oldLocations.put(player.getUniqueId(), player.getLocation());
@@ -128,5 +134,20 @@ public class ProtectionManager {
 
     private boolean isSafe(Location<World> loc) {
         return loc.getBlockType() != BlockTypes.PORTAL;
+    }
+
+    @Listener
+    public void onPlayerQuit(Disconnect playerQuitEvent, @First Player player) {
+        unprotect(player);
+    }
+
+    @Listener
+    public void onPlayerJoin(Join playerJoinEvent, @First Player player) {
+        protect(player);
+    }
+
+    @Listener
+    public void onDisable(GameStoppingServerEvent stoppingEvent) {
+        Sponge.getServer().getOnlinePlayers().forEach(this::unprotect);
     }
 }

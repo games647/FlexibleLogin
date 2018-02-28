@@ -27,6 +27,7 @@ package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.config.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.hasher.TOTP;
 
 import java.net.InetAddress;
@@ -73,7 +74,7 @@ public class RegisterTask implements Runnable {
                 }
 
                 //thread-safe, because it's immutable after config load
-                if ("totp".equalsIgnoreCase(plugin.getConfigManager().getGeneral().getHashAlgo())) {
+                if (plugin.getConfigManager().getGeneral().getHashAlgo() ==HashingAlgorithm.TOTP) {
                     sendTotpHint(hashedPassword);
                 }
 

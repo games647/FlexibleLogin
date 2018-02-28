@@ -35,7 +35,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 @ConfigSerializable
-public class SpawnTeleportConfig {
+public class TeleportConfig {
 
     @Setting
     private boolean enabled;

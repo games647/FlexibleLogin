@@ -31,7 +31,8 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class SQLConfig {
 
-    @Setting(comment = "SQL server type. You can choose between h2, SQLite and MySQL/MariaDB")
+    @Setting(comment = "SQL server type. You can choose between h2, SQLite and MySQL/MariaDB. " +
+            "If you use MySQL/MariaDB. Just write MySQL")
     private SQLType type = SQLType.H2;
 
     @Setting(comment = "Path where the database is located." +
@@ -80,5 +81,18 @@ public class SQLConfig {
 
     public boolean isUseSSL() {
         return useSSL;
+    }
+
+    /**
+     * Sponge has support for all these three drivers
+     */
+    @ConfigSerializable
+    public enum SQLType {
+
+        MYSQL,
+
+        SQLITE,
+
+        H2
     }
 }

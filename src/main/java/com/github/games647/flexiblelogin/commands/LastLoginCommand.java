@@ -28,6 +28,7 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
+import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.google.inject.Inject;
 
 import java.time.format.DateTimeFormatter;
@@ -53,6 +54,8 @@ import static org.spongepowered.api.text.Text.of;
 
 public class LastLoginCommand extends AbstractCommand {
 
+    @Inject private NamePredicate namePredicate;
+
     @Inject
     LastLoginCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
         super(plugin, logger, settings);
@@ -61,7 +64,7 @@ public class LastLoginCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         String username = args.<String>getOne("account").get();
-        if (plugin.isValidName(username)) {
+        if (namePredicate.test(username)) {
             SpongeExecutorService asyncExecutor = Sponge.getScheduler().createAsyncExecutor(plugin);
             SpongeExecutorService syncExecutor = Sponge.getScheduler().createAsyncExecutor(plugin);
 

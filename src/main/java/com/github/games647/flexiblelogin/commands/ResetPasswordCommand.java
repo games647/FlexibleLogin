@@ -30,6 +30,8 @@ import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.NameResetPwTask;
 import com.github.games647.flexiblelogin.tasks.ResetPwTask;
 import com.github.games647.flexiblelogin.tasks.UUIDResetPwTask;
+import com.github.games647.flexiblelogin.validation.NamePredicate;
+import com.github.games647.flexiblelogin.validation.UUIDPredicate;
 import com.google.inject.Inject;
 
 import java.util.UUID;
@@ -48,6 +50,9 @@ import static org.spongepowered.api.text.Text.of;
 
 public class ResetPasswordCommand extends AbstractCommand {
 
+    @Inject private UUIDPredicate uuidPredicate;
+    @Inject private NamePredicate namePredicate;
+
     @Inject
     ResetPasswordCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
         super(plugin, logger, settings);
@@ -59,10 +64,10 @@ public class ResetPasswordCommand extends AbstractCommand {
         String password = args.<String>getOne("password").get();
 
         ResetPwTask resetTask;
-        if (isValidUUID(accountId)) {
+        if (uuidPredicate.test(accountId)) {
             UUID uuid = UUID.fromString(accountId);
             resetTask = new UUIDResetPwTask(plugin, src, password, uuid);
-        } else if (plugin.isValidName(accountId)) {
+        } else if (namePredicate.test(accountId)) {
             resetTask = new NameResetPwTask(plugin, src, password, accountId);
         } else {
             return CommandResult.empty();

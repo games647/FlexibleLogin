@@ -28,6 +28,8 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.UnregisterTask;
+import com.github.games647.flexiblelogin.validation.NamePredicate;
+import com.github.games647.flexiblelogin.validation.UUIDPredicate;
 import com.google.inject.Inject;
 
 import java.util.UUID;
@@ -46,6 +48,9 @@ import static org.spongepowered.api.text.Text.of;
 
 public class UnregisterCommand extends AbstractCommand {
 
+    @Inject private UUIDPredicate uuidPredicate;
+    @Inject private NamePredicate namePredicate;
+
     @Inject
     UnregisterCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
         super(plugin, logger, settings);
@@ -54,7 +59,7 @@ public class UnregisterCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         String account = args.<String>getOne("account").get();
-        if (isValidUUID(account)) {
+        if (uuidPredicate.test(account)) {
             //check if the account is an UUID
             UUID uuid = UUID.fromString(account);
            Task.builder()
@@ -63,7 +68,7 @@ public class UnregisterCommand extends AbstractCommand {
                     .execute(new UnregisterTask(plugin, src, uuid))
                     .submit(plugin);
             return CommandResult.success();
-        } else if (plugin.isValidName(account)) {
+        } else if (namePredicate.test(account)) {
             //check if the account is a valid player name
             Task.builder()
                     //Async as it could run a SQL query

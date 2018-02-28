@@ -37,6 +37,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
@@ -64,6 +65,8 @@ import org.spongepowered.api.scheduler.Task;
 public class ForgotPasswordCommand extends AbstractCommand {
 
     private static final int PASSWORD_LENGTH = 16;
+
+    private final Supplier<String> passwordSupplier = () -> RandomStringUtils.random(PASSWORD_LENGTH);
 
     @Inject
     ForgotPasswordCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
@@ -108,7 +111,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
     }
 
     private void prepareSend(Player player, Account account, Optional<String> optEmail) {
-        String newPassword = generatePassword();
+        String newPassword = passwordSupplier.get();
 
         EmailConfig emailConfig = settings.getGeneral().getEmail();
         Session session = buildSession(emailConfig);
@@ -199,10 +202,6 @@ public class ForgotPasswordCommand extends AbstractCommand {
         alternative.addBodyPart(textPart);
         message.setContent(alternative);
         return message;
-    }
-
-    private String generatePassword() {
-        return RandomStringUtils.random(PASSWORD_LENGTH);
     }
 
     @Override

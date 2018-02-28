@@ -27,9 +27,8 @@ package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
+import com.github.games647.flexiblelogin.validation.MailPredicate;
 import com.google.inject.Inject;
-
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandException;
@@ -46,7 +45,8 @@ import static org.spongepowered.api.text.Text.of;
 
 public class SetEmailCommand extends AbstractCommand {
 
-    private final Pattern emailPattern = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+");
+    @Inject
+    private MailPredicate mailPredicate;
 
     @Inject
     SetEmailCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
@@ -63,7 +63,7 @@ public class SetEmailCommand extends AbstractCommand {
         checkPlayerPermission(src);
 
         String email = args.<String>getOne("email").get();
-        if (emailPattern.matcher(email).matches()) {
+        if (mailPredicate.test(email)) {
             plugin.getDatabase().getAccount((Player) src).ifPresent(account -> {
                 account.setEmail(email);
                 src.sendMessage(settings.getText().getEmailSet());

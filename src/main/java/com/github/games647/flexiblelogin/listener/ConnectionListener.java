@@ -28,10 +28,10 @@ package com.github.games647.flexiblelogin.listener;
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.PomData;
-import com.github.games647.flexiblelogin.ProtectionManager;
 import com.github.games647.flexiblelogin.config.General;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
+import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.google.inject.Inject;
 
 import java.time.Duration;
@@ -54,23 +54,20 @@ public class ConnectionListener {
 
     private final FlexibleLogin plugin;
     private final Settings settings;
-    private final ProtectionManager protectionManager;
+    private final NamePredicate namePredicate;
 
     @Inject
-    public ConnectionListener(FlexibleLogin plugin, Settings settings, ProtectionManager protectionManager) {
+    ConnectionListener(FlexibleLogin plugin, Settings settings, NamePredicate namePredicate) {
         this.plugin = plugin;
         this.settings = settings;
-        this.protectionManager = protectionManager;
+        this.namePredicate = namePredicate;
     }
 
     @Listener
     public void onPlayerQuit(Disconnect playerQuitEvent, @First Player player) {
         Account account = plugin.getDatabase().remove(player);
 
-        protectionManager.unprotect(player);
-
         if (account != null) {
-            plugin.getAttempts().remove(player.getName());
             //account is loaded -> mark the player as logout as it could remain in the cache
             account.setLoggedIn(false);
 
@@ -84,7 +81,6 @@ public class ConnectionListener {
 
     @Listener
     public void onPlayerJoin(Join playerJoinEvent, @First Player player) {
-        protectionManager.protect(player);
         Task.builder()
                 .async()
                 .execute(() -> onAccountLoaded(player))
@@ -94,7 +90,7 @@ public class ConnectionListener {
     @Listener
     public void onPlayerAuth(Auth playerAuthEvent, @First GameProfile gameProfile) {
         String playerName = gameProfile.getName().get();
-        if (plugin.isValidName(playerName)) {
+        if (namePredicate.test(playerName)) {
             if (Sponge.getServer().getPlayer(playerName)
                     .map(Player::getName)
                     .filter(name -> name.equals(playerName))
@@ -104,7 +100,7 @@ public class ConnectionListener {
                 return;
             }
 
-            if (plugin.getConfigManager().getGeneral().isCaseSensitiveNameCheck()) {
+            if (settings.getGeneral().isCaseSensitiveNameCheck()) {
                 plugin.getDatabase().exists(playerName)
                         .filter(databaseName -> !playerName.equals(databaseName))
                         .ifPresent(databaseName -> {

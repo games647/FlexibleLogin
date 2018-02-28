@@ -49,26 +49,30 @@ public abstract class ResetPwTask implements Runnable {
     @Override
     public void run() {
         Optional<Player> player = getIfPresent();
+
+        Optional<Account> account;
         if (player.isPresent()) {
-            resetPassword(plugin.getDatabase().getAccount(player.get()));
+            account = plugin.getDatabase().getAccount(player.get());
         } else {
-            resetPassword(loadAccount());
+            account = loadAccount();
+        }
+
+        if (account.isPresent()) {
+            resetPassword(account.get());
+        } else {
+            src.sendMessage(plugin.getConfigManager().getText().getAccountNotFound());
         }
     }
 
-    private void resetPassword(Optional<Account> account) {
-        if (account.isPresent()) {
-            try {
-                account.get().setPasswordHash(plugin.getHasher().hash(password));
-                plugin.getDatabase().save(account.get());
+    private void resetPassword(Account account) {
+        try {
+            account.setPasswordHash(plugin.getHasher().hash(password));
+            plugin.getDatabase().save(account);
 
-                src.sendMessage(plugin.getConfigManager().getText().getChangePassword());
-            } catch (Exception ex) {
-                plugin.getLogger().error("Error creating hash", ex);
-                src.sendMessage(plugin.getConfigManager().getText().getErrorExecutingCommand());
-            }
-        } else {
-            src.sendMessage(plugin.getConfigManager().getText().getAccountNotFound());
+            src.sendMessage(plugin.getConfigManager().getText().getChangePassword());
+        } catch (Exception ex) {
+            plugin.getLogger().error("Error creating hash", ex);
+            src.sendMessage(plugin.getConfigManager().getText().getErrorExecutingCommand());
         }
     }
 

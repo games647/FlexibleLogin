@@ -28,8 +28,6 @@ package com.github.games647.flexiblelogin.commands;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
 
-import java.util.regex.Pattern;
-
 import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.spec.CommandExecutor;
@@ -45,8 +43,6 @@ public abstract class AbstractCommand implements CommandExecutor {
     protected final Settings settings;
 
     private final String permission;
-    private final Pattern uuidPattern = Pattern
-            .compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}");
 
     public AbstractCommand(FlexibleLogin plugin, Logger logger, Settings settings, String permissionKey) {
         this.plugin = plugin;
@@ -63,10 +59,6 @@ public abstract class AbstractCommand implements CommandExecutor {
         if (settings.getGeneral().isPlayerPermissions() && !player.hasPermission(permission)) {
             throw new CommandPermissionException();
         }
-    }
-
-    public boolean isValidUUID(String input) {
-        return uuidPattern.matcher(input).matches();
     }
 
     public abstract CommandSpec buildSpec();

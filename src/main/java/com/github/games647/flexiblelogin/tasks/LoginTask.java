@@ -26,24 +26,24 @@
 package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.Account;
+import com.github.games647.flexiblelogin.AttemptManager;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
 public class LoginTask implements Runnable {
 
     private final FlexibleLogin plugin;
+    private final AttemptManager attemptManager;
 
     private final Player player;
     private final String userInput;
 
-    public LoginTask(FlexibleLogin plugin, Player player, String userInput) {
+    public LoginTask(FlexibleLogin plugin, AttemptManager attemptManager, Player player, String userInput) {
+        this.attemptManager = attemptManager;
         this.plugin = plugin;
         this.player = player;
         this.userInput = userInput;
@@ -58,24 +58,10 @@ public class LoginTask implements Runnable {
         }
 
         try {
-            int attempts = plugin.getAttempts().computeIfAbsent(player.getName(), playerName -> 0);
-            if (attempts > plugin.getConfigManager().getGeneral().getMaxAttempts()) {
-                player.sendMessage(plugin.getConfigManager().getText().getMaxAttempts());
-                String lockCommand = plugin.getConfigManager().getGeneral().getLockCommand();
-                if (!lockCommand.isEmpty()) {
-                    ConsoleSource console = Sponge.getServer().getConsole();
-                    Sponge.getCommandManager().process(console, lockCommand);
-                }
-
-                Task.builder()
-                        .delay(plugin.getConfigManager().getGeneral().getWaitTime(), TimeUnit.SECONDS)
-                        .execute(() -> plugin.getAttempts().remove(player.getName())).submit(plugin);
-                return;
-            }
-
             Account account = optAccount.get();
             if (account.checkPassword(plugin, userInput)) {
-                plugin.getAttempts().remove(player.getName());
+                attemptManager.clearAttempts(player.getUniqueId());
+
                 account.setLoggedIn(true);
                 //update the ip
                 byte[] playerIp = player.getConnection().getAddress().getAddress().getAddress();
@@ -87,9 +73,6 @@ public class LoginTask implements Runnable {
                 //flushes the ip update
                 plugin.getDatabase().save(account);
             } else {
-                attempts++;
-                plugin.getAttempts().put(player.getName(), attempts);
-
                 player.sendMessage(plugin.getConfigManager().getText().getIncorrectPassword());
             }
         } catch (Exception ex) {

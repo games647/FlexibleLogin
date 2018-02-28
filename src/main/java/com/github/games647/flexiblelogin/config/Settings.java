@@ -53,7 +53,7 @@ public class Settings {
 
     @Inject
     //We will place more than one config there (i.e. H2/SQLite database)
-    public Settings(Logger logger, @ConfigDir(sharedRoot = false) Path dataFolder) {
+    Settings(Logger logger, @ConfigDir(sharedRoot = false) Path dataFolder) {
         this.logger = logger;
         this.dataFolder = dataFolder;
 
