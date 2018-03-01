@@ -44,7 +44,9 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.AsynchronousExecutor;
 import org.spongepowered.api.scheduler.SpongeExecutorService;
+import org.spongepowered.api.scheduler.SynchronousExecutor;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageReceiver;
 
@@ -54,7 +56,16 @@ import static org.spongepowered.api.text.Text.of;
 
 public class LastLoginCommand extends AbstractCommand {
 
-    @Inject private NamePredicate namePredicate;
+    @Inject
+    private NamePredicate namePredicate;
+
+    @SynchronousExecutor
+    @Inject
+    private SpongeExecutorService syncExecutor;
+
+    @AsynchronousExecutor
+    @Inject
+    private SpongeExecutorService asyncExecutor;
 
     @Inject
     LastLoginCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
@@ -65,9 +76,6 @@ public class LastLoginCommand extends AbstractCommand {
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         String username = args.<String>getOne("account").get();
         if (namePredicate.test(username)) {
-            SpongeExecutorService asyncExecutor = Sponge.getScheduler().createAsyncExecutor(plugin);
-            SpongeExecutorService syncExecutor = Sponge.getScheduler().createAsyncExecutor(plugin);
-
             Optional<UUID> sender = Optional.empty();
             if (src instanceof Player) {
                 sender = Optional.of(((Player) src).getUniqueId());
@@ -75,7 +83,7 @@ public class LastLoginCommand extends AbstractCommand {
 
             Optional<UUID> finalSender = sender;
             CompletableFuture.supplyAsync(() -> plugin.getDatabase().loadAccount(username), asyncExecutor)
-                                    .thenAcceptAsync(optAcc -> onAccLoaded(finalSender, optAcc), syncExecutor);
+                    .thenAcceptAsync(optAcc -> onAccLoaded(finalSender, optAcc), syncExecutor);
 
             return CommandResult.success();
         }

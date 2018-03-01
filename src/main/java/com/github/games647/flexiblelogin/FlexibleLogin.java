@@ -62,6 +62,7 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginManager;
 
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
         url = PomData.URL, description = PomData.DESCRIPTION,
@@ -73,12 +74,14 @@ public class FlexibleLogin {
     private final Logger logger;
     private final Injector injector;
     private final Settings configuration;
+    private final CommandManager commandManager;
 
     private Database database;
     private Hasher hasher;
 
-    @Inject
-    private ProtectionManager protectionManager;
+    @Inject private ProtectionManager protectionManager;
+    @Inject private EventManager eventManager;
+    @Inject private PluginManager pluginManager;
 
     @Inject
     FlexibleLogin(Logger logger, Injector injector, Settings settings) {
@@ -94,6 +97,7 @@ public class FlexibleLogin {
         }
 
         this.injector = injector;
+        this.commandManager = Sponge.getCommandManager();
     }
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
@@ -107,18 +111,15 @@ public class FlexibleLogin {
         registerCommands();
 
         //register events
-        EventManager eventManager = Sponge.getEventManager();
         eventManager.registerListeners(this, protectionManager);
         eventManager.registerListeners(this, injector.getInstance(ConnectionListener.class));
         eventManager.registerListeners(this, injector.getInstance(PreventListener.class));
-        if (Sponge.getPluginManager().isLoaded("GriefPrevention")) {
+        if (pluginManager.isLoaded("GriefPrevention")) {
             eventManager.registerListeners(this, injector.getInstance(GriefPreventListener.class));
         }
     }
 
     private void registerCommands() {
-        CommandManager commandManager = Sponge.getCommandManager();
-
         commandManager.register(this, injector.getInstance(LoginCommand.class).buildSpec(), "login", "log");
         commandManager.register(this, injector.getInstance(RegisterCommand.class).buildSpec(), "register", "reg");
         commandManager.register(this, injector.getInstance(LogoutCommand.class).buildSpec(), "logout");
