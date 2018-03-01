@@ -31,6 +31,9 @@ import java.nio.ByteBuffer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
@@ -66,7 +69,7 @@ public class Account {
     }
 
     //existing account
-    public Account(ResultSet resultSet) throws SQLException {
+    public Account(ResultSet resultSet, boolean sqlite) throws SQLException {
         //uuid in binary format
         ByteBuffer uuidBytes = ByteBuffer.wrap(resultSet.getBytes(2));
 
@@ -75,7 +78,15 @@ public class Account {
         this.passwordHash = resultSet.getString(4);
 
         this.ip = resultSet.getBytes(5);
-        this.lastLogin = resultSet.getTimestamp(6).toInstant();
+
+        if (sqlite) {
+            String timestamp = resultSet.getString(6);
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            this.lastLogin = LocalDateTime.parse(timestamp, timeFormatter).toInstant(ZoneOffset.UTC);
+        } else {
+            this.lastLogin = resultSet.getTimestamp(6).toInstant();
+        }
 
         this.email = resultSet.getString(7);
     }

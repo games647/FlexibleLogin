@@ -56,6 +56,8 @@ public class Database {
 
     private final Logger logger;
 
+    private final boolean isSqlite;
+
     private final Map<UUID, Account> cache = new ConcurrentHashMap<>();
     private final DataSource dataSource;
 
@@ -73,6 +75,7 @@ public class Database {
         switch (sqlConfig.getType()) {
             case SQLITE:
                 urlBuilder.append(storagePath).append(File.separatorChar).append("database.db");
+                this.isSqlite = true;
                 break;
             case MYSQL:
                 //jdbc:<engine>://[<username>[:<password>]@]<host>/<database> - copied from sponge doc
@@ -86,9 +89,11 @@ public class Database {
                         .append('/')
                         .append(sqlConfig.getDatabase())
                         .append("?useSSL").append('=').append(sqlConfig.isUseSSL());
+                this.isSqlite = false;
                 break;
             case H2:
             default:
+                this.isSqlite = false;
                 urlBuilder.append(storagePath).append(File.separatorChar).append("database");
                 break;
         }
@@ -207,7 +212,7 @@ public class Database {
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
-                    Account loadedAccount = new Account(resultSet);
+                    Account loadedAccount = new Account(resultSet, isSqlite);
                     cache.put(uuid, loadedAccount);
                     return Optional.of(loadedAccount);
                 }
@@ -226,7 +231,7 @@ public class Database {
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
-                    return Optional.of(new Account(resultSet));
+                    return Optional.of(new Account(resultSet, isSqlite));
                 }
             }
         } catch (SQLException sqlEx) {
