@@ -63,6 +63,7 @@ import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginManager;
+import org.spongepowered.api.scheduler.Task;
 
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
         url = PomData.URL, description = PomData.DESCRIPTION,
@@ -75,18 +76,21 @@ public class FlexibleLogin {
     private final Injector injector;
     private final Settings configuration;
     private final CommandManager commandManager;
+    private final ProtectionManager protectionManager;
+    private final EventManager eventManager;
+    private final PluginManager pluginManager;
 
     private Database database;
     private Hasher hasher;
 
-    @Inject private ProtectionManager protectionManager;
-    @Inject private EventManager eventManager;
-    @Inject private PluginManager pluginManager;
-
     @Inject
-    FlexibleLogin(Logger logger, Injector injector, Settings settings) {
+    FlexibleLogin(Logger logger, Injector injector, Settings settings, ProtectionManager protection,
+                  EventManager eventManager, PluginManager pluginManager) {
         this.logger = logger;
         this.configuration = settings;
+        this.protectionManager = protection;
+        this.eventManager = eventManager;
+        this.pluginManager = pluginManager;
 
         try {
             //if we are on old sponge version the command manager doesn't exist for injections
@@ -169,7 +173,7 @@ public class FlexibleLogin {
             database.createTable(configuration.getGeneral().getSQL().getType());
         } catch (SQLException sqlEx) {
             logger.error("Cannot connect to auth storage", sqlEx);
-            Sponge.getServer().shutdown();
+            Task.builder().execute(() -> Sponge.getServer().shutdown()).submit(this);
         }
 
         //use bcrypt as fallback for now
