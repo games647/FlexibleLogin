@@ -44,6 +44,7 @@ import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.github.games647.flexiblelogin.listener.ConnectionListener;
 import com.github.games647.flexiblelogin.listener.prevent.GriefPreventListener;
 import com.github.games647.flexiblelogin.listener.prevent.PreventListener;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -171,7 +172,7 @@ public class FlexibleLogin {
         try {
             database = new Database(logger, configuration);
             database.createTable(configuration.getGeneral().getSQL().getType());
-        } catch (SQLException sqlEx) {
+        } catch (SQLException | UncheckedExecutionException sqlEx) {
             logger.error("Cannot connect to auth storage", sqlEx);
             Task.builder().execute(() -> Sponge.getServer().shutdown()).submit(this);
         }
