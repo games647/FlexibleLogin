@@ -55,7 +55,6 @@ public class Database {
     private static final String USERS_TABLE = "flexiblelogin_users";
 
     private final Logger logger;
-
     private final boolean isSqlite;
 
     private final Map<UUID, Account> cache = new ConcurrentHashMap<>();
@@ -100,11 +99,6 @@ public class Database {
 
         String jdbcUrl = urlBuilder.toString();
         this.dataSource = Sponge.getServiceManager().provideUnchecked(SqlService.class).getDataSource(jdbcUrl);
-    }
-
-    @Deprecated
-    public Account getAccountIfPresent(Player player) {
-        return cache.get(player.getUniqueId());
     }
 
     public Optional<Account> getAccount(Player player) {

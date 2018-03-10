@@ -27,9 +27,9 @@ package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.tasks.NameResetPwTask;
-import com.github.games647.flexiblelogin.tasks.ResetPwTask;
-import com.github.games647.flexiblelogin.tasks.UUIDResetPwTask;
+import com.github.games647.flexiblelogin.tasks.reset.NameResetPwTask;
+import com.github.games647.flexiblelogin.tasks.reset.ResetPwTask;
+import com.github.games647.flexiblelogin.tasks.reset.UUIDResetPwTask;
 import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.github.games647.flexiblelogin.validation.UUIDPredicate;
 import com.google.inject.Inject;

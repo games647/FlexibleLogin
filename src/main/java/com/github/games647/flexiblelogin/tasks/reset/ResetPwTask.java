@@ -23,38 +23,60 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.tasks;
+package com.github.games647.flexiblelogin.tasks.reset;
 
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.scheduler.Task;
 
-public class LoginMessageTask implements Consumer<Task> {
+public abstract class ResetPwTask implements Runnable {
 
-    private final FlexibleLogin plugin;
-    private final Player player;
+    protected final FlexibleLogin plugin;
 
-    public LoginMessageTask(FlexibleLogin plugin, Player player) {
+    private final CommandSource src;
+    private final String password;
+
+    public ResetPwTask(FlexibleLogin plugin, CommandSource src, String password) {
         this.plugin = plugin;
-        this.player = player;
+        this.src = src;
+        this.password = password;
     }
 
     @Override
-    public void accept(Task task) {
-        Optional<Account> optAccount = plugin.getDatabase().getAccount(player);
-        if (optAccount.isPresent()) {
-            if (optAccount.get().isLoggedIn()) {
-                task.cancel();
-            } else {
-                player.sendMessage(plugin.getConfigManager().getText().getNotLoggedIn());
-            }
+    public void run() {
+        Optional<Player> player = getIfPresent();
+
+        Optional<Account> account;
+        if (player.isPresent()) {
+            account = plugin.getDatabase().getAccount(player.get());
         } else {
-            player.sendMessage(plugin.getConfigManager().getText().getNotRegistered());
+            account = loadAccount();
+        }
+
+        if (account.isPresent()) {
+            resetPassword(account.get());
+        } else {
+            src.sendMessage(plugin.getConfigManager().getText().getAccountNotFound());
         }
     }
+
+    private void resetPassword(Account account) {
+        try {
+            account.setPasswordHash(plugin.getHasher().hash(password));
+            plugin.getDatabase().save(account);
+
+            src.sendMessage(plugin.getConfigManager().getText().getChangePassword());
+        } catch (Exception ex) {
+            plugin.getLogger().error("Error creating hash", ex);
+            src.sendMessage(plugin.getConfigManager().getText().getErrorExecutingCommand());
+        }
+    }
+
+    protected abstract Optional<Player> getIfPresent();
+
+    protected abstract Optional<Account> loadAccount();
 }

@@ -30,7 +30,6 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.PomData;
 import com.github.games647.flexiblelogin.config.General;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.tasks.LoginMessageTask;
 import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.google.inject.Inject;
 
@@ -130,40 +129,15 @@ public class ConnectionListener {
                 //user will be auto logged in
                 player.sendMessage(settings.getText().getIpAutoLogin());
                 account.setLoggedIn(true);
-            } else {
-                //user has an account but isn't logged in
-                sendNotLoggedInMessage(player);
             }
         } else {
             if (!settings.getGeneral().isAllowUnregistered()) {
                 player.kick(settings.getText().getUnregisteredKick());
                 return;
             }
-
-            if (config.isCommandOnlyProtection()) {
-                if (player.hasPermission(PomData.ARTIFACT_ID + ".registerRequired")) {
-                    //command only protection but have to register
-                    sendNotLoggedInMessage(player);
-                }
-            } else {
-                //no account
-                sendNotLoggedInMessage(player);
-            }
         }
 
         scheduleTimeoutTask(player);
-    }
-
-    private void sendNotLoggedInMessage(Player player) {
-        if (settings.getGeneral().isBypassPermission() && player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
-            //send the message if the player only needs to login
-            return;
-        }
-
-        Task.builder()
-                .execute(new LoginMessageTask(plugin, player))
-                .interval(settings.getGeneral().getMessageInterval(), TimeUnit.SECONDS)
-                .submit(plugin);
     }
 
     private void scheduleTimeoutTask(Player player) {

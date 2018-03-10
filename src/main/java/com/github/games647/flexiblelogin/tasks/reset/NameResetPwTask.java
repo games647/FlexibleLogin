@@ -23,60 +23,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.tasks;
+package com.github.games647.flexiblelogin.tasks.reset;
 
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import java.util.Optional;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 
-public abstract class ResetPwTask implements Runnable {
+public class NameResetPwTask extends ResetPwTask {
 
-    protected final FlexibleLogin plugin;
+    private final String username;
 
-    private final CommandSource src;
-    private final String password;
-
-    public ResetPwTask(FlexibleLogin plugin, CommandSource src, String password) {
-        this.plugin = plugin;
-        this.src = src;
-        this.password = password;
+    public NameResetPwTask(FlexibleLogin plugin, CommandSource src, String password, String username) {
+        super(plugin, src, password);
+        this.username = username;
     }
 
     @Override
-    public void run() {
-        Optional<Player> player = getIfPresent();
-
-        Optional<Account> account;
-        if (player.isPresent()) {
-            account = plugin.getDatabase().getAccount(player.get());
-        } else {
-            account = loadAccount();
-        }
-
-        if (account.isPresent()) {
-            resetPassword(account.get());
-        } else {
-            src.sendMessage(plugin.getConfigManager().getText().getAccountNotFound());
-        }
+    public Optional<Player> getIfPresent() {
+        return Sponge.getServer().getPlayer(username);
     }
 
-    private void resetPassword(Account account) {
-        try {
-            account.setPasswordHash(plugin.getHasher().hash(password));
-            plugin.getDatabase().save(account);
-
-            src.sendMessage(plugin.getConfigManager().getText().getChangePassword());
-        } catch (Exception ex) {
-            plugin.getLogger().error("Error creating hash", ex);
-            src.sendMessage(plugin.getConfigManager().getText().getErrorExecutingCommand());
-        }
+    @Override
+    public Optional<Account> loadAccount() {
+        return plugin.getDatabase().loadAccount(username);
     }
-
-    protected abstract Optional<Player> getIfPresent();
-
-    protected abstract Optional<Account> loadAccount();
 }

@@ -44,12 +44,14 @@ import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.github.games647.flexiblelogin.listener.ConnectionListener;
 import com.github.games647.flexiblelogin.listener.prevent.GriefPreventListener;
 import com.github.games647.flexiblelogin.listener.prevent.PreventListener;
+import com.github.games647.flexiblelogin.tasks.MessageTask;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Server;
@@ -157,6 +159,8 @@ public class FlexibleLogin {
         //run this task sync in order let it finish before the process ends
         database.close();
 
+        Sponge.getScheduler().getScheduledTasks(this).forEach(Task::cancel);
+
         Server server = Sponge.getServer();
         server.getOnlinePlayers().forEach(protectionManager::unprotect);
 
@@ -182,6 +186,11 @@ public class FlexibleLogin {
         if (configuration.getGeneral().getHashAlgo() == HashingAlgorithm.TOTP) {
             hasher = new TOTP();
         }
+
+        //schedule tasks
+        Task.builder().execute(new MessageTask(this, configuration))
+                .interval(configuration.getGeneral().getMessageInterval(), TimeUnit.SECONDS)
+                .submit(this);
     }
 
     public Settings getConfigManager() {
