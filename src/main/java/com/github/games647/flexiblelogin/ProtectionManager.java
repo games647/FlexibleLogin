@@ -46,6 +46,8 @@ import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
+import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
+import org.spongepowered.api.network.ChannelRegistrar;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
@@ -53,16 +55,22 @@ import org.spongepowered.api.world.World;
 @Singleton
 public class ProtectionManager {
 
+    private static final String BRIDGE_CHANNEL = "AuthMeBridge";
+    private static final String LOGIN_ACTION = "PlayerLogin";
     private static final int DISTANCE = 3;
 
     private final Settings config;
     private final TeleportHelper teleportHelper;
+    private final RawDataChannel channel;
+
     private final Map<UUID, Location<World>> oldLocations = new HashMap<>();
 
     @Inject
-    ProtectionManager(Settings config, TeleportHelper teleportHelper) {
+    ProtectionManager(FlexibleLogin plugin, Settings config,
+                      TeleportHelper teleportHelper, ChannelRegistrar channelRegistrar) {
         this.config = config;
         this.teleportHelper = teleportHelper;
+        this.channel = channelRegistrar.createRawChannel(plugin, BRIDGE_CHANNEL);
     }
 
     public void protect(Player player) {
@@ -87,6 +95,7 @@ public class ProtectionManager {
         }
 
         safeTeleport(player, oldLocation);
+        channel.sendTo(player, buf -> buf.writeUTF(LOGIN_ACTION));
     }
 
     private void safeTeleport(Player player, Location<World> location) {

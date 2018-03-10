@@ -44,7 +44,7 @@ public class Account {
 
     private final UUID uuid;
 
-    private String username;
+    private final String username;
     private String passwordHash;
 
     private byte[] ip;
@@ -54,8 +54,8 @@ public class Account {
     private Instant lastLogin;
 
     public Account(Player player, String password) {
-        this(player.getUniqueId()
-                , player.getName(), password, player.getConnection().getAddress().getAddress().getAddress());
+        this(player.getUniqueId(), player.getName(),
+                password, player.getConnection().getAddress().getAddress().getAddress());
     }
 
     //new account
@@ -105,10 +105,6 @@ public class Account {
 
     /* package */ synchronized String getPassword() {
         return passwordHash;
-    }
-
-    public synchronized void setUsername(String username) {
-        this.username = username;
     }
 
     public synchronized void setPasswordHash(String passwordHash) {
@@ -162,7 +158,7 @@ public class Account {
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return this.getClass().getSimpleName() + '{' +
                 "uuid=" + uuid +
                 ", username='" + username + '\'' +
