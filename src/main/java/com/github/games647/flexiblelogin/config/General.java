@@ -32,6 +32,7 @@ import java.util.List;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class General {
 
     @Setting(comment = "Database configuration")
@@ -87,6 +88,9 @@ public class General {
 
     @Setting(comment = "Interval where the please login will be printed to the user")
     private int messageInterval = 2;
+
+    @Setting(comment = "Should unregistered player be able to join the server?")
+    private boolean allowUnregistered = true;
 
     @Setting
     private TeleportConfig teleportConfig = new TeleportConfig();
@@ -177,6 +181,10 @@ public class General {
 
     public boolean isCaseSensitiveNameCheck() {
         return caseSensitiveNameCheck;
+    }
+
+    public boolean isAllowUnregistered() {
+        return allowUnregistered;
     }
 
     @ConfigSerializable

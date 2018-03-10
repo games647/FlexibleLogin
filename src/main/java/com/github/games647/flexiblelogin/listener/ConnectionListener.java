@@ -135,6 +135,11 @@ public class ConnectionListener {
                 sendNotLoggedInMessage(player);
             }
         } else {
+            if (!settings.getGeneral().isAllowUnregistered()) {
+                player.kick(settings.getText().getUnregisteredKick());
+                return;
+            }
+
             if (config.isCommandOnlyProtection()) {
                 if (player.hasPermission(PomData.ARTIFACT_ID + ".registerRequired")) {
                     //command only protection but have to register

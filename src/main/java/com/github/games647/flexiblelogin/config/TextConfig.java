@@ -173,6 +173,10 @@ public class TextConfig {
     @Setting(comment = "If email recovery is not enabled")
     private Text emailNotEnabled = builder("Email recovery is not enabled.").color(INFO_COLOR).build();
 
+    @Setting(comment = "If unregistered player shouldn't join the server")
+    private Text unregisteredKick = builder("You cannot connect because you have to register on the website.")
+            .color(INFO_COLOR).build();
+
     public Text getPlayersOnly() {
         return playersOnly;
     }
@@ -303,6 +307,10 @@ public class TextConfig {
 
     public Text getEmailNotEnabled() {
         return emailNotEnabled;
+    }
+
+    public Text getUnregisteredKick() {
+        return unregisteredKick;
     }
 
     public Text getAccountDeleted(String account) {
