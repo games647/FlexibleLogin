@@ -93,6 +93,10 @@ public class SQLConfig {
 
         SQLITE,
 
-        H2
+        H2;
+
+        public String getJDBCId() {
+            return name().toLowerCase();
+        }
     }
 }

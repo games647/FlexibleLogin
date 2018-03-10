@@ -69,7 +69,7 @@ public class Database {
         String storagePath = sqlConfig.getPath().replace("%DIR%", configDir.normalize().toString());
 
         StringBuilder urlBuilder = new StringBuilder("jdbc:")
-                .append(sqlConfig.getType().name().toLowerCase())
+                .append(sqlConfig.getType().getJDBCId())
                 .append("://");
         switch (sqlConfig.getType()) {
             case SQLITE:
@@ -193,14 +193,15 @@ public class Database {
         return loadAccount(player.getUniqueId());
     }
 
-    public Account remove(Player player) {
-        return cache.remove(player.getUniqueId());
+    public Optional<Account> remove(Player player) {
+        return Optional.ofNullable(cache.remove(player.getUniqueId()));
     }
 
     public Optional<Account> loadAccount(UUID uuid) {
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + USERS_TABLE
-                     + " WHERE UUID=?")) {
+        try (
+                Connection conn = dataSource.getConnection();
+                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + USERS_TABLE + " WHERE UUID=?")
+        ) {
 
             stmt.setObject(1, toArray(uuid));
 
@@ -219,8 +220,10 @@ public class Database {
     }
 
     public Optional<Account> loadAccount(String playerName) {
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + USERS_TABLE + " WHERE Username=?")) {
+        try (
+                Connection conn = dataSource.getConnection();
+                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + USERS_TABLE + " WHERE Username=?")
+        ) {
             stmt.setString(1, playerName);
 
             try (ResultSet resultSet = stmt.executeQuery()) {
@@ -237,8 +240,7 @@ public class Database {
 
     public int getRegistrationsCount(byte[] ip) {
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM " + USERS_TABLE
-                     + " WHERE IP=?")) {
+             PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM " + USERS_TABLE + " WHERE IP=?")) {
             stmt.setBytes(1, ip);
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
@@ -262,7 +264,7 @@ public class Database {
             stmt.setString(2, account.getUsername());
             stmt.setString(3, account.getPassword());
 
-            stmt.setObject(4, account.getIp());
+            stmt.setObject(4, account.getIp().getAddress());
             stmt.setString(5, account.getEmail().orElse(null));
 
             stmt.execute();
@@ -281,8 +283,7 @@ public class Database {
 
     public void flushLoginStatus(Account account, boolean loggedIn) {
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("UPDATE " + USERS_TABLE
-                     + " SET  WHERE UUID=?")) {
+             PreparedStatement stmt = conn.prepareStatement("UPDATE " + USERS_TABLE + " SET  WHERE UUID=?")) {
             stmt.setInt(1, loggedIn ? 1 : 0);
 
             UUID uuid = account.getUuid();
@@ -297,8 +298,7 @@ public class Database {
     public void close() {
         cache.clear();
 
-        try (Connection conn = dataSource.getConnection();
-             Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
             //set all player accounts existing in the database to unlogged
             stmt.execute("UPDATE " + USERS_TABLE + " SET LoggedIn=0");
         } catch (SQLException ex) {
@@ -313,7 +313,7 @@ public class Database {
             //username is now changeable by Mojang - so keep it up to date
             stmt.setString(1, account.getUsername());
             stmt.setString(2, account.getPassword());
-            stmt.setObject(3, account.getIp());
+            stmt.setObject(3, account.getIp().getAddress());
 
             stmt.setTimestamp(4, Timestamp.from(account.getLastLogin()));
             stmt.setString(5, account.getEmail().orElse(null));

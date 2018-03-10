@@ -34,9 +34,11 @@ import com.warrenstrange.googleauth.KeyRepresentation;
 
 public class TOTP implements Hasher {
 
-    private static final String URL_FORMAT = "https://chart.googleapis.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl="
-            + "otpauth://totp/"
-            + "%s@%s%%3Fsecret%%3D%s";
+    private static final String URL_FORMAT = "https://chart.googleapis.com/chart?" +
+            "&cht=qr" + // chart type
+            "chs=200x200" + //image size
+            "&chld=M%%7C0" + //error correction
+            "&chl=otpauth://totp/%s@%s%%3Fsecret%%3D%s"; //data
 
     private final IGoogleAuthenticator gAuth = new GoogleAuthenticator(new GoogleAuthenticatorConfigBuilder()
             .setHmacHashFunction(HmacHashFunction.HmacSHA256)

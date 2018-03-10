@@ -33,15 +33,18 @@ import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.google.inject.Inject;
 
+import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.source.RemoteSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Auth;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
@@ -64,85 +67,92 @@ public class ConnectionListener {
 
     @Listener
     public void onPlayerQuit(Disconnect playerQuitEvent, @First Player player) {
-        Account account = plugin.getDatabase().remove(player);
-
-        if (account != null) {
+        Optional<Account> optAccount = plugin.getDatabase().remove(player);
+        if (optAccount.isPresent()) {
             //account is loaded -> mark the player as logout as it could remain in the cache
-            account.setLoggedIn(false);
+            optAccount.get().setLoggedIn(false);
 
             if (settings.getGeneral().isUpdateLoginStatus()) {
                 Task.builder()
-                        .async().execute(() -> plugin.getDatabase().save(account))
+                        .async()
+                        .execute(() -> plugin.getDatabase().save(optAccount.get()))
                         .submit(plugin);
             }
         }
     }
 
+    @Listener(order = Order.FIRST)
+    public void verifyPlayerName(Auth authEvent, @First GameProfile profile) {
+        if (namePredicate.test(profile.getName().get())) {
+            //validate invalid characters
+            authEvent.setMessage(settings.getText().getInvalidUsername());
+            authEvent.setCancelled(true);
+        }
+    }
+
+    @Listener(order = Order.EARLY)
+    public void checkAlreadyOnline(Auth authEvent, @First GameProfile profile) {
+        String playerName = profile.getName().get();
+        if (Sponge.getServer().getPlayer(playerName)
+                .map(Player::getName)
+                .filter(name -> name.equals(playerName))
+                .isPresent()) {
+            authEvent.setMessage(settings.getText().getAlreadyOnline());
+            authEvent.setCancelled(true);
+        }
+    }
+
+    @Listener(order = Order.LATE)
+    public void checkCaseSensitive(Auth authEvent, @First GameProfile profile) {
+        String playerName = profile.getName().get();
+        if (settings.getGeneral().isCaseSensitiveNameCheck()) {
+            plugin.getDatabase().exists(playerName)
+                    .filter(databaseName -> !playerName.equals(databaseName))
+                    .ifPresent(databaseName -> {
+                        authEvent.setMessage(settings.getText().getInvalidCase(databaseName));
+                        authEvent.setCancelled(true);
+                    });
+        }
+    }
+
     @Listener
-    public void onPlayerJoin(Join playerJoinEvent, @First Player player) {
+    public void loadAccountOnJoin(Join playerJoinEvent, @First Player player) {
         Task.builder()
                 .async()
                 .execute(() -> onAccountLoaded(player))
                 .submit(plugin);
     }
 
-    @Listener
-    public void onPlayerAuth(Auth playerAuthEvent, @First GameProfile gameProfile) {
-        String playerName = gameProfile.getName().get();
-        if (namePredicate.test(playerName)) {
-            if (Sponge.getServer().getPlayer(playerName)
-                    .map(Player::getName)
-                    .filter(name -> name.equals(playerName))
-                    .isPresent()) {
-                playerAuthEvent.setMessage(settings.getText().getAlreadyOnline());
-                playerAuthEvent.setCancelled(true);
-                return;
-            }
-
-            if (settings.getGeneral().isCaseSensitiveNameCheck()) {
-                plugin.getDatabase().exists(playerName)
-                        .filter(databaseName -> !playerName.equals(databaseName))
-                        .ifPresent(databaseName -> {
-                            playerAuthEvent.setMessage(settings.getText().getInvalidCase(databaseName));
-                            playerAuthEvent.setCancelled(true);
-                        });
-            }
-        } else {
-            //validate invalid characters
-            playerAuthEvent.setMessage(settings.getText().getInvalidUsername());
-            playerAuthEvent.setCancelled(true);
-        }
-    }
-
     private void onAccountLoaded(Player player) {
         Optional<Account> optAccount = plugin.getDatabase().loadAccount(player);
-        byte[] newIp = player.getConnection().getAddress().getAddress().getAddress();
-
-        General config = settings.getGeneral();
         if (optAccount.isPresent()) {
             Account account = optAccount.get();
-
-            Instant lastLogin = account.getLastLogin();
-            if (config.isIpAutoLogin() && Arrays.equals(account.getIp(), newIp)
-                    && Duration.between(lastLogin, Instant.now()).getSeconds() > TimeUnit.HOURS.toSeconds(12)
-                    && !player.hasPermission(PomData.ARTIFACT_ID + ".no_auto_login")) {
+            if (canAutoLogin(account, player)) {
                 //user will be auto logged in
                 player.sendMessage(settings.getText().getIpAutoLogin());
                 account.setLoggedIn(true);
             }
-        } else {
-            if (!settings.getGeneral().isAllowUnregistered()) {
-                player.kick(settings.getText().getUnregisteredKick());
-                return;
-            }
+        } else if (!settings.getGeneral().isAllowUnregistered()) {
+            player.kick(settings.getText().getUnregisteredKick());
+            return;
         }
 
         scheduleTimeoutTask(player);
     }
 
+    private boolean canAutoLogin(Account account, RemoteSource source) {
+        if (!settings.getGeneral().isIpAutoLogin() || !source.hasPermission(PomData.ARTIFACT_ID + ".no_auto_login")) {
+            return false;
+        }
+
+        InetAddress newIp = source.getConnection().getAddress().getAddress();
+        Instant now = Instant.now();
+        return Objects.equals(account.getIp(), newIp) && Duration.between(account.getLastLogin(), now).toHours() < 12;
+    }
+
     private void scheduleTimeoutTask(Player player) {
         General config = settings.getGeneral();
-        if (config.isBypassPermission() && player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
+        if (config.isBypassed(player)) {
             return;
         }
 

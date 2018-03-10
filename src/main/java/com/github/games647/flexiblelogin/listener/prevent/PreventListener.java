@@ -25,19 +25,17 @@
  */
 package com.github.games647.flexiblelogin.listener.prevent;
 
-import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.google.inject.Inject;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandMapping;
-import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -46,6 +44,7 @@ import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
+import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
@@ -66,13 +65,12 @@ public class PreventListener extends AbstractPreventListener {
     @Inject
     PreventListener(FlexibleLogin plugin, Settings settings, CommandManager commandManager) {
         super(plugin, settings);
-        this.commandManager = commandManager;
 
+        this.commandManager = commandManager;
         this.ignoredCommands = commandManager
                 .getOwnedBy(plugin)
                 .stream()
-                .map(CommandMapping::getAllAliases)
-                .flatMap(Collection::stream)
+                .map(CommandMapping::getPrimaryAlias)
                 .collect(toSet());
     }
 
@@ -82,10 +80,9 @@ public class PreventListener extends AbstractPreventListener {
             return;
         }
 
-        Vector3d oldLocation = playerMoveEvent.getFromTransform().getPosition();
-        Vector3d newLocation = playerMoveEvent.getToTransform().getPosition();
-        if ((oldLocation.getFloorX() != newLocation.getFloorX()
-                || oldLocation.getFloorZ() != newLocation.getFloorZ())) {
+        Vector3i oldLocation = playerMoveEvent.getFromTransform().getPosition().toInt();
+        Vector3i newLocation = playerMoveEvent.getToTransform().getPosition().toInt();
+        if (oldLocation.getX() != newLocation.getX() || oldLocation.getZ() != newLocation.getZ()) {
             checkLoginStatus(playerMoveEvent, player);
         }
     }
@@ -111,11 +108,9 @@ public class PreventListener extends AbstractPreventListener {
 
         if (settings.getGeneral().isCommandOnlyProtection()) {
             List<String> protectedCommands = settings.getGeneral().getProtectedCommands();
-            if ((protectedCommands.isEmpty() || protectedCommands.contains(command))) {
-                if (!plugin.getDatabase().isLoggedIn(player)) {
-                    player.sendMessage(settings.getText().getProtectedCommand());
-                    commandEvent.setCancelled(true);
-                }
+            if (protectedCommands.contains(command) && !plugin.getDatabase().isLoggedIn(player)) {
+                player.sendMessage(settings.getText().getProtectedCommand());
+                commandEvent.setCancelled(true);
             }
         } else {
             checkLoginStatus(commandEvent, player);
@@ -169,17 +164,13 @@ public class PreventListener extends AbstractPreventListener {
 
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onPlayerDamage(DamageEntityEvent damageEntityEvent, @First Player player) {
+        //player is damage source
         checkLoginStatus(damageEntityEvent, player);
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onDamagePlayer(DamageEntityEvent damageEntityEvent) {
-        //check the target
-        Entity targetEntity = damageEntityEvent.getTargetEntity();
-
-        //check only if the event isn't already cancelled by the first call
-        if (targetEntity instanceof Player) {
-            checkLoginStatus(damageEntityEvent, (Player) damageEntityEvent.getTargetEntity());
-        }
+    public void onDamagePlayer(DamageEntityEvent damageEntityEvent, @Getter("getTargetEntity") Player player) {
+        //player is damage target
+        checkLoginStatus(damageEntityEvent, (Player) damageEntityEvent.getTargetEntity());
     }
 }

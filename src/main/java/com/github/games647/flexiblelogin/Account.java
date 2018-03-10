@@ -34,7 +34,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,28 +42,26 @@ import org.spongepowered.api.entity.living.player.Player;
 public class Account {
 
     private final UUID uuid;
-
     private final String username;
-    private String passwordHash;
 
-    private byte[] ip;
+    private String passwordHash;
+    private InetAddress ip;
     private String email;
 
     private boolean loggedIn;
     private Instant lastLogin;
 
     public Account(Player player, String password) {
-        this(player.getUniqueId(), player.getName(),
-                password, player.getConnection().getAddress().getAddress().getAddress());
+        this(player.getUniqueId(), player.getName(), password, player.getConnection().getAddress().getAddress());
     }
 
     //new account
-    public Account(UUID uuid, String username, String password, byte[] ip) {
+    public Account(UUID uuid, String username, String password, InetAddress ip) {
         this.uuid = uuid;
         this.username = username;
         this.passwordHash = password;
 
-        this.ip = Arrays.copyOf(ip, ip.length);
+        this.ip = ip;
         this.lastLogin = Instant.now();
     }
 
@@ -77,17 +74,16 @@ public class Account {
         this.username = resultSet.getString(3);
         this.passwordHash = resultSet.getString(4);
 
-        this.ip = resultSet.getBytes(5);
-
-        if (sqlite) {
-            String timestamp = resultSet.getString(6);
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-            this.lastLogin = LocalDateTime.parse(timestamp, timeFormatter).toInstant(ZoneOffset.UTC);
-        } else {
-            this.lastLogin = resultSet.getTimestamp(6).toInstant();
+        try {
+            byte[] bytes = resultSet.getBytes(5);
+            if (bytes.length > 0) {
+                this.ip = InetAddress.getByAddress(bytes);
+            }
+        } catch (UnknownHostException e) {
+            this.ip = null;
         }
 
+        this.lastLogin = parseTimestamp(resultSet, sqlite);
         this.email = resultSet.getString(7);
     }
 
@@ -103,28 +99,21 @@ public class Account {
         return username;
     }
 
-    /* package */ synchronized String getPassword() {
+    /* package */
+
+    synchronized String getPassword() {
         return passwordHash;
     }
-
     public synchronized void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
 
-    public synchronized void setIp(byte[] ip) {
-        this.ip = Arrays.copyOf(ip, ip.length);
+    public synchronized InetAddress getIp() {
+        return ip;
     }
 
-    public synchronized byte[] getIp() {
-        return Arrays.copyOf(ip, ip.length);
-    }
-
-    public synchronized Optional<String> getIpString() {
-        try {
-            return Optional.of(InetAddress.getByAddress(ip).getHostName());
-        } catch (UnknownHostException ex) {
-            return Optional.empty();
-        }
+    public synchronized void setIp(InetAddress ip) {
+        this.ip = ip;
     }
 
     public synchronized Instant getLastLogin() {
@@ -144,11 +133,11 @@ public class Account {
     }
 
     //these methods have to thread-safe as they will be accessed
+
     //through Async (PlayerChatEvent/LoginTask) and sync methods
     public synchronized boolean isLoggedIn() {
         return loggedIn;
     }
-
     public synchronized void setLoggedIn(boolean loggedIn) {
         if (loggedIn) {
             lastLogin = Instant.now();
@@ -157,12 +146,24 @@ public class Account {
         this.loggedIn = loggedIn;
     }
 
+    private Instant parseTimestamp(ResultSet resultSet, boolean sqlite) throws SQLException {
+        if (sqlite) {
+            //workaround for SQLite that causes time parsing errors in combination with CURRENT_TIMESTAMP in SQL
+            String timestamp = resultSet.getString(6);
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            return LocalDateTime.parse(timestamp, timeFormatter).toInstant(ZoneOffset.UTC);
+        }
+
+        return resultSet.getTimestamp(6).toInstant();
+    }
+
     @Override
     public synchronized String toString() {
         return this.getClass().getSimpleName() + '{' +
                 "uuid=" + uuid +
                 ", username='" + username + '\'' +
-                ", ip=" + Arrays.toString(ip) +
+                ", ip=" + ip +
                 ", email='" + email + '\'' +
                 ", loggedIn=" + loggedIn +
                 ", lastLogin=" + lastLogin +

@@ -1,3 +1,28 @@
+/*
+ * This file is part of FlexibleLogin
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2015-2018 contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.Account;
@@ -25,7 +50,8 @@ public class MessageTask implements Runnable {
     public void run() {
         Sponge.getServer().getOnlinePlayers()
                 .stream()
-                .filter(this::isNotBypassed)
+                //send the message if the player only needs to login
+                .filter(player -> !settings.getGeneral().isBypassed(player))
                 .filter(this::isRegistrationRequired)
                 .forEach(this::sendMessage);
     }
@@ -40,11 +66,6 @@ public class MessageTask implements Runnable {
         } else {
             player.sendMessage(settings.getText().getNotRegistered());
         }
-    }
-
-    private boolean isNotBypassed(Subject player) {
-        //send the message if the player only needs to login
-        return settings.getGeneral().isBypassPermission() && player.hasPermission(PomData.ARTIFACT_ID + ".bypass");
     }
 
     private boolean isRegistrationRequired(Subject player) {

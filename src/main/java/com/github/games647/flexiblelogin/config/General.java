@@ -25,12 +25,15 @@
  */
 package com.github.games647.flexiblelogin.config;
 
+import com.github.games647.flexiblelogin.PomData;
 import com.google.common.collect.Lists;
 
 import java.util.List;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+
+import org.spongepowered.api.service.permission.Subject;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class General {
@@ -135,8 +138,8 @@ public class General {
         return playerPermissions;
     }
 
-    public boolean isBypassPermission() {
-        return bypassPermission;
+    public boolean isBypassed(Subject subject) {
+        return bypassPermission && subject.hasPermission(PomData.ARTIFACT_ID + ".bypass");
     }
 
     public TeleportConfig getTeleport() {

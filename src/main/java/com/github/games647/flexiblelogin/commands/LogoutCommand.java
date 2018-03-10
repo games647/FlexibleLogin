@@ -30,7 +30,6 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.google.inject.Inject;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -61,7 +60,6 @@ public class LogoutCommand extends AbstractCommand {
 
             src.sendMessage(settings.getText().getLoggedOut());
             account.setLoggedIn(false);
-            account.setIp(ArrayUtils.EMPTY_BYTE_ARRAY);
 
             Task.builder()
                     .async()

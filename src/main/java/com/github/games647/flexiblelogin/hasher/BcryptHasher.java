@@ -32,12 +32,12 @@ public class BcryptHasher implements Hasher {
     @Override
     public String hash(String rawPassword) {
         //generate a different salt for each user
-        String hashpw = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
-        if (hashpw.startsWith("$2a")) {
-            return "$2y" + hashpw.substring(3);
+        String hash = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
+        if (hash.startsWith("$2a")) {
+            return "$2y" + hash.substring(3);
         }
 
-        return hashpw;
+        return hash;
     }
 
     @Override

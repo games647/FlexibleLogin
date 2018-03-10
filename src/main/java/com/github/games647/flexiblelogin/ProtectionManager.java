@@ -90,11 +90,10 @@ public class ProtectionManager {
 
     public void unprotect(Player player) {
         Location<World> oldLocation = oldLocations.remove(player.getUniqueId());
-        if (oldLocation == null) {
-            return;
+        if (oldLocation != null) {
+            safeTeleport(player, oldLocation);
         }
 
-        safeTeleport(player, oldLocation);
         channel.sendTo(player, buf -> buf.writeUTF(LOGIN_ACTION));
     }
 

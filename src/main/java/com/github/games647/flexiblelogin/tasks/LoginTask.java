@@ -64,8 +64,7 @@ public class LoginTask implements Runnable {
 
                 account.setLoggedIn(true);
                 //update the ip
-                byte[] playerIp = player.getConnection().getAddress().getAddress().getAddress();
-                account.setIp(playerIp);
+                account.setIp(player.getConnection().getAddress().getAddress());
 
                 player.sendMessage(plugin.getConfigManager().getText().getLoggedIn());
                 Task.builder().execute(() -> plugin.getProtectionManager().unprotect(player)).submit(plugin);

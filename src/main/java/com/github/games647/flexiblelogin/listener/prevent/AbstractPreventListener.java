@@ -43,18 +43,22 @@ public abstract class AbstractPreventListener {
     }
 
     protected void checkLoginStatus(Cancellable event, Player player) {
-        if (settings.getGeneral().isBypassPermission() && player.hasPermission(PomData.ARTIFACT_ID + ".bypass")) {
-            return;
+        if (!isAllowed(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    private boolean isAllowed(Player player) {
+        if (settings.getGeneral().isBypassed(player)) {
+            return true;
         }
 
         if (settings.getGeneral().isCommandOnlyProtection()) {
             //check if the user is already registered
-            if (!plugin.getDatabase().getAccount(player).isPresent()
-                    && player.hasPermission(PomData.ARTIFACT_ID + ".registerRequired")) {
-                event.setCancelled(true);
-            }
-        } else if (!plugin.getDatabase().isLoggedIn(player)) {
-            event.setCancelled(true);
+            return plugin.getDatabase().getAccount(player).isPresent()
+                    || !player.hasPermission(PomData.ARTIFACT_ID + ".registerRequired");
         }
+
+        return plugin.getDatabase().isLoggedIn(player);
     }
 }
