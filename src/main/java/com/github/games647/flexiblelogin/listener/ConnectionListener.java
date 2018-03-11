@@ -83,7 +83,7 @@ public class ConnectionListener {
 
     @Listener(order = Order.FIRST)
     public void verifyPlayerName(Auth authEvent, @First GameProfile profile) {
-        if (namePredicate.test(profile.getName().get())) {
+        if (!namePredicate.test(profile.getName().get())) {
             //validate invalid characters
             authEvent.setMessage(settings.getText().getInvalidUsername());
             authEvent.setCancelled(true);
