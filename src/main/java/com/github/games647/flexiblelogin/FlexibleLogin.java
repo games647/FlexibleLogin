@@ -79,21 +79,18 @@ public class FlexibleLogin {
     private final Injector injector;
     private final Settings configuration;
     private final CommandManager commandManager;
-    private final ProtectionManager protectionManager;
-    private final EventManager eventManager;
-    private final PluginManager pluginManager;
 
+    @Inject private EventManager eventManager;
+    @Inject private PluginManager pluginManager;
+
+    private ProtectionManager protectionManager;
     private Database database;
     private Hasher hasher;
 
     @Inject
-    FlexibleLogin(Logger logger, Injector injector, Settings settings, ProtectionManager protection,
-                  EventManager eventManager, PluginManager pluginManager) {
+    FlexibleLogin(Logger logger, Injector injector, Settings settings) {
         this.logger = logger;
         this.configuration = settings;
-        this.protectionManager = protection;
-        this.eventManager = eventManager;
-        this.pluginManager = pluginManager;
 
         try {
             //if we are on old sponge version the command manager doesn't exist for injections
@@ -109,6 +106,8 @@ public class FlexibleLogin {
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
+        protectionManager = injector.getInstance(ProtectionManager.class);
+
         init();
     }
 

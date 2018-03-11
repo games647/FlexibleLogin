@@ -61,15 +61,16 @@ public class ProtectionManager {
 
     private final Settings config;
     private final TeleportHelper teleportHelper;
-    private final RawDataChannel channel;
-
     private final Map<UUID, Location<World>> oldLocations = new HashMap<>();
+
+    private RawDataChannel channel;
 
     @Inject
     ProtectionManager(FlexibleLogin plugin, Settings config,
                       TeleportHelper teleportHelper, ChannelRegistrar channelRegistrar) {
         this.config = config;
         this.teleportHelper = teleportHelper;
+
         this.channel = channelRegistrar.createRawChannel(plugin, BRIDGE_CHANNEL);
     }
 
