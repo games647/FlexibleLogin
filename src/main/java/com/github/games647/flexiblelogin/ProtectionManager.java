@@ -32,8 +32,10 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -42,12 +44,16 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
 import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
 import org.spongepowered.api.network.ChannelRegistrar;
+import org.spongepowered.api.service.context.Context;
+import org.spongepowered.api.service.permission.SubjectData;
+import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
@@ -61,9 +67,9 @@ public class ProtectionManager {
 
     private final Settings config;
     private final TeleportHelper teleportHelper;
-    private final Map<UUID, Location<World>> oldLocations = new HashMap<>();
+    private final Map<UUID, ProtectionData> protections = new HashMap<>();
 
-    private RawDataChannel channel;
+    private final RawDataChannel channel;
 
     @Inject
     ProtectionManager(FlexibleLogin plugin, Settings config,
@@ -75,12 +81,19 @@ public class ProtectionManager {
     }
 
     public void protect(Player player) {
+        SubjectData subjectData = player.getTransientSubjectData();
+
+        Map<Set<Context>, Map<String, Boolean>> permissions = Collections.emptyMap();
+        if (config.getGeneral().isProtectPermissions()) {
+            permissions = subjectData.getAllPermissions();
+            subjectData.clearPermissions();
+        }
+
+        protections.put(player.getUniqueId(), new ProtectionData(player.getLocation(), permissions));
+
         TeleportConfig teleportConfig = config.getGeneral().getTeleport();
         if (teleportConfig.isEnabled()) {
-            teleportConfig.getSpawnLocation().ifPresent(worldLocation -> {
-                oldLocations.put(player.getUniqueId(), player.getLocation());
-                safeTeleport(player, worldLocation);
-            });
+            teleportConfig.getSpawnLocation().ifPresent(worldLocation -> safeTeleport(player, worldLocation));
         } else {
             Location<World> oldLoc = player.getLocation();
 
@@ -90,12 +103,25 @@ public class ProtectionManager {
     }
 
     public void unprotect(Player player) {
-        Location<World> oldLocation = oldLocations.remove(player.getUniqueId());
-        if (oldLocation != null) {
-            safeTeleport(player, oldLocation);
+        channel.sendTo(player, buf -> buf.writeUTF(LOGIN_ACTION));
+
+        ProtectionData data = protections.remove(player.getUniqueId());
+        if (data == null) {
+            return;
         }
 
-        channel.sendTo(player, buf -> buf.writeUTF(LOGIN_ACTION));
+        if (config.getGeneral().getTeleport().isEnabled()) {
+            safeTeleport(player, data.getOldLocation());
+        }
+
+        SubjectData subjectData = player.getTransientSubjectData();
+        Map<Set<Context>, Map<String, Boolean>> oldPermissions = data.getPermissions();
+        for (Entry<Set<Context>, Map<String, Boolean>> permission : oldPermissions.entrySet()) {
+            Set<Context> context = permission.getKey();
+            for (Entry<String, Boolean> perm : permission.getValue().entrySet()) {
+                subjectData.setPermission(context, perm.getKey(), Tristate.fromBoolean(perm.getValue()));
+            }
+        }
     }
 
     private void safeTeleport(Player player, Location<World> location) {
@@ -150,7 +176,7 @@ public class ProtectionManager {
         unprotect(player);
     }
 
-    @Listener
+    @Listener(order = Order.POST)
     public void onPlayerJoin(Join playerJoinEvent, @First Player player) {
         protect(player);
     }
@@ -158,5 +184,24 @@ public class ProtectionManager {
     @Listener
     public void onDisable(GameStoppingServerEvent stoppingEvent) {
         Sponge.getServer().getOnlinePlayers().forEach(this::unprotect);
+    }
+
+    private class ProtectionData {
+
+        private final Location<World> oldLocation;
+        private final Map<Set<Context>, Map<String, Boolean>> permissions;
+
+        public ProtectionData(Location<World> oldLocation, Map<Set<Context>, Map<String, Boolean>> permissions) {
+            this.oldLocation = oldLocation;
+            this.permissions = permissions;
+        }
+
+        public Location<World> getOldLocation() {
+            return oldLocation;
+        }
+
+        public Map<Set<Context>, Map<String, Boolean>> getPermissions() {
+            return permissions;
+        }
     }
 }

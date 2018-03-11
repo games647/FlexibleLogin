@@ -98,6 +98,9 @@ public class General {
     @Setting
     private TeleportConfig teleportConfig = new TeleportConfig();
 
+    @Setting(comment = "Experimental feature to protect permissions for players who aren't logged in yet")
+    private boolean protectPermissions;
+
     @Setting(comment = "If command only protection is enabled, these commands are protected. If the list is empty"
             + " all commands are protected")
     private List<String> protectedCommands = Lists.newArrayList("op", "pex");
@@ -140,6 +143,10 @@ public class General {
 
     public boolean isBypassed(Subject subject) {
         return bypassPermission && subject.hasPermission(PomData.ARTIFACT_ID + ".bypass");
+    }
+
+    public boolean isProtectPermissions() {
+        return protectPermissions;
     }
 
     public TeleportConfig getTeleport() {
