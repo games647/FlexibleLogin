@@ -68,17 +68,17 @@ public class ConnectionListener {
     @Listener
     public void onPlayerQuit(Disconnect playerQuitEvent, @First Player player) {
         Optional<Account> optAccount = plugin.getDatabase().remove(player);
-        if (optAccount.isPresent()) {
+        optAccount.ifPresent(account -> {
             //account is loaded -> mark the player as logout as it could remain in the cache
-            optAccount.get().setLoggedIn(false);
+            account.setLoggedIn(false);
 
             if (settings.getGeneral().isUpdateLoginStatus()) {
                 Task.builder()
                         .async()
-                        .execute(() -> plugin.getDatabase().save(optAccount.get()))
+                        .execute(() -> plugin.getDatabase().save(account))
                         .submit(plugin);
             }
-        }
+        });
     }
 
     @Listener(order = Order.FIRST)

@@ -36,12 +36,12 @@ public class UnregisterTask implements Runnable {
     private final FlexibleLogin plugin;
     private final CommandSource src;
 
-    private final Object accountIndentifer;
+    private final Object accountIdentifier;
 
-    UnregisterTask(FlexibleLogin plugin, CommandSource src, Object accountIndentifer) {
+    UnregisterTask(FlexibleLogin plugin, CommandSource src, Object accountIdentifier) {
         this.plugin = plugin;
         this.src = src;
-        this.accountIndentifer = accountIndentifer;
+        this.accountIdentifier = accountIdentifier;
     }
 
     public UnregisterTask(FlexibleLogin plugin, CommandSource src, UUID uuid) {
@@ -55,14 +55,14 @@ public class UnregisterTask implements Runnable {
     @Override
     public void run() {
         boolean accountFound;
-        if (accountIndentifer instanceof String) {
-            accountFound = plugin.getDatabase().deleteAccount((String) accountIndentifer);
+        if (accountIdentifier instanceof String) {
+            accountFound = plugin.getDatabase().deleteAccount((String) accountIdentifier);
         } else {
-            accountFound = plugin.getDatabase().deleteAccount((UUID) accountIndentifer);
+            accountFound = plugin.getDatabase().deleteAccount((UUID) accountIdentifier);
         }
 
         if (accountFound) {
-            src.sendMessage(plugin.getConfigManager().getText().getAccountDeleted(accountIndentifer.toString()));
+            src.sendMessage(plugin.getConfigManager().getText().getAccountDeleted(accountIdentifier.toString()));
         } else {
             src.sendMessage(plugin.getConfigManager().getText().getAccountNotFound());
         }

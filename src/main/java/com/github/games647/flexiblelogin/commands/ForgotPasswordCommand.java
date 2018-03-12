@@ -60,6 +60,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 
 public class ForgotPasswordCommand extends AbstractCommand {
@@ -101,23 +102,23 @@ public class ForgotPasswordCommand extends AbstractCommand {
         Account account = optAccount.get();
 
         Optional<String> optEmail = account.getEmail();
-        if (!optEmail.isPresent()) {
-            player.sendMessage(settings.getText().getUncommittedEmailAddress());
+        if (optEmail.isPresent()) {
+            prepareSend(player, account, optEmail.get());
             return CommandResult.success();
         }
 
-        prepareSend(player, account, optEmail);
+        player.sendMessage(settings.getText().getUncommittedEmailAddress());
         return CommandResult.success();
     }
 
-    private void prepareSend(Player player, Account account, Optional<String> optEmail) {
+    private void prepareSend(Player player, Account account, String email) {
         String newPassword = passwordSupplier.get();
 
         EmailConfig emailConfig = settings.getGeneral().getEmail();
         Session session = buildSession(emailConfig);
 
         try {
-            Message message = buildMessage(player, optEmail.get(), newPassword, emailConfig, session);
+            Message message = buildMessage(player, email, newPassword, emailConfig, session);
 
             //send email
             Task.builder()
@@ -161,17 +162,17 @@ public class ForgotPasswordCommand extends AbstractCommand {
             session.setProvider(new Provider(Type.TRANSPORT, "flexiblelogin",
                     "flexiblelogin.sun.mail.smtp.SMTPSSLTransport", "Oracle", "1.6.0"));
         } catch (NoSuchProviderException noSuchProvider) {
-            logger.error("Failed to add STMP provider", noSuchProvider);
+            logger.error("Failed to add SMTP provider", noSuchProvider);
         }
 
         return session;
     }
 
-    private MimeMessage buildMessage(Player player, String email, String newPassword, EmailConfig emailConfig,
+    private MimeMessage buildMessage(User player, String email, String newPassword, EmailConfig emailConfig,
                                      Session session)
             throws MessagingException, UnsupportedEncodingException {
         String serverName = Sponge.getServer().getBoundAddress()
-                .map(inetSocketAddress -> inetSocketAddress.getAddress().getHostAddress())
+                .map(sa -> sa.getAddress().getHostAddress())
                 .orElse("Minecraft Server");
         ImmutableMap<String, String> variables = ImmutableMap.of("player", player.getName(),
                 "server", serverName,

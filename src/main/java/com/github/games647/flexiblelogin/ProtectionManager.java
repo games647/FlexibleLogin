@@ -40,6 +40,7 @@ import java.util.UUID;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -126,7 +127,7 @@ public class ProtectionManager {
         }
     }
 
-    private void safeTeleport(Player player, Location<World> loc) {
+    private void safeTeleport(Entity player, Location<World> loc) {
         Location<World> safeLoc = loc;
         if (config.getGeneral().isSafeLocation()) {
             Optional<Location<World>> optSafe = teleportHelper.getSafeLocation(loc,

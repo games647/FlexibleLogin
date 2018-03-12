@@ -51,11 +51,7 @@ public abstract class ResetPwTask implements Runnable {
         Optional<Player> player = getIfPresent();
 
         Optional<Account> account;
-        if (player.isPresent()) {
-            account = plugin.getDatabase().getAccount(player.get());
-        } else {
-            account = loadAccount();
-        }
+        account = player.map(player1 -> plugin.getDatabase().getAccount(player1)).orElseGet(this::loadAccount);
 
         if (account.isPresent()) {
             resetPassword(account.get());

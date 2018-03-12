@@ -171,6 +171,6 @@ public class PreventListener extends AbstractPreventListener {
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onDamagePlayer(DamageEntityEvent damageEntityEvent, @Getter("getTargetEntity") Player player) {
         //player is damage target
-        checkLoginStatus(damageEntityEvent, (Player) damageEntityEvent.getTargetEntity());
+        checkLoginStatus(damageEntityEvent, player);
     }
 }

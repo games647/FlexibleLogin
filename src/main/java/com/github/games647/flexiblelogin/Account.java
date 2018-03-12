@@ -41,6 +41,7 @@ import org.spongepowered.api.entity.living.player.Player;
 
 public class Account {
 
+    private static final String SQL_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private final UUID uuid;
     private final String username;
 
@@ -150,7 +151,7 @@ public class Account {
         if (sqlite) {
             //workaround for SQLite that causes time parsing errors in combination with CURRENT_TIMESTAMP in SQL
             String timestamp = resultSet.getString(6);
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(SQL_TIME_FORMAT);
 
             return LocalDateTime.parse(timestamp, timeFormatter).toInstant(ZoneOffset.UTC);
         }

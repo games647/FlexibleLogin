@@ -1,5 +1,9 @@
 # Changelog
 
+###### 0.18
+
+
+
 ###### 0.17
 
 * Add experimental permission protection to fix compatibility with NEB (Fixes #111)
@@ -7,7 +11,7 @@
 * Kick unregistered players if configured to do so (Fixes #93)
 * Add support for AuthMeBridge (Fixes #108) to allow integration on BungeeCord
 * Catch uncheckedexception for database setup too
-* Add workarkound for time parsing bug in SQLite (Fixes #106)
+* Add workaround for time parsing bug in SQLite (Fixes #106)
 * Delay server shutdown to shutdown correctly on failed database setup (Related #109)
 * Reduce file size by minimizing google auth dependency 
 * Use JSON Text objects for more flexibility of messages
@@ -17,7 +21,7 @@
 
 ###### 0.16.8
 
-* Ignore teleports for prevent listener otherwise we prevent our own teleports
+* Ignore teleport for prevent listener otherwise we prevent our own teleport
 * Override smtp provider (Related #92)
 * Add support for plain text messages
 * Make valid usernames configurable (Fixes #94)
@@ -111,7 +115,7 @@ safeLoc.setPosition(newPos)
 ##### 0.14.1
 
 * Compare the playername case sensitive (Fixes #66)
-* Fix creating accoutn (Fixes #67)
+* Fix creating account (Fixes #67)
 
 ##### 0.14 
 
@@ -203,7 +207,7 @@ safeLoc.setPosition(newPos)
 ##### 0.5
 
 * Moved Bcrypt to a maven maven dependency
-* Added timeout for logins
+* Added timeout for login
 * Added permissions
 * Added loggedIn boolean column
 * Renamed table to flexiblelogin_users - the plugin will automatically convert it into the new table

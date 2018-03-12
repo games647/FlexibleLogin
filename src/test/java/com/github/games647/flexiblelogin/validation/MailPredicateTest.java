@@ -51,7 +51,7 @@ class MailPredicateTest {
     }
 
     @Test
-    void testSubdomain() {
+    void testSubDomain() {
         assertTrue(predicate.test("user@bla.gmail.com"));
     }
 

@@ -26,7 +26,7 @@
 package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.config.SQLConfig;
-import com.github.games647.flexiblelogin.config.SQLConfig.SQLType;
+import com.github.games647.flexiblelogin.config.SQLConfig.Type;
 import com.github.games647.flexiblelogin.config.Settings;
 
 import java.io.File;
@@ -47,7 +47,7 @@ import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.sql.SqlService;
 
 public class Database {
@@ -101,15 +101,15 @@ public class Database {
         this.dataSource = Sponge.getServiceManager().provideUnchecked(SqlService.class).getDataSource(jdbcUrl);
     }
 
-    public Optional<Account> getAccount(Player player) {
+    public Optional<Account> getAccount(User player) {
         return Optional.ofNullable(cache.get(player.getUniqueId()));
     }
 
-    public boolean isLoggedIn(Player player) {
+    public boolean isLoggedIn(User player) {
         return getAccount(player).map(Account::isLoggedIn).orElse(false);
     }
 
-    public void createTable(SQLType type) throws SQLException {
+    public void createTable(Type type) throws SQLException {
         try (Connection con = dataSource.getConnection();
              Statement statement = con.createStatement()) {
             String createTable = "CREATE TABLE IF NOT EXISTS " + USERS_TABLE + " ( "
@@ -123,7 +123,7 @@ public class Database {
                     + "`LoggedIn` BOOLEAN DEFAULT 0, "
                     + "UNIQUE (`UUID`) "
                     + ')';
-            if (type == SQLType.SQLITE) {
+            if (type == Type.SQLITE) {
                 createTable = createTable.replace("AUTO_INCREMENT", "");
             }
 
@@ -189,11 +189,11 @@ public class Database {
         return Optional.empty();
     }
 
-    public Optional<Account> loadAccount(Player player) {
+    public Optional<Account> loadAccount(User player) {
         return loadAccount(player.getUniqueId());
     }
 
-    public Optional<Account> remove(Player player) {
+    public Optional<Account> remove(User player) {
         return Optional.ofNullable(cache.remove(player.getUniqueId()));
     }
 
@@ -284,10 +284,9 @@ public class Database {
     public void flushLoginStatus(Account account, boolean loggedIn) {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("UPDATE " + USERS_TABLE + " SET  WHERE UUID=?")) {
-            stmt.setInt(1, loggedIn ? 1 : 0);
 
-            UUID uuid = account.getUuid();
-            stmt.setObject(2, toArray(uuid));
+            stmt.setInt(1, loggedIn ? 1 : 0);
+            stmt.setObject(2, toArray(account.getUuid()));
 
             stmt.execute();
         } catch (SQLException ex) {

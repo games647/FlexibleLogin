@@ -60,7 +60,7 @@ public class ResetPasswordCommand extends AbstractCommand {
     }
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         String accountId = args.<String>getOne("account").get();
         String password = args.<String>getOne("password").get();
 

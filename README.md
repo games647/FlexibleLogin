@@ -10,7 +10,7 @@ password command. 0.16.5 fixed this security bug occurred in this
 A Sponge Minecraft server plugin for second authentication. It has a built-in
 TOTP support.
 
-Do you want to let your players protect their account (from hackers/login stealers) and keep playing 
+Do you want to let your players protect their account (from hackers/login stealer) and keep playing 
 while the session server is down. You can use this little plugin. You can protect your account with 
 a password you choose or with a time based password created from a secret key, generated just for you.
 

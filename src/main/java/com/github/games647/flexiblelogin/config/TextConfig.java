@@ -164,7 +164,7 @@ public class TextConfig {
     private Text forceRegisterOnline = builder("Cannot force register player. That player is online")
             .color(INFO_COLOR).build();
 
-    @Setting(comment = "Successfull force registered an account")
+    @Setting(comment = "Successful force registered an account")
     private Text forceRegisterSuccess = builder("Force register success").color(INFO_COLOR).build();
 
     @Setting(comment = "Another player with the same name tried to join the server while that player is still online")

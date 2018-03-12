@@ -45,7 +45,7 @@ public class ReloadCommand extends AbstractCommand {
     }
 
     @Override
-    public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource source, CommandContext args) {
         plugin.onReload();
 
         source.sendMessage(settings.getText().getOnReload());

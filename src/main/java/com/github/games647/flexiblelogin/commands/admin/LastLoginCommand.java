@@ -39,7 +39,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -50,6 +49,7 @@ import org.spongepowered.api.scheduler.SpongeExecutorService;
 import org.spongepowered.api.scheduler.SynchronousExecutor;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageReceiver;
+import org.spongepowered.api.util.Identifiable;
 
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
 import static org.spongepowered.api.command.args.GenericArguments.string;
@@ -74,17 +74,17 @@ public class LastLoginCommand extends AbstractCommand {
     }
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         String username = args.<String>getOne("account").get();
         if (namePredicate.test(username)) {
-            Optional<UUID> sender = Optional.empty();
-            if (src instanceof Player) {
-                sender = Optional.of(((Player) src).getUniqueId());
+            UUID sender = null;
+            if (src instanceof Identifiable) {
+                sender = ((Identifiable) src).getUniqueId();
             }
 
-            Optional<UUID> finalSender = sender;
+            UUID finalSender = sender;
             CompletableFuture.supplyAsync(() -> plugin.getDatabase().loadAccount(username), asyncExecutor)
-                    .thenAcceptAsync(optAcc -> onAccLoaded(finalSender, optAcc), syncExecutor);
+                    .thenAcceptAsync(optAcc -> onAccLoaded(finalSender, optAcc.orElse(null)), syncExecutor);
 
             return CommandResult.success();
         }
@@ -93,10 +93,10 @@ public class LastLoginCommand extends AbstractCommand {
         return CommandResult.success();
     }
 
-    private void onAccLoaded(Optional<UUID> src, Optional<Account> optAcc) {
+    private void onAccLoaded(UUID src, Account account) {
         MessageReceiver receiver = Sponge.getServer().getConsole();
-        if (src.isPresent()) {
-            Optional<Player> player = Sponge.getServer().getPlayer(src.get());
+        if (src != null) {
+            Optional<Player> player = Sponge.getServer().getPlayer(src);
             if (!player.isPresent()) {
                 return;
             }
@@ -104,15 +104,13 @@ public class LastLoginCommand extends AbstractCommand {
             receiver = player.get();
         }
 
-        if (optAcc.isPresent()) {
-            Account account = optAcc.get();
-
+        if (account == null) {
+            receiver.sendMessage(settings.getText().getAccountNotFound());
+        } else {
             String username = account.getUsername();
             String timeFormat = DateTimeFormatter.ISO_DATE_TIME.format(account.getLastLogin());
             Text message = settings.getText().getLastOnline(username, timeFormat);
             receiver.sendMessage(message);
-        } else {
-            receiver.sendMessage(settings.getText().getAccountNotFound());
         }
     }
 

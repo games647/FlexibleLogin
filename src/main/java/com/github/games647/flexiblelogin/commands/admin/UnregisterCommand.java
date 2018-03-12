@@ -58,7 +58,7 @@ public class UnregisterCommand extends AbstractCommand {
     }
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         String account = args.<String>getOne("account").get();
         if (uuidPredicate.test(account)) {
             //check if the account is an UUID

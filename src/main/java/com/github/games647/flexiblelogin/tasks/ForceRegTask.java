@@ -38,26 +38,26 @@ public class ForceRegTask implements Runnable {
     private final FlexibleLogin plugin;
 
     private final CommandSource src;
-    private final UUID accountIndentifer;
+    private final UUID accountIdentifier;
     private final String password;
 
-    public ForceRegTask(FlexibleLogin plugin, CommandSource src, UUID accountIndentifer, String password) {
+    public ForceRegTask(FlexibleLogin plugin, CommandSource src, UUID accountIdentifier, String password) {
         this.plugin = plugin;
         this.src = src;
-        this.accountIndentifer = accountIndentifer;
+        this.accountIdentifier = accountIdentifier;
         this.password = password;
     }
 
     @Override
     public void run() {
-        Optional<Account> optAccount = plugin.getDatabase().loadAccount(accountIndentifer);
+        Optional<Account> optAccount = plugin.getDatabase().loadAccount(accountIdentifier);
 
         if (optAccount.isPresent()) {
             src.sendMessage(plugin.getConfigManager().getText().getAccountAlreadyExists());
         } else {
             try {
                 String hash = plugin.getHasher().hash(password);
-                Account account = new Account(accountIndentifer, "", hash, null);
+                Account account = new Account(accountIdentifier, "", hash, null);
                 plugin.getDatabase().createAccount(account, false);
 
                 src.sendMessage(plugin.getConfigManager().getText().getForceRegisterSuccess());

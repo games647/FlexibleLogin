@@ -29,7 +29,7 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.PomData;
 import com.github.games647.flexiblelogin.config.Settings;
 
-import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Cancellable;
 
 public abstract class AbstractPreventListener {
@@ -42,13 +42,13 @@ public abstract class AbstractPreventListener {
         this.settings = settings;
     }
 
-    protected void checkLoginStatus(Cancellable event, Player player) {
+    protected void checkLoginStatus(Cancellable event, User player) {
         if (!isAllowed(player)) {
             event.setCancelled(true);
         }
     }
 
-    private boolean isAllowed(Player player) {
+    private boolean isAllowed(User player) {
         if (settings.getGeneral().isBypassed(player)) {
             return true;
         }

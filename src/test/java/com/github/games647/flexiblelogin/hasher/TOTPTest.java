@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TOTPTest {
 
-    private final IGoogleAuthenticator specImplementation = new GoogleAuthenticator(new GoogleAuthenticatorConfigBuilder()
+    private final IGoogleAuthenticator specImpl = new GoogleAuthenticator(new GoogleAuthenticatorConfigBuilder()
             .setHmacHashFunction(HmacHashFunction.HmacSHA256)
             //HmacSHA512 is not yet compatible with Base64
             .setKeyRepresentation(KeyRepresentation.BASE64)
@@ -62,15 +62,15 @@ class TOTPTest {
 
     @Test
     void testCompare() {
-        GoogleAuthenticatorKey credentials = specImplementation.createCredentials();
+        GoogleAuthenticatorKey credentials = specImpl.createCredentials();
         String secretKey = credentials.getKey();
-        assertTrue(totp.checkPassword(secretKey, String.valueOf(specImplementation.getTotpPassword(secretKey))));
+        assertTrue(totp.checkPassword(secretKey, String.valueOf(specImpl.getTotpPassword(secretKey))));
     }
 
     @Test
     void testNegativeCompare() {
-        GoogleAuthenticatorKey credentials = specImplementation.createCredentials();
+        GoogleAuthenticatorKey credentials = specImpl.createCredentials();
         String secretKey = credentials.getKey();
-        assertFalse(totp.checkPassword(secretKey, String.valueOf(specImplementation.getTotpPassword(secretKey) + 1)));
+        assertFalse(totp.checkPassword(secretKey, String.valueOf(specImpl.getTotpPassword(secretKey) + 1)));
     }
 }

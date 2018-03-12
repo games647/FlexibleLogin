@@ -26,6 +26,7 @@
 package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.config.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.RegisterTask;
 import com.google.common.collect.Lists;
@@ -65,7 +66,7 @@ public class RegisterCommand extends AbstractCommand {
 
         //If the server is using TOTP, no password is required
         if (!args.hasAny("password")) {
-            if ("totp".equals(settings.getGeneral().getHashAlgo())) {
+            if (settings.getGeneral().getHashAlgo() == HashingAlgorithm.TOTP) {
                 startTask(src, "");
             } else {
                 src.sendMessage(settings.getText().getTotpNotEnabled());
