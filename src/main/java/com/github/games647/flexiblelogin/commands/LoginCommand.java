@@ -79,7 +79,7 @@ public class LoginCommand extends AbstractCommand {
         }
 
         UUID uniqueId = player.getUniqueId();
-        if (attemptManager.isAllowed(uniqueId)) {
+        if (!attemptManager.isAllowed(uniqueId)) {
             src.sendMessage(settings.getText().getMaxAttempts());
             String lockCommand = settings.getGeneral().getLockCommand();
             if (!lockCommand.isEmpty()) {

@@ -52,8 +52,9 @@ public class AttemptManager {
         eventManager.registerListeners(plugin, this);
     }
 
-    public int increaseAttempt(UUID uniqueId) {
-        return attempts.computeIfAbsent(uniqueId, name -> 0);
+    public void increaseAttempt(UUID uniqueId) {
+        int old = attempts.getOrDefault(uniqueId, 0);
+        attempts.put(uniqueId, old + 1);
     }
 
     public void clearAttempts(UUID uniqueId) {
