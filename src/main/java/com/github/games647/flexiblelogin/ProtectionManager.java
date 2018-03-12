@@ -25,10 +25,8 @@
  */
 package com.github.games647.flexiblelogin;
 
-import com.flowpowered.math.vector.Vector3d;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.config.TeleportConfig;
-import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -57,6 +55,7 @@ import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.teleport.TeleportHelperFilters;
 
 @Singleton
 public class ProtectionManager {
@@ -103,6 +102,7 @@ public class ProtectionManager {
     }
 
     public void unprotect(Player player) {
+        //notify BungeeCord plugins for the login
         channel.sendTo(player, buf -> buf.writeUTF(LOGIN_ACTION));
 
         ProtectionData data = protections.remove(player.getUniqueId());
@@ -110,10 +110,12 @@ public class ProtectionManager {
             return;
         }
 
+        //teleport
         if (config.getGeneral().getTeleport().isEnabled()) {
             safeTeleport(player, data.getOldLocation());
         }
 
+        //restore permissions
         SubjectData subjectData = player.getTransientSubjectData();
         Map<Set<Context>, Map<String, Boolean>> oldPermissions = data.getPermissions();
         for (Entry<Set<Context>, Map<String, Boolean>> permission : oldPermissions.entrySet()) {
@@ -124,47 +126,17 @@ public class ProtectionManager {
         }
     }
 
-    private void safeTeleport(Player player, Location<World> location) {
+    private void safeTeleport(Player player, Location<World> loc) {
+        Location<World> safeLoc = loc;
         if (config.getGeneral().isSafeLocation()) {
-            findPortalSafeLocation(location).ifPresent(player::setLocation);
-        } else {
-            player.setLocation(location);
-        }
-    }
-
-    private Optional<Location<World>> findPortalSafeLocation(Location<World> location) {
-        Optional<Location<World>> optSafeLoc = teleportHelper.getSafeLocation(location);
-        if (!optSafeLoc.isPresent()) {
-            return Optional.empty();
-        }
-
-        Location<World> safeLoc = optSafeLoc.get();
-
-        //Sponge 7.0 adds API support for additional teleport helpers
-        if (!isSafe(safeLoc)) {
-            Set<Location<World>> locations = Sets.newHashSetWithExpectedSize(DISTANCE * DISTANCE);
-            for (int distanceX = -DISTANCE; distanceX < DISTANCE; distanceX++) {
-                for (int distanceZ = -DISTANCE; distanceZ < DISTANCE; distanceZ++) {
-                    if (distanceX == 0 && distanceZ == 0) {
-                        continue;
-                    }
-
-                    int newX = safeLoc.getBlockX() + distanceX;
-                    int newZ = safeLoc.getBlockZ() + distanceZ;
-                    Vector3d newPos = new Vector3d(newX, safeLoc.getY(), newZ);
-                    locations.add(safeLoc.setPosition(newPos));
-                }
+            Optional<Location<World>> optSafe = teleportHelper.getSafeLocation(loc,
+                    DISTANCE, DISTANCE, 0, TeleportHelperFilters.NO_PORTAL);
+            if (optSafe.isPresent()) {
+                safeLoc = optSafe.get();
             }
-
-            return locations.stream()
-                    .map(teleportHelper::getSafeLocation)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .filter(this::isSafe)
-                    .findFirst();
         }
 
-        return Optional.of(safeLoc);
+        player.setLocation(safeLoc);
     }
 
     private boolean isSafe(Location<World> loc) {
