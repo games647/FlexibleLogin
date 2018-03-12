@@ -23,10 +23,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.commands;
+package com.github.games647.flexiblelogin.commands.admin;
 
 import com.github.games647.flexiblelogin.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.commands.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.google.inject.Inject;

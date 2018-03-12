@@ -23,13 +23,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.commands;
+package com.github.games647.flexiblelogin.commands.admin;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.commands.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.tasks.reset.NameResetPwTask;
-import com.github.games647.flexiblelogin.tasks.reset.ResetPwTask;
-import com.github.games647.flexiblelogin.tasks.reset.UUIDResetPwTask;
+import com.github.games647.flexiblelogin.tasks.UnregisterTask;
 import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.github.games647.flexiblelogin.validation.UUIDPredicate;
 import com.google.inject.Inject;
@@ -48,37 +47,40 @@ import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
 import static org.spongepowered.api.command.args.GenericArguments.string;
 import static org.spongepowered.api.text.Text.of;
 
-public class ResetPasswordCommand extends AbstractCommand {
+public class UnregisterCommand extends AbstractCommand {
 
     @Inject private UUIDPredicate uuidPredicate;
     @Inject private NamePredicate namePredicate;
 
     @Inject
-    ResetPasswordCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+    UnregisterCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
         super(plugin, logger, settings);
     }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        String accountId = args.<String>getOne("account").get();
-        String password = args.<String>getOne("password").get();
-
-        ResetPwTask resetTask;
-        if (uuidPredicate.test(accountId)) {
-            UUID uuid = UUID.fromString(accountId);
-            resetTask = new UUIDResetPwTask(plugin, src, password, uuid);
-        } else if (namePredicate.test(accountId)) {
-            resetTask = new NameResetPwTask(plugin, src, password, accountId);
-        } else {
-            return CommandResult.empty();
+        String account = args.<String>getOne("account").get();
+        if (uuidPredicate.test(account)) {
+            //check if the account is an UUID
+            UUID uuid = UUID.fromString(account);
+           Task.builder()
+                    //Async as it could run a SQL query
+                    .async()
+                    .execute(new UnregisterTask(plugin, src, uuid))
+                    .submit(plugin);
+            return CommandResult.success();
+        } else if (namePredicate.test(account)) {
+            //check if the account is a valid player name
+            Task.builder()
+                    //Async as it could run a SQL query
+                    .async()
+                    .execute(new UnregisterTask(plugin, src, account))
+                    .submit(plugin);
+            return CommandResult.success();
         }
 
-        //check if the account is a valid player name
-        Task.builder()
-                //Async as it could run a SQL query
-                .async()
-                .execute(resetTask)
-                .submit(plugin);
+        src.sendMessage(settings.getText().getUnregisterFailed());
+
         return CommandResult.success();
     }
 
@@ -86,9 +88,7 @@ public class ResetPasswordCommand extends AbstractCommand {
     public CommandSpec buildSpec() {
         return CommandSpec.builder()
                 .executor(this)
-                .arguments(
-                        onlyOne(
-                                string(of("account"))), string(of("password")))
+                .arguments(onlyOne(string(of("account"))))
                 .build();
     }
 }

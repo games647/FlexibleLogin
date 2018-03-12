@@ -82,8 +82,7 @@ public class ChangePasswordCommand extends AbstractCommand {
                         .async()
                         .execute(() -> {
                             account.setPasswordHash(hash);
-                            boolean success = plugin.getDatabase().save(account);
-                            if (success) {
+                            if (plugin.getDatabase().save(account)) {
                                 src.sendMessage(settings.getText().getChangePassword());
                             } else {
                                 src.sendMessage(settings.getText().getErrorExecutingCommand());

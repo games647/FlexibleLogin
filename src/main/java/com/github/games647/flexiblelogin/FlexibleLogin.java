@@ -26,16 +26,16 @@
 package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.commands.ChangePasswordCommand;
-import com.github.games647.flexiblelogin.commands.ForceRegisterCommand;
+import com.github.games647.flexiblelogin.commands.admin.ForceRegisterCommand;
 import com.github.games647.flexiblelogin.commands.ForgotPasswordCommand;
-import com.github.games647.flexiblelogin.commands.LastLoginCommand;
+import com.github.games647.flexiblelogin.commands.admin.LastLoginCommand;
 import com.github.games647.flexiblelogin.commands.LoginCommand;
 import com.github.games647.flexiblelogin.commands.LogoutCommand;
 import com.github.games647.flexiblelogin.commands.RegisterCommand;
-import com.github.games647.flexiblelogin.commands.ReloadCommand;
-import com.github.games647.flexiblelogin.commands.ResetPasswordCommand;
+import com.github.games647.flexiblelogin.commands.admin.ReloadCommand;
+import com.github.games647.flexiblelogin.commands.admin.ResetPasswordCommand;
 import com.github.games647.flexiblelogin.commands.SetEmailCommand;
-import com.github.games647.flexiblelogin.commands.UnregisterCommand;
+import com.github.games647.flexiblelogin.commands.admin.UnregisterCommand;
 import com.github.games647.flexiblelogin.config.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;

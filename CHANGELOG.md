@@ -1,5 +1,20 @@
 # Changelog
 
+###### 0.17
+
+* Add experimental permission protection to fix compatibility with NEB (Fixes #111)
+* Use a single task to print not logged messages
+* Kick unregistered players if configured to do so (Fixes #93)
+* Add support for AuthMeBridge (Fixes #108) to allow integration on BungeeCord
+* Catch uncheckedexception for database setup too
+* Add workarkound for time parsing bug in SQLite (Fixes #106)
+* Delay server shutdown to shutdown correctly on failed database setup (Related #109)
+* Reduce file size by minimizing google auth dependency 
+* Use JSON Text objects for more flexibility of messages
+* Save account on password save (Fixes #101)
+* Add configuration option for case sensitive name checking (Fixes #99)
+* Don't require the latest version of GriefPrevention (Fixes #98)
+
 ###### 0.16.8
 
 * Ignore teleports for prevent listener otherwise we prevent our own teleports

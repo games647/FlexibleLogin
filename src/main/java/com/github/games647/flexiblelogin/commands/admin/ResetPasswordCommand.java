@@ -23,41 +23,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.commands;
+package com.github.games647.flexiblelogin.commands.admin;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.commands.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
+import com.github.games647.flexiblelogin.tasks.reset.NameResetPwTask;
+import com.github.games647.flexiblelogin.tasks.reset.ResetPwTask;
+import com.github.games647.flexiblelogin.tasks.reset.UUIDResetPwTask;
 import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.github.games647.flexiblelogin.validation.UUIDPredicate;
-import com.github.games647.flexiblelogin.tasks.ForceRegTask;
 import com.google.inject.Inject;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
 import static org.spongepowered.api.command.args.GenericArguments.string;
 import static org.spongepowered.api.text.Text.of;
 
-public class ForceRegisterCommand extends AbstractCommand {
+public class ResetPasswordCommand extends AbstractCommand {
 
     @Inject private UUIDPredicate uuidPredicate;
-
     @Inject private NamePredicate namePredicate;
 
     @Inject
-    ForceRegisterCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+    ResetPasswordCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
         super(plugin, logger, settings);
     }
 
@@ -65,50 +63,24 @@ public class ForceRegisterCommand extends AbstractCommand {
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         String accountId = args.<String>getOne("account").get();
         String password = args.<String>getOne("password").get();
+
+        ResetPwTask resetTask;
         if (uuidPredicate.test(accountId)) {
-            onUuidRegister(accountId, src, password);
-
-            return CommandResult.success();
+            UUID uuid = UUID.fromString(accountId);
+            resetTask = new UUIDResetPwTask(plugin, src, password, uuid);
         } else if (namePredicate.test(accountId)) {
-            onNameRegister(src, accountId, password);
-            return CommandResult.success();
+            resetTask = new NameResetPwTask(plugin, src, password, accountId);
+        } else {
+            return CommandResult.empty();
         }
 
+        //check if the account is a valid player name
+        Task.builder()
+                //Async as it could run a SQL query
+                .async()
+                .execute(resetTask)
+                .submit(plugin);
         return CommandResult.success();
-    }
-
-    private void onNameRegister(CommandSource src, String accountId, String password) {
-        Optional<Player> player = Sponge.getServer().getPlayer(accountId);
-        if (player.isPresent()) {
-            src.sendMessage(settings.getText().getForceRegisterOnline());
-        } else {
-            UUID offlineUUID = getOfflineUUID(accountId);
-
-            Task.builder()
-                    //Async as it could run a SQL query
-                    .async()
-                    .execute(new ForceRegTask(plugin, src, offlineUUID, password))
-                    .submit(plugin);
-        }
-    }
-
-    private UUID getOfflineUUID(String playerName) {
-        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8));
-    }
-
-    private void onUuidRegister(String accountId, CommandSource src, String password) {
-        //check if the account is an UUID
-        UUID uuid = UUID.fromString(accountId);
-        Optional<Player> player = Sponge.getServer().getPlayer(uuid);
-        if (player.isPresent()) {
-            src.sendMessage(settings.getText().getForceRegisterOnline());
-        } else {
-            Task.builder()
-                    //Async as it could run a SQL query
-                    .async()
-                    .execute(new ForceRegTask(plugin, src, uuid, password))
-                    .submit(plugin);
-        }
     }
 
     @Override
@@ -121,4 +93,3 @@ public class ForceRegisterCommand extends AbstractCommand {
                 .build();
     }
 }
-
