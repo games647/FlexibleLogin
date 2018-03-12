@@ -16,7 +16,8 @@ a password you choose or with a time based password created from a secret key, g
 
 ### Requirements
 
-* Sponge 6.1 or 7.0
+* Sponge 7.0+
+* Java 8+
 
 ### Commands
 
