@@ -25,7 +25,7 @@
  */
 package com.github.games647.flexiblelogin.listener;
 
-import com.github.games647.flexiblelogin.Account;
+import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.PomData;
 import com.github.games647.flexiblelogin.config.General;
@@ -147,7 +147,7 @@ public class ConnectionListener {
 
         InetAddress newIp = source.getConnection().getAddress().getAddress();
         Instant now = Instant.now();
-        return Objects.equals(account.getIp(), newIp) && Duration.between(account.getLastLogin(), now).toHours() < 12;
+        return Objects.equals(account.getIP(), newIp) && Duration.between(account.getLastLogin(), now).toHours() < 12;
     }
 
     private void scheduleTimeoutTask(Player player) {

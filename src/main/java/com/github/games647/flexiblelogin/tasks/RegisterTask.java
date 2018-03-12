@@ -25,7 +25,7 @@
  */
 package com.github.games647.flexiblelogin.tasks;
 
-import com.github.games647.flexiblelogin.Account;
+import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.hasher.TOTP;
@@ -59,8 +59,7 @@ public class RegisterTask implements Runnable {
     public void run() {
         String name = player.getName();
         if (!plugin.getDatabase().loadAccount(player).isPresent()) {
-            byte[] ipAddress = player.getConnection().getAddress().getAddress().getAddress();
-            int regByIp = plugin.getDatabase().getRegistrationsCount(ipAddress);
+            int regByIp = plugin.getDatabase().getRegistrationsCount(player.getConnection().getAddress().getAddress());
             if (regByIp > plugin.getConfigManager().getGeneral().getMaxIpReg()) {
                 player.sendMessage(plugin.getConfigManager().getText().getMaxIpReg());
                 return;
@@ -69,9 +68,11 @@ public class RegisterTask implements Runnable {
             try {
                 String hashedPassword = plugin.getHasher().hash(password);
                 Account createdAccount = new Account(player, hashedPassword);
-                if (!plugin.getDatabase().createAccount(createdAccount, true)) {
+                if (!plugin.getDatabase().createAccount(createdAccount)) {
                     return;
                 }
+
+                plugin.getDatabase().addCache(player.getUniqueId(), createdAccount);
 
                 //thread-safe, because it's immutable after config load
                 if (plugin.getConfigManager().getGeneral().getHashAlgo() ==HashingAlgorithm.TOTP) {
@@ -81,7 +82,7 @@ public class RegisterTask implements Runnable {
                 player.sendMessage(plugin.getConfigManager().getText().getAccountCreated());
                 createdAccount.setLoggedIn(true);
                 if (plugin.getConfigManager().getGeneral().isUpdateLoginStatus()) {
-                    plugin.getDatabase().flushLoginStatus(createdAccount, true);
+                    plugin.getDatabase().save(createdAccount);
                 }
 
                 Task.builder()

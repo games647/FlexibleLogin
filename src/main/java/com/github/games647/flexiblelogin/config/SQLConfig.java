@@ -42,7 +42,7 @@ public class SQLConfig {
     @Setting(comment = "Port for example MySQL connections")
     private int port = 3306;
 
-    @Setting(comment = "Database name")
+    @Setting(comment = "FlexibleDatabase name")
     private String database = "flexiblelogin";
 
     @Setting(comment = "Username to login the database system")
@@ -54,6 +54,10 @@ public class SQLConfig {
     @Setting(comment = "It's strongly recommended to enable SSL and setup a SSL certificate if the MySQL/MariaDB " +
             "server isn't running on the same machine")
     private boolean useSSL;
+
+    @Setting(comment = "Compatibility with the Bukkit plugin AuthMeReloaded. Here you can specify the table name. If " +
+            "this option is empty, compatibility will be disabled and FlexibleLogin's schema will be used.")
+    private String authMeTable = "";
 
     public Type getType() {
         return type;
@@ -81,6 +85,10 @@ public class SQLConfig {
 
     public boolean isUseSSL() {
         return useSSL;
+    }
+
+    public String getAuthMeTable() {
+        return authMeTable;
     }
 
     /**

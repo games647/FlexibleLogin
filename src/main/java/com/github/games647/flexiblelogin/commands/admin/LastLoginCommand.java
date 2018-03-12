@@ -25,7 +25,7 @@
  */
 package com.github.games647.flexiblelogin.commands.admin;
 
-import com.github.games647.flexiblelogin.Account;
+import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.commands.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;

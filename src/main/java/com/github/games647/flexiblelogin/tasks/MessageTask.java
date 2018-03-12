@@ -25,7 +25,7 @@
  */
 package com.github.games647.flexiblelogin.tasks;
 
-import com.github.games647.flexiblelogin.Account;
+import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.PomData;
 import com.github.games647.flexiblelogin.config.Settings;

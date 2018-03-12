@@ -25,7 +25,7 @@
  */
 package com.github.games647.flexiblelogin.tasks;
 
-import com.github.games647.flexiblelogin.Account;
+import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.AttemptManager;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
@@ -64,7 +64,7 @@ public class LoginTask implements Runnable {
 
                 account.setLoggedIn(true);
                 //update the ip
-                account.setIp(player.getConnection().getAddress().getAddress());
+                account.setIP(player.getConnection().getAddress().getAddress());
 
                 player.sendMessage(plugin.getConfigManager().getText().getLoggedIn());
                 Task.builder().execute(() -> plugin.getProtectionManager().unprotect(player)).submit(plugin);

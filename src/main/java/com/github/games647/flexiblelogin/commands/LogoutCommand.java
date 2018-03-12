@@ -25,7 +25,7 @@
  */
 package com.github.games647.flexiblelogin.commands;
 
-import com.github.games647.flexiblelogin.Account;
+import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.google.inject.Inject;
@@ -66,9 +66,6 @@ public class LogoutCommand extends AbstractCommand {
                     .execute(() -> {
                         //flushes the ip update
                         plugin.getDatabase().save(account);
-                        if (settings.getGeneral().isUpdateLoginStatus()) {
-                            plugin.getDatabase().flushLoginStatus(account, false);
-                        }
                     })
                     .submit(plugin);
         } else {

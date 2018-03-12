@@ -28,18 +28,17 @@ package com.github.games647.flexiblelogin.commands.admin;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.commands.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
+import com.github.games647.flexiblelogin.storage.Account;
+import com.github.games647.flexiblelogin.tasks.ForceRegTask;
 import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.github.games647.flexiblelogin.validation.UUIDPredicate;
-import com.github.games647.flexiblelogin.tasks.ForceRegTask;
 import com.google.inject.Inject;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -83,7 +82,7 @@ public class ForceRegisterCommand extends AbstractCommand {
         if (player.isPresent()) {
             src.sendMessage(settings.getText().getForceRegisterOnline());
         } else {
-            UUID offlineUUID = getOfflineUUID(accountId);
+            UUID offlineUUID = Account.getOfflineUUID(accountId);
 
             Task.builder()
                     //Async as it could run a SQL query
@@ -91,10 +90,6 @@ public class ForceRegisterCommand extends AbstractCommand {
                     .execute(new ForceRegTask(plugin, src, offlineUUID, password))
                     .submit(plugin);
         }
-    }
-
-    private UUID getOfflineUUID(String playerName) {
-        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8));
     }
 
     private void onUuidRegister(String accountId, CommandSource src, String password) {

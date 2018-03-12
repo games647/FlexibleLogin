@@ -26,15 +26,15 @@
 package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.commands.ChangePasswordCommand;
-import com.github.games647.flexiblelogin.commands.admin.ForceRegisterCommand;
 import com.github.games647.flexiblelogin.commands.ForgotPasswordCommand;
-import com.github.games647.flexiblelogin.commands.admin.LastLoginCommand;
 import com.github.games647.flexiblelogin.commands.LoginCommand;
 import com.github.games647.flexiblelogin.commands.LogoutCommand;
 import com.github.games647.flexiblelogin.commands.RegisterCommand;
+import com.github.games647.flexiblelogin.commands.SetEmailCommand;
+import com.github.games647.flexiblelogin.commands.admin.ForceRegisterCommand;
+import com.github.games647.flexiblelogin.commands.admin.LastLoginCommand;
 import com.github.games647.flexiblelogin.commands.admin.ReloadCommand;
 import com.github.games647.flexiblelogin.commands.admin.ResetPasswordCommand;
-import com.github.games647.flexiblelogin.commands.SetEmailCommand;
 import com.github.games647.flexiblelogin.commands.admin.UnregisterCommand;
 import com.github.games647.flexiblelogin.config.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.config.Settings;
@@ -44,12 +44,16 @@ import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.github.games647.flexiblelogin.listener.ConnectionListener;
 import com.github.games647.flexiblelogin.listener.prevent.GriefPreventListener;
 import com.github.games647.flexiblelogin.listener.prevent.PreventListener;
+import com.github.games647.flexiblelogin.storage.AuthMeDatabase;
+import com.github.games647.flexiblelogin.storage.Database;
+import com.github.games647.flexiblelogin.storage.FlexibleDatabase;
 import com.github.games647.flexiblelogin.tasks.MessageTask;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
@@ -77,7 +81,7 @@ public class FlexibleLogin {
 
     private final Logger logger;
     private final Injector injector;
-    private final Settings configuration;
+    private final Settings config;
     private final CommandManager commandManager;
 
     @Inject private EventManager eventManager;
@@ -90,7 +94,7 @@ public class FlexibleLogin {
     @Inject
     FlexibleLogin(Logger logger, Injector injector, Settings settings) {
         this.logger = logger;
-        this.configuration = settings;
+        this.config = settings;
 
         try {
             //if we are on old sponge version the command manager doesn't exist for injections
@@ -167,33 +171,38 @@ public class FlexibleLogin {
 
         server.getOnlinePlayers().stream()
                 .peek(protectionManager::protect)
+                .parallel()
                 .forEach(database::loadAccount);
     }
 
     private void init() {
-        configuration.load();
+        config.load();
         try {
-            database = new Database(logger, configuration);
-            database.createTable(configuration.getGeneral().getSQL().getType());
-        } catch (SQLException | UncheckedExecutionException sqlEx) {
-            logger.error("Cannot connect to auth storage", sqlEx);
+            if (config.getGeneral().getSQL().getAuthMeTable().isEmpty()) {
+                database = new FlexibleDatabase(logger, config);
+                database.createTable(config.getGeneral().getSQL().getType());
+            } else {
+                database = new AuthMeDatabase(logger, config);
+            }
+        } catch (SQLException | UncheckedExecutionException | IOException ex) {
+            logger.error("Cannot connect to auth storage", ex);
             Task.builder().execute(() -> Sponge.getServer().shutdown()).submit(this);
         }
 
         //use bcrypt as fallback for now
         hasher = new BcryptHasher();
-        if (configuration.getGeneral().getHashAlgo() == HashingAlgorithm.TOTP) {
+        if (config.getGeneral().getHashAlgo() == HashingAlgorithm.TOTP) {
             hasher = new TOTP();
         }
 
         //schedule tasks
-        Task.builder().execute(new MessageTask(this, configuration))
-                .interval(configuration.getGeneral().getMessageInterval(), TimeUnit.SECONDS)
+        Task.builder().execute(new MessageTask(this, config))
+                .interval(config.getGeneral().getMessageInterval(), TimeUnit.SECONDS)
                 .submit(this);
     }
 
     public Settings getConfigManager() {
-        return configuration;
+        return config;
     }
 
     public Logger getLogger() {

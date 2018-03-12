@@ -25,7 +25,7 @@
  */
 package com.github.games647.flexiblelogin.tasks.reset;
 
-import com.github.games647.flexiblelogin.Account;
+import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import java.util.Optional;

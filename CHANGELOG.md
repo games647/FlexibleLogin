@@ -2,7 +2,7 @@
 
 ###### 0.18
 
-
+* Add AuthMe database schema support (Fixes #49)
 
 ###### 0.17
 

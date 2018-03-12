@@ -56,7 +56,7 @@ class TOTPTest {
 
     @Test
     void testGenerateKey() {
-        //test if generation still works after remove libraries
+        //test if generation still works after invalidate libraries
         assertNotNull(totp.hash(""));
     }
 

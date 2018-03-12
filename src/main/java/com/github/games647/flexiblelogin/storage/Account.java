@@ -23,17 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin;
+package com.github.games647.flexiblelogin.storage;
+
+import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,7 +37,6 @@ import org.spongepowered.api.entity.living.player.Player;
 
 public class Account {
 
-    private static final String SQL_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private final UUID uuid;
     private final String username;
 
@@ -49,8 +44,8 @@ public class Account {
     private InetAddress ip;
     private String email;
 
-    private boolean loggedIn;
     private Instant lastLogin;
+    private transient boolean loggedIn;
 
     public Account(Player player, String password) {
         this(player.getUniqueId(), player.getName(), password, player.getConnection().getAddress().getAddress());
@@ -66,33 +61,24 @@ public class Account {
         this.lastLogin = Instant.now();
     }
 
-    //existing account
-    public Account(ResultSet resultSet, boolean sqlite) throws SQLException {
-        //uuid in binary format
-        ByteBuffer uuidBytes = ByteBuffer.wrap(resultSet.getBytes(2));
-
-        this.uuid = new UUID(uuidBytes.getLong(), uuidBytes.getLong());
-        this.username = resultSet.getString(3);
-        this.passwordHash = resultSet.getString(4);
-
-        try {
-            byte[] bytes = resultSet.getBytes(5);
-            if (bytes.length > 0) {
-                this.ip = InetAddress.getByAddress(bytes);
-            }
-        } catch (UnknownHostException e) {
-            this.ip = null;
-        }
-
-        this.lastLogin = parseTimestamp(resultSet, sqlite);
-        this.email = resultSet.getString(7);
+    public Account(UUID uuid, String username, String password, InetAddress ip, String email, Instant lastLogin) {
+        this.uuid = uuid;
+        this.username = username;
+        this.passwordHash = password;
+        this.ip = ip;
+        this.email = email;
+        this.lastLogin = lastLogin;
     }
 
     public synchronized boolean checkPassword(FlexibleLogin plugin, String userInput) throws Exception {
         return plugin.getHasher().checkPassword(passwordHash, userInput);
     }
 
-    public UUID getUuid() {
+    public static UUID getOfflineUUID(String playerName) {
+        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8));
+    }
+
+    public UUID getId() {
         return uuid;
     }
 
@@ -109,11 +95,11 @@ public class Account {
         this.passwordHash = passwordHash;
     }
 
-    public synchronized InetAddress getIp() {
+    public synchronized InetAddress getIP() {
         return ip;
     }
 
-    public synchronized void setIp(InetAddress ip) {
+    public synchronized void setIP(InetAddress ip) {
         this.ip = ip;
     }
 
@@ -139,24 +125,13 @@ public class Account {
     public synchronized boolean isLoggedIn() {
         return loggedIn;
     }
+
     public synchronized void setLoggedIn(boolean loggedIn) {
         if (loggedIn) {
             lastLogin = Instant.now();
         }
 
         this.loggedIn = loggedIn;
-    }
-
-    private Instant parseTimestamp(ResultSet resultSet, boolean sqlite) throws SQLException {
-        if (sqlite) {
-            //workaround for SQLite that causes time parsing errors in combination with CURRENT_TIMESTAMP in SQL
-            String timestamp = resultSet.getString(6);
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(SQL_TIME_FORMAT);
-
-            return LocalDateTime.parse(timestamp, timeFormatter).toInstant(ZoneOffset.UTC);
-        }
-
-        return resultSet.getTimestamp(6).toInstant();
     }
 
     @Override

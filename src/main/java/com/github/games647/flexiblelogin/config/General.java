@@ -38,7 +38,7 @@ import org.spongepowered.api.service.permission.Subject;
 @SuppressWarnings("FieldMayBeFinal")
 public class General {
 
-    @Setting(comment = "Database configuration")
+    @Setting(comment = "FlexibleDatabase configuration")
     private SQLConfig sqlConfiguration = new SQLConfig();
 
     @Setting(comment = "Email configuration for password recovery")

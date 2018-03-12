@@ -25,12 +25,13 @@
  */
 package com.github.games647.flexiblelogin.tasks;
 
-import com.github.games647.flexiblelogin.Account;
+import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 
 public class ForceRegTask implements Runnable {
@@ -58,7 +59,11 @@ public class ForceRegTask implements Runnable {
             try {
                 String hash = plugin.getHasher().hash(password);
                 Account account = new Account(accountIdentifier, "", hash, null);
-                plugin.getDatabase().createAccount(account, false);
+                plugin.getDatabase().createAccount(account);
+
+                if (Sponge.getServer().getPlayer(accountIdentifier).isPresent()) {
+                    plugin.getDatabase().addCache(accountIdentifier, account);
+                }
 
                 src.sendMessage(plugin.getConfigManager().getText().getForceRegisterSuccess());
             } catch (Exception ex) {
