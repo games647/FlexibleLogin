@@ -180,7 +180,7 @@ public class FlexibleLogin {
         try {
             if (config.getGeneral().getSQL().getAuthMeTable().isEmpty()) {
                 database = new FlexibleDatabase(logger, config);
-                database.createTable(config.getGeneral().getSQL().getType());
+                database.createTable(this, config);
             } else {
                 database = new AuthMeDatabase(logger, config);
             }

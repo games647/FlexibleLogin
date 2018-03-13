@@ -25,13 +25,18 @@
  */
 package com.github.games647.flexiblelogin.storage;
 
+import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.SQLConfig.Type;
 import com.github.games647.flexiblelogin.config.Settings;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -43,8 +48,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.asset.Asset;
 
 public class FlexibleDatabase extends Database {
 
@@ -53,16 +56,19 @@ public class FlexibleDatabase extends Database {
     }
 
     @Override
-    public void createTable(Type type) throws SQLException, IOException {
-        Asset asset = Sponge.getAssetManager().getAsset("create.sql").get();
+    public void createTable(FlexibleLogin plugin, Settings type) throws SQLException, IOException {
         StringBuilder builder = new StringBuilder();
 
-        try (Connection con = dataSource.getConnection(); Statement stmt = con.createStatement()) {
-            for (String line : asset.readLines()) {
+
+        try (InputStream resourceStream = getClass().getResourceAsStream("/create.sql");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(resourceStream, StandardCharsets.UTF_8));
+             Connection con = dataSource.getConnection(); Statement stmt = con.createStatement()) {
+            String line;
+            while ((line = reader.readLine()) != null) {
                 builder.append(line.replace("{TABLE_NAME}", tableName));
                 if (line.endsWith(";")) {
                     String sql = builder.toString();
-                    if (type == Type.SQLITE) {
+                    if (type.getGeneral().getSQL().getType() == Type.SQLITE) {
                         sql = sql.replace("AUTO_INCREMENT", "AUTOINCREMENT");
                     }
 

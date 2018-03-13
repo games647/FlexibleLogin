@@ -1,5 +1,6 @@
 package com.github.games647.flexiblelogin.storage;
 
+import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.SQLConfig;
 import com.github.games647.flexiblelogin.config.SQLConfig.Type;
 import com.github.games647.flexiblelogin.config.Settings;
@@ -126,6 +127,7 @@ public abstract class Database {
 
     public abstract boolean deleteAccount(String playerName);
     public abstract boolean deleteAccount(UUID uuid);
+
     public abstract Optional<String> exists(String username);
     public abstract Optional<Account> loadAccount(UUID uuid);
     public abstract Optional<Account> loadAccount(String playerName);
@@ -198,5 +200,5 @@ public abstract class Database {
         cache.clear();
     }
 
-    public void createTable(Type type) throws IOException, SQLException {}
+    public void createTable(FlexibleLogin plugin, Settings type) throws IOException, SQLException {}
 }
