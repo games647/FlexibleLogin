@@ -1,9 +1,6 @@
 # FlexibleLogin
 
-> ## **Security Notice:** If you use a version 0.16.X version, update immediately to 0.16.5+ or disable the change
-password command. 0.16.5 fixed this security bug occurred in this
-[commit](https://github.com/games647/FlexibleLogin/commit/43f74a466e73b0f2cfa522b5bfd68480010a7934). Older versions of
-0.16.X are not affected.
+## **Security Notice:** If you use a version 0.16.X version, update to 0.16.5+ or disable the change password command. 0.16.5 fixed this security bug occurred in this [commit](https://github.com/games647/FlexibleLogin/commit/43f74a466e73b0f2cfa522b5bfd68480010a7934). Older versions before 0.16 are not affected.
 
 ### Description
 
@@ -18,6 +15,11 @@ a password you choose or with a time based password created from a secret key, g
 
 * Sponge 7.0+
 * Java 8+
+
+### Language
+
+This plugin has configurable language files. By default it only ships the english version of it, but there are community
+driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wiki
 
 ### Commands
 
@@ -50,15 +52,32 @@ a password you choose or with a time based password created from a secret key, g
 
 ### Config
 
+    # Should unregistered player be able to join the server?
+    allowUnregistered=true
     # Do you allow your users to skip authentication with the bypass permission
     bypassPermission=false
+    # Should the player name always be case sensitive equal to the time the player registered?
+    caseSensitiveNameCheck=true
     # Should only the specified commands be protected from unauthorized access
     commandOnlyProtection=false
     # Email configuration for password recovery
     emailConfiguration {
         # Username for the account you want to the email from
         account=""
-        # Is password recovery using an email alloweds
+        # Email contents. You can use HTML here
+        contentTemplate {
+            arguments {}
+            closeArg="}"
+            content {
+                text="New password for Builder{name=player, optional=true} on Minecraft server Builder{name=server, optional=true}: Builder{name=, optional=true}"
+            }
+            openArg="{"
+            options {
+                closeArg="}"
+                openArg="{"
+            }
+        }
+        # Is password recovery using an email allowed
         enabled=false
         # Mail server
         host="smtp.gmail.com"
@@ -69,9 +88,18 @@ a password you choose or with a time based password created from a secret key, g
         # Displays as sender in the email client
         senderName="Your Minecraft server name"
         # Email subject/title
-        subject="Your new Password"
-        # Email contents. You can use HTML here
-        text="New password for %player% on Minecraft server %server%: %password%"
+        subjectTemplate {
+            arguments {}
+            closeArg="}"
+            content {
+                text="Your new Password"
+            }
+            openArg="{"
+            options {
+                closeArg="}"
+                openArg="{"
+            }
+        }
     }
     # Algorithms for hashing user passwords. You can also choose totp
     hashAlgo=bcrypt
@@ -81,30 +109,37 @@ a password you choose or with a time based password created from a secret key, g
     lockCommand=""
     # How many login attempts are allowed until everything is blocked
     maxAttempts=3
-    # How many accounts are allowed per ip-addres. Use 0 to disable it
+    # How many accounts are allowed per ip-address. Use 0 to disable it
     maxIpReg=0
+    # Interval where the please login will be printed to the user
+    messageInterval=2
     # The user should use a strong password
     minPasswordLength=4
     # Should this plugin check for player permissions
     playerPermissions=false
-    # If command only protection is enabled, these commands are protected. If the list is empty 
-    # all commands are protected
+    # Experimental feature to protect permissions for players who aren't logged in yet
+    protectPermissions=false
+    # If command only protection is enabled, these commands are protected. If the list is empty all commands are protected
     protectedCommands=[
         op,
         pex
     ]
+    # Teleport the player to a safe location based on the last login coordinates
+    safeLocation=false
     # Database configuration
     sqlConfiguration {
         # Database name
         database=flexiblelogin
         # Password in order to login
         password=""
-        # Path where the database is located. This can be a file path (h2/SQLite) or an IP/Domain(MySQL/MariaDB)
+        # Path where the database is located. This can be a file path (h2/SQLite) or an IP/Domain (MySQL/MariaDB)
         path="%DIR%"
         # Port for example MySQL connections
         port=3306
-        # SQL server type. You can choose between h2, SQLite and MySQL
+        # SQL server type. You can choose between h2, SQLite and MySQL/MariaDB
         type=H2
+        # It's strongly recommended to enable SSL and setup a SSL certificate if the MySQL/MariaDB server isn't running on the same machine
+        useSSL=false
         # Username to login the database system
         username=""
     }
@@ -122,6 +157,8 @@ a password you choose or with a time based password created from a secret key, g
     timeoutLogin=60
     # Should the plugin save the login status to the database
     updateLoginStatus=false
+    # Regular expression for verifying validate player names. Default is a-zA-Z with 2-16 length
+    validNames="^\\w{2,16}$"
     # How seconds the user should wait after the user tried to make too many attempts
     waitTime=300
 

@@ -35,7 +35,6 @@ import java.nio.file.Path;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
@@ -85,15 +84,17 @@ public class Settings {
             logger.error("Failed to create default config file", ioEx);
         }
 
-        loadMapper(configMapper, HoconConfigurationLoader.builder().setPath(configFile).build());
-        loadMapper(textMapper, HoconConfigurationLoader.builder().setPath(textFile).build());
+        loadMapper(configMapper, configFile, ConfigurationOptions.defaults());
+        loadMapper(textMapper, textFile, ConfigurationOptions.defaults()
+                .setHeader("Visit: https://github.com/games647/FlexibleLogin/wiki for community given templates"));
     }
 
-    private <T> void loadMapper(ObjectMapper<T>.BoundInstance mapper, ConfigurationLoader<?> loader) {
+    private <T> void loadMapper(ObjectMapper<T>.BoundInstance mapper, Path file, ConfigurationOptions options) {
         ConfigurationNode rootNode;
         if (mapper != null) {
+            HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setPath(file).build();
             try {
-                rootNode = loader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true));
+                rootNode = loader.load(options.setShouldCopyDefaults(true));
 
                 //load the config into the object
                 mapper.populate(rootNode);
