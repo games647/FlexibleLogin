@@ -66,7 +66,7 @@ public class TextConfig {
     @Setting(comment = "When the player is not logged in of his/her account.")
     private Text notLoggedIn = builder("Not logged in. Type /login to login in").color(WARNING_COLOR).build();
 
-    @Setting(comment = "When the player is not logged in of his/her account.")
+    @Setting(comment = "When the player not registered an account.")
     private Text notRegistered = builder("Not registered. Type /register to register").color(WARNING_COLOR).build();
 
     @Setting(comment = "When totp is not enabled.")
@@ -114,8 +114,7 @@ public class TextConfig {
             WARNING_COLOR, "Invalid username. Please join as ", TextColors.YELLOW, arg("username").optional(), "!"
     );
 
-    @Setting(comment = "Kick message if the case sensitive compare between the already registered " +
-            "and the joining player failed")
+    @Setting(comment = "Result message for the last login admin command")
     private TextTemplate lastOnline = of(
             INFO_COLOR, "Account: ", TextColors.YELLOW, arg("username").optional(),
             INFO_COLOR, " was last online at ", TextColors.YELLOW, arg("time")
