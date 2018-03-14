@@ -154,7 +154,7 @@ public class FlexibleDatabase extends Database {
     }
 
     private void writeAccount(PreparedStatement stmt, Account account) throws SQLException {
-        stmt.setString(1, account.getUsername());
+        stmt.setString(1, account.getUsername().orElse(""));
         stmt.setString(2, account.getPassword());
         stmt.setObject(3, account.getIP().getAddress());
 

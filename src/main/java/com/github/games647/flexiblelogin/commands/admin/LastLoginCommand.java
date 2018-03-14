@@ -107,7 +107,7 @@ public class LastLoginCommand extends AbstractCommand {
         if (account == null) {
             receiver.sendMessage(settings.getText().getAccountNotFound());
         } else {
-            String username = account.getUsername();
+            String username = account.getUsername().orElseGet(() -> account.getId().toString());
             String timeFormat = DateTimeFormatter.ISO_DATE_TIME.format(account.getLastLogin());
             Text message = settings.getText().getLastOnline(username, timeFormat);
             receiver.sendMessage(message);

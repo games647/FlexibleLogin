@@ -85,7 +85,7 @@ public class AuthMeDatabase extends Database {
             writeAccount(stmt, account);
 
             stmt.setBoolean(7, account.isLoggedIn());
-            stmt.setString(8, account.getUsername());
+            stmt.setString(8, account.getUsername().get());
 
             stmt.executeUpdate();
             return true;
@@ -97,8 +97,8 @@ public class AuthMeDatabase extends Database {
     }
 
     private void writeAccount(PreparedStatement stmt, Account account) throws SQLException {
-        stmt.setString(1, account.getUsername().toLowerCase());
-        stmt.setString(2, account.getUsername());
+        stmt.setString(1, account.getUsername().get().toLowerCase());
+        stmt.setString(2, account.getUsername().get());
         stmt.setString(3, account.getPassword());
         stmt.setString(4, account.getIP().getHostAddress());
 

@@ -38,8 +38,8 @@ import org.spongepowered.api.entity.living.player.Player;
 public class Account {
 
     private final UUID uuid;
-    private final String username;
 
+    private String username;
     private String passwordHash;
     private InetAddress ip;
     private String email;
@@ -82,14 +82,15 @@ public class Account {
         return uuid;
     }
 
-    //todo: in FlexibleLogin nullable for force register
-    public synchronized String getUsername() {
-        return username;
+    public synchronized Optional<String> getUsername() {
+        return Optional.ofNullable(username);
     }
 
-    /* package */
+    public synchronized void setUsername(String username) {
+        this.username = username;
+    }
 
-    synchronized String getPassword() {
+    /* package */ synchronized String getPassword() {
         return passwordHash;
     }
 
