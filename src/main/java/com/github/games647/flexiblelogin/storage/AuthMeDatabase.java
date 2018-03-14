@@ -113,7 +113,7 @@ public class AuthMeDatabase extends Database {
             String password = resultSet.getString(2);
 
             InetAddress ip = parseAddress(resultSet.getString(3));
-            Timestamp lastLogin = resultSet.getTimestamp(4);
+            Timestamp lastLogin = Optional.ofNullable(resultSet.getTimestamp(4)).orElse(new Timestamp(0));
             String email = resultSet.getString(5);
 
             UUID offlineUUID = Account.getOfflineUUID(username);

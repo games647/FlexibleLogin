@@ -82,6 +82,7 @@ public class Account {
         return uuid;
     }
 
+    //todo: in FlexibleLogin nullable for force register
     public synchronized String getUsername() {
         return username;
     }
@@ -91,6 +92,7 @@ public class Account {
     synchronized String getPassword() {
         return passwordHash;
     }
+
     public synchronized void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
