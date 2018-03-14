@@ -35,7 +35,9 @@ public class AuthMeDatabase extends Database {
 
     @Override
     public Optional<Account> loadAccount(User player) {
-        return loadAccount(player.getName());
+        Optional<Account> optAcc = loadAccount(player.getName());
+        optAcc.ifPresent(account -> cache.put(player.getUniqueId(), account));
+        return optAcc;
     }
 
     @Override
