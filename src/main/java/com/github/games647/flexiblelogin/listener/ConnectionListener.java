@@ -141,7 +141,7 @@ public class ConnectionListener {
     }
 
     private boolean canAutoLogin(Account account, RemoteSource source) {
-        if (!settings.getGeneral().isIpAutoLogin() || !source.hasPermission(PomData.ARTIFACT_ID + ".no_auto_login")) {
+        if (!settings.getGeneral().isIpAutoLogin() || source.hasPermission(PomData.ARTIFACT_ID + ".no_auto_login")) {
             return false;
         }
 
