@@ -79,6 +79,7 @@ import org.spongepowered.api.scheduler.Task;
 
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
         url = PomData.URL, description = PomData.DESCRIPTION,
+        authors = {"games647", "frogocomics", "Toranktto", "sgdc3", "nalimleinad"},
         dependencies = {
                 @Dependency(id = "griefprevention", version = "[4.0.1,)", optional = true)
         })
