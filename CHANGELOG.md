@@ -3,6 +3,7 @@
 ###### 0.18
 
 * Add AuthMe database schema support (Fixes #49)
+* Add /flexiblelogin forcelogin subcommand.
 
 ###### 0.17
 
