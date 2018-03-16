@@ -70,8 +70,7 @@ public class ForceLoginCommand extends AbstractCommand {
             Optional<Player> optPlayer = Sponge.getServer().getPlayer(accountId);
             
             if(!optPlayer.isPresent()) {
-                /* TO DO: Change this message */
-                src.sendMessage(settings.getText().getForceRegisterOnline());
+                src.sendMessage(settings.getText().getForceLoginOffline());
                 return CommandResult.success();
             }
             
