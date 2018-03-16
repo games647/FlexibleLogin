@@ -34,6 +34,7 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
 
     Admin commands
     /flexiblelogin reload - reloads the config
+    /flexiblelogin forcelogin <name> - Force login the user
     /flexiblelogin unregister <name/uuid> - Deletes the account of a user
     /flexiblelogin register <name/uuid> <pass> - Register the user with a specific password
     /flexiblelogin resetpw <name> - Sets a new temp password for a new user

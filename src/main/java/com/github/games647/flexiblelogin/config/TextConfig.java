@@ -165,6 +165,17 @@ public class TextConfig {
 
     @Setting(comment = "Successful force registered an account")
     private Text forceRegisterSuccess = builder("Force register success").color(INFO_COLOR).build();
+    
+    @Setting(comment = "Force login failed because the player is logged in")
+    private Text forceLoginAlreadyLoggedIn = builder("Cannot force login player. That player is already logged in")
+            .color(INFO_COLOR).build();
+    
+    @Setting(comment = "Force login failed because the player is offline")
+    private Text forceLoginOffline = builder("Cannot force login player. That player is offline")
+            .color(INFO_COLOR).build();
+
+    @Setting(comment = "Successful force logged an account")
+    private Text forceLoginSuccess = builder("Force login success").color(INFO_COLOR).build();
 
     @Setting(comment = "Another player with the same name tried to join the server while that player is still online")
     private Text alreadyOnline = builder("You are already online").color(INFO_COLOR).build();
@@ -298,6 +309,18 @@ public class TextConfig {
 
     public Text getForceRegisterSuccess() {
         return forceRegisterSuccess;
+    }
+    
+    public Text getForceLoginOffline() {
+        return forceLoginOffline;
+    }
+    
+    public Text getForceLoginAlreadyLoggedIn() {
+        return forceLoginAlreadyLoggedIn;
+    }
+    
+    public Text getForceLoginSuccess() {
+        return forceLoginSuccess;
     }
 
     public Text getAlreadyOnline() {
