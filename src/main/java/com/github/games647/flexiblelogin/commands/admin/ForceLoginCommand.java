@@ -31,8 +31,6 @@ import com.github.games647.flexiblelogin.tasks.ForceLoginTask;
 import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.google.inject.Inject;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
@@ -66,50 +64,33 @@ public class ForceLoginCommand extends AbstractCommand {
     public CommandResult execute(CommandSource src, CommandContext args) {
         String accountId = args.<String>getOne("account").get();
 
-        if (namePredicate.test(accountId)) {
-            Optional<Player> optPlayer = Sponge.getServer().getPlayer(accountId);
-            
-            if(!optPlayer.isPresent()) {
-                src.sendMessage(settings.getText().getForceLoginOffline());
-                return CommandResult.success();
-            }
-            
-            Player player = optPlayer.get();
-
-            if (plugin.getDatabase().isLoggedIn(player)) {
-                src.sendMessage(settings.getText().getForceLoginAlreadyLoggedIn());
-                return CommandResult.success();
-            }
-
-            UUID uniqueId = player.getUniqueId();
-            if (!attemptManager.isAllowed(uniqueId)) {
-                src.sendMessage(settings.getText().getMaxAttempts());
-                String lockCommand = settings.getGeneral().getLockCommand();
-                if (!lockCommand.isEmpty()) {
-                    commandManager.process(Sponge.getServer().getConsole(), lockCommand);
-                }
-
-                Task.builder()
-                        .delay(settings.getGeneral().getWaitTime(), TimeUnit.SECONDS)
-                        .execute(() -> attemptManager.clearAttempts(uniqueId))
-                        .submit(plugin);
-                return CommandResult.success();
-            }
-
-            attemptManager.increaseAttempt(uniqueId);
-
-            Task.builder()
-                    //we are executing a SQL Query which is blocking
-                    .async()
-                    .execute(new ForceLoginTask(plugin, attemptManager, src, player))
-                    .name("Force Login Query")
-                    .submit(plugin);
-        } else {
+        if (!namePredicate.test(accountId)) {
             src.sendMessage(settings.getText().getInvalidUsername());
+            return CommandResult.success();
         }
-        
-        return CommandResult.success();
 
+        Optional<Player> optPlayer = Sponge.getServer().getPlayer(accountId);
+
+        if (!optPlayer.isPresent()) {
+            src.sendMessage(settings.getText().getForceLoginOffline());
+            return CommandResult.success();
+        }
+
+        Player player = optPlayer.get();
+
+        if (plugin.getDatabase().isLoggedIn(player)) {
+            src.sendMessage(settings.getText().getForceLoginAlreadyLoggedIn());
+            return CommandResult.success();
+        }
+
+        Task.builder()
+                //we are executing a SQL Query which is blocking
+                .async()
+                .execute(new ForceLoginTask(plugin, attemptManager, src, player))
+                .name("Force Login Query")
+                .submit(plugin);
+
+        return CommandResult.success();
     }
 
     @Override
