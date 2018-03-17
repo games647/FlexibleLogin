@@ -131,12 +131,12 @@ public class FlexibleLogin {
     }
 
     private void registerCommands() {
-        commandManager.register(this, injector.getInstance(LoginCommand.class).buildSpec(), "login", "log");
+        commandManager.register(this, injector.getInstance(LoginCommand.class).buildSpec(), "login", "log", "l");
         commandManager.register(this, injector.getInstance(RegisterCommand.class).buildSpec(), "register", "reg");
         commandManager.register(this, injector.getInstance(LogoutCommand.class).buildSpec(), "logout");
         commandManager.register(this, injector.getInstance(SetEmailCommand.class).buildSpec(), "setemail", "email");
         commandManager.register(this, injector.getInstance(ChangePasswordCommand.class)
-                .buildSpec(), "changepassword", "changepw");
+                .buildSpec(), "changepassword", "changepw", "cp");
         commandManager.register(this, injector.getInstance(ForgotPasswordCommand.class)
                 .buildSpec(), "forgotpassword", "forgot");
 
@@ -149,7 +149,7 @@ public class FlexibleLogin {
                 .child(injector.getInstance(LastLoginCommand.class).buildSpec(), "lastlogin")
                 .child(injector.getInstance(ResetPasswordCommand.class).buildSpec(), "resetpw", "resetpassword")
                 .child(injector.getInstance(ForceLoginCommand.class).buildSpec(), "forcelogin")
-                .build(), PomData.ARTIFACT_ID);
+                .build(), PomData.ARTIFACT_ID, "fl");
     }
 
     @Listener
