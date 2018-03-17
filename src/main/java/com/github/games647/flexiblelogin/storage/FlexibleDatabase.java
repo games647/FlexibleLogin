@@ -45,6 +45,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -116,6 +117,11 @@ public class FlexibleDatabase extends Database {
     @Override
     public int getRegistrationsCount(InetAddress ip) {
         return getRegistrationsCount(ip, stmt -> stmt.setBytes(1, ip.getAddress()));
+    }
+    
+    @Override
+    public Set<Account> getAccountsByIp(InetAddress ip) {
+        return getAccountsByIp(ip, stmt -> stmt.setBytes(1, ip.getAddress()));
     }
 
     @Override

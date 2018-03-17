@@ -50,14 +50,12 @@ public class ForceLoginCommand extends AbstractCommand {
     private NamePredicate namePredicate;
 
     private final AttemptManager attemptManager;
-    private final CommandManager commandManager;
 
     @Inject
     ForceLoginCommand(FlexibleLogin plugin, Logger logger, Settings settings, AttemptManager attemptManager,
             CommandManager commandManager) {
         super(plugin, logger, settings);
         this.attemptManager = attemptManager;
-        this.commandManager = commandManager;
     }
 
     @Override
