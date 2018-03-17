@@ -56,6 +56,9 @@ import com.google.inject.Injector;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -131,7 +134,13 @@ public class FlexibleLogin {
     }
 
     private void registerCommands() {
-        commandManager.register(this, injector.getInstance(LoginCommand.class).buildSpec(), "login", "log", "l");
+        List<String> loginAliases = new ArrayList<>(Arrays.asList("login", "log"));
+        
+        if(!this.config.getGeneral().isSupportSomeChatPlugins()) {
+            loginAliases.add("l");
+        }
+        
+        commandManager.register(this, injector.getInstance(LoginCommand.class).buildSpec(), loginAliases);
         commandManager.register(this, injector.getInstance(RegisterCommand.class).buildSpec(), "register", "reg");
         commandManager.register(this, injector.getInstance(LogoutCommand.class).buildSpec(), "logout");
         commandManager.register(this, injector.getInstance(SetEmailCommand.class).buildSpec(), "setemail", "email");

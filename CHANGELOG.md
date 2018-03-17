@@ -4,7 +4,7 @@
 
 * Add AuthMe database schema support (Fixes #49)
 * Add /flexiblelogin forcelogin subcommand.
-* Add /l to /login command alias.
+* Add /l to /login command alias. (can be disabled with supportSomeChatPlugins=true)
 * Add /fl to /flexiblelogin command alias.
 * Add /cp to /changepassword command alias.
 
