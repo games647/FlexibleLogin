@@ -56,6 +56,9 @@ import com.google.inject.Injector;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -131,12 +134,18 @@ public class FlexibleLogin {
     }
 
     private void registerCommands() {
-        commandManager.register(this, injector.getInstance(LoginCommand.class).buildSpec(), "login", "log");
+        List<String> loginAliases = new ArrayList<>(Arrays.asList("login", "log"));
+        
+        if(!this.config.getGeneral().isSupportSomeChatPlugins()) {
+            loginAliases.add("l");
+        }
+        
+        commandManager.register(this, injector.getInstance(LoginCommand.class).buildSpec(), loginAliases);
         commandManager.register(this, injector.getInstance(RegisterCommand.class).buildSpec(), "register", "reg");
         commandManager.register(this, injector.getInstance(LogoutCommand.class).buildSpec(), "logout");
         commandManager.register(this, injector.getInstance(SetEmailCommand.class).buildSpec(), "setemail", "email");
         commandManager.register(this, injector.getInstance(ChangePasswordCommand.class)
-                .buildSpec(), "changepassword", "changepw");
+                .buildSpec(), "changepassword", "changepw", "cp");
         commandManager.register(this, injector.getInstance(ForgotPasswordCommand.class)
                 .buildSpec(), "forgotpassword", "forgot");
 
@@ -149,7 +158,7 @@ public class FlexibleLogin {
                 .child(injector.getInstance(LastLoginCommand.class).buildSpec(), "lastlogin")
                 .child(injector.getInstance(ResetPasswordCommand.class).buildSpec(), "resetpw", "resetpassword")
                 .child(injector.getInstance(ForceLoginCommand.class).buildSpec(), "forcelogin")
-                .build(), PomData.ARTIFACT_ID);
+                .build(), PomData.ARTIFACT_ID, "fl");
     }
 
     @Listener

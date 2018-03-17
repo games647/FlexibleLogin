@@ -55,7 +55,10 @@ public class General {
 
     @Setting(comment = "Should the plugin login users automatically if it's the same account from the same IP")
     private boolean ipAutoLogin;
-
+    
+    @Setting(comment = "Should the plugin don't register alias /l (used by some chat plugins) for /login command ")
+    private boolean supportSomeChatPlugins = false;
+    
     @Setting(comment = "Should only the specified commands be protected from unauthorized access")
     private boolean commandOnlyProtection;
 
@@ -191,6 +194,10 @@ public class General {
 
     public boolean isCaseSensitiveNameCheck() {
         return caseSensitiveNameCheck;
+    }
+    
+    public boolean isSupportSomeChatPlugins() {
+        return supportSomeChatPlugins;
     }
 
     public boolean isAllowUnregistered() {
