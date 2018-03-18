@@ -30,18 +30,17 @@ import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.ForceLoginTask;
 import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.google.inject.Inject;
-import java.util.Optional;
+
 import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
-import static org.spongepowered.api.command.args.GenericArguments.string;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
+
+import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
+import static org.spongepowered.api.command.args.GenericArguments.player;
 import static org.spongepowered.api.text.Text.of;
 
 public class ForceLoginCommand extends AbstractCommand {
@@ -49,33 +48,17 @@ public class ForceLoginCommand extends AbstractCommand {
     @Inject
     private NamePredicate namePredicate;
 
-    private final AttemptManager attemptManager;
+    @Inject
+    private AttemptManager attemptManager;
 
     @Inject
-    ForceLoginCommand(FlexibleLogin plugin, Logger logger, Settings settings, AttemptManager attemptManager,
-            CommandManager commandManager) {
+    ForceLoginCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
         super(plugin, logger, settings);
-        this.attemptManager = attemptManager;
     }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
-        String accountId = args.<String>getOne("account").get();
-
-        if (!namePredicate.test(accountId)) {
-            src.sendMessage(settings.getText().getInvalidUsername());
-            return CommandResult.success();
-        }
-
-        Optional<Player> optPlayer = Sponge.getServer().getPlayer(accountId);
-
-        if (!optPlayer.isPresent()) {
-            src.sendMessage(settings.getText().getForceLoginOffline());
-            return CommandResult.success();
-        }
-
-        Player player = optPlayer.get();
-
+        Player player = args.<Player>getOne("account").get();
         if (plugin.getDatabase().isLoggedIn(player)) {
             src.sendMessage(settings.getText().getForceLoginAlreadyLoggedIn());
             return CommandResult.success();
@@ -95,7 +78,7 @@ public class ForceLoginCommand extends AbstractCommand {
     public CommandSpec buildSpec() {
         return CommandSpec.builder()
                 .executor(this)
-                .arguments(onlyOne(string(of("account"))))
+                .arguments(onlyOne(player(of("account"))))
                 .build();
     }
 }
