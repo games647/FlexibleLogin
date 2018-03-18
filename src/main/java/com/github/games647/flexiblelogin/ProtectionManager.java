@@ -49,7 +49,7 @@ import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
 import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
-import org.spongepowered.api.network.ChannelRegistrar;
+import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.SubjectData;
 import org.spongepowered.api.util.Tristate;
@@ -65,20 +65,17 @@ public class ProtectionManager {
     private static final String LOGIN_ACTION = "PlayerLogin";
     private static final int DISTANCE = 3;
 
-    private final Settings config;
-    private final TeleportHelper teleportHelper;
     private final Map<UUID, ProtectionData> protections = new HashMap<>();
 
-    private final RawDataChannel channel;
+    @Inject
+    @ChannelId(BRIDGE_CHANNEL)
+    private RawDataChannel channel;
 
     @Inject
-    ProtectionManager(FlexibleLogin plugin, Settings config,
-                      TeleportHelper teleportHelper, ChannelRegistrar channelRegistrar) {
-        this.config = config;
-        this.teleportHelper = teleportHelper;
+    private Settings config;
 
-        this.channel = channelRegistrar.createRawChannel(plugin, BRIDGE_CHANNEL);
-    }
+    @Inject
+    private TeleportHelper teleportHelper;
 
     public void protect(Player player) {
         SubjectData subjectData = player.getTransientSubjectData();

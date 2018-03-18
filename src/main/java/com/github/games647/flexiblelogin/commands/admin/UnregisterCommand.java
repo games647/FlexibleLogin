@@ -36,7 +36,6 @@ import com.google.inject.Inject;
 import java.util.UUID;
 
 import org.slf4j.Logger;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -49,8 +48,11 @@ import static org.spongepowered.api.text.Text.of;
 
 public class UnregisterCommand extends AbstractCommand {
 
-    @Inject private UUIDPredicate uuidPredicate;
-    @Inject private NamePredicate namePredicate;
+    @Inject
+    private UUIDPredicate uuidPredicate;
+
+    @Inject
+    private NamePredicate namePredicate;
 
     @Inject
     UnregisterCommand(FlexibleLogin plugin, Logger logger, Settings settings) {

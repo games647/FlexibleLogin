@@ -56,13 +56,14 @@ public class ConnectionListener {
 
     private final FlexibleLogin plugin;
     private final Settings settings;
-    private final NamePredicate namePredicate;
 
     @Inject
-    ConnectionListener(FlexibleLogin plugin, Settings settings, NamePredicate namePredicate) {
+    private NamePredicate namePredicate;
+
+    @Inject
+    ConnectionListener(FlexibleLogin plugin, Settings settings) {
         this.plugin = plugin;
         this.settings = settings;
-        this.namePredicate = namePredicate;
     }
 
     @Listener

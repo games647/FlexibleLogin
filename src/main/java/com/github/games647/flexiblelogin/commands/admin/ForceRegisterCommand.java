@@ -52,9 +52,11 @@ import static org.spongepowered.api.text.Text.of;
 
 public class ForceRegisterCommand extends AbstractCommand {
 
-    @Inject private UUIDPredicate uuidPredicate;
+    @Inject
+    private UUIDPredicate uuidPredicate;
 
-    @Inject private NamePredicate namePredicate;
+    @Inject
+    private NamePredicate namePredicate;
 
     @Inject
     ForceRegisterCommand(FlexibleLogin plugin, Logger logger, Settings settings) {

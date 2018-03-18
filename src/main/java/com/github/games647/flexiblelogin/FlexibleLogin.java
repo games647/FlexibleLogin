@@ -90,8 +90,11 @@ public class FlexibleLogin {
     private final Settings config;
     private final CommandManager commandManager;
 
-    @Inject private EventManager eventManager;
-    @Inject private PluginManager pluginManager;
+    @Inject
+    private EventManager eventManager;
+
+    @Inject
+    private PluginManager pluginManager;
 
     private ProtectionManager protectionManager;
     private Database database;
