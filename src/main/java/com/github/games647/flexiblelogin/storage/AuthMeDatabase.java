@@ -64,7 +64,7 @@ public class AuthMeDatabase extends Database {
     
     @Override
     public Set<Account> getAccountsByIp(InetAddress ip) {
-        return getAccountsByIp(ip, stmt -> stmt.setBytes(1, ip.getAddress()));
+        return getAccountsByIp(ip, stmt -> stmt.setString(1, ip.getHostAddress()));
     }
     
     @Override

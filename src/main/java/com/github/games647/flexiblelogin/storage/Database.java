@@ -208,10 +208,7 @@ public abstract class Database {
             ImmutableSet.Builder<Account> accountsBuilder = ImmutableSet.builder();
             try (ResultSet resultSet = stmt.executeQuery()) {
                 do {
-                    Optional<Account> optAccount = parseLoadResult(resultSet);
-                    if(optAccount.isPresent()) {
-                        accountsBuilder.add(optAccount.get());
-                    }
+                    parseLoadResult(resultSet).ifPresent(accountsBuilder::add);
                 } while(resultSet.next());
             }
             

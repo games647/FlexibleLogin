@@ -126,8 +126,8 @@ public class TextConfig {
     @Setting(comment = "When the player successfully created his/her account.")
     private Text accountCreated = builder("Account created").color(INFO_COLOR).build();
 
-    @Setting(comment = "When IPv4 address is invalid.")
-    private Text invalidIPv4 = builder("Invalid IPv4 address").color(WARNING_COLOR).build();
+    @Setting(comment = "When IP address is invalid.")
+    private Text invalidIP = builder("Invalid IP address").color(WARNING_COLOR).build();
 
     @Setting(comment = "Result message for the accounts admin command")
     private TextTemplate accountsList = of(
@@ -135,7 +135,7 @@ public class TextConfig {
     );
 
     @Setting(comment = "When an accounts list is empty")
-    private Text accountsListEmpty = builder("There is no accounts").color(WARNING_COLOR).build();
+    private Text accountsListEmpty = builder("There are no accounts").color(WARNING_COLOR).build();
 
     @Setting(comment = "When an account hasn't IP in database")
     private Text accountsListNoIP = builder("That account doesn't played before.").color(WARNING_COLOR).build();
@@ -329,8 +329,8 @@ public class TextConfig {
         return forceLoginOffline;
     }
 
-    public Text getInvalidIPv4() {
-        return invalidIPv4;
+    public Text getInvalidIP() {
+        return invalidIP;
     }
 
     public Text getAccountsListEmpty() {
