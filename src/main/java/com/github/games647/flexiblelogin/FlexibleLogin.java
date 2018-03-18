@@ -51,7 +51,6 @@ import com.github.games647.flexiblelogin.storage.Database;
 import com.github.games647.flexiblelogin.storage.FlexibleDatabase;
 import com.github.games647.flexiblelogin.tasks.MessageTask;
 import com.google.common.util.concurrent.UncheckedExecutionException;
-import com.google.inject.ConfigurationException;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
@@ -101,20 +100,12 @@ public class FlexibleLogin {
     private Hasher hasher;
 
     @Inject
-    FlexibleLogin(Logger logger, Injector injector, Settings settings) {
+    FlexibleLogin(Logger logger, Injector injector, Settings settings, CommandManager commandManager) {
         this.logger = logger;
         this.config = settings;
 
-        try {
-            //if we are on old sponge version the command manager doesn't exist for injections
-            injector.getBinding(CommandManager.class);
-        } catch (ConfigurationException configEx) {
-            injector = injector.createChildInjector(binder -> binder.bind(CommandManager.class)
-                    .toInstance(Sponge.getCommandManager()));
-        }
-
         this.injector = injector;
-        this.commandManager = Sponge.getCommandManager();
+        this.commandManager = commandManager;
     }
 
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
