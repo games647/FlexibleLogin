@@ -31,6 +31,7 @@ import com.github.games647.flexiblelogin.commands.LoginCommand;
 import com.github.games647.flexiblelogin.commands.LogoutCommand;
 import com.github.games647.flexiblelogin.commands.RegisterCommand;
 import com.github.games647.flexiblelogin.commands.SetEmailCommand;
+import com.github.games647.flexiblelogin.commands.admin.AccountsCommand;
 import com.github.games647.flexiblelogin.commands.admin.ForceLoginCommand;
 import com.github.games647.flexiblelogin.commands.admin.ForceRegisterCommand;
 import com.github.games647.flexiblelogin.commands.admin.LastLoginCommand;
@@ -158,6 +159,7 @@ public class FlexibleLogin {
                 .child(injector.getInstance(LastLoginCommand.class).buildSpec(), "lastlogin")
                 .child(injector.getInstance(ResetPasswordCommand.class).buildSpec(), "resetpw", "resetpassword")
                 .child(injector.getInstance(ForceLoginCommand.class).buildSpec(), "forcelogin")
+                .child(injector.getInstance(AccountsCommand.class).buildSpec(), "accounts", "acc")
                 .build(), PomData.ARTIFACT_ID, "fl");
     }
 

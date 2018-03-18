@@ -108,8 +108,8 @@ public class TextConfig {
             INFO_COLOR, "Deleted account of ", TextColors.YELLOW, arg("account").optional(), "!"
     );
 
-    @Setting(comment = "Kick message if the case sensitive compare between the already registered " +
-            "and the joining player failed")
+    @Setting(comment = "Kick message if the case sensitive compare between the already registered "
+            + "and the joining player failed")
     private TextTemplate invalidCase = of(
             WARNING_COLOR, "Invalid username. Please join as ", TextColors.YELLOW, arg("username").optional(), "!"
     );
@@ -125,6 +125,20 @@ public class TextConfig {
 
     @Setting(comment = "When the player successfully created his/her account.")
     private Text accountCreated = builder("Account created").color(INFO_COLOR).build();
+
+    @Setting(comment = "When IP address is invalid.")
+    private Text invalidIP = builder("Invalid IP address").color(WARNING_COLOR).build();
+
+    @Setting(comment = "Result message for the accounts admin command")
+    private TextTemplate accountsList = of(
+            INFO_COLOR, arg("username").optional(), "'s accounts: ", arg("accounts")
+    );
+
+    @Setting(comment = "When an accounts list is empty")
+    private Text accountsListEmpty = builder("There are no accounts").color(WARNING_COLOR).build();
+
+    @Setting(comment = "When an account hasn't IP in database")
+    private Text accountsListNoIP = builder("That account doesn't played before.").color(WARNING_COLOR).build();
 
     @Setting(comment = "When a secret-key is created (header).")
     private TextTemplate keyGenerated = of(
@@ -165,11 +179,11 @@ public class TextConfig {
 
     @Setting(comment = "Successful force registered an account")
     private Text forceRegisterSuccess = builder("Force register success").color(INFO_COLOR).build();
-    
+
     @Setting(comment = "Force login failed because the player is logged in")
     private Text forceLoginAlreadyLoggedIn = builder("Cannot force login player. That player is already logged in")
             .color(INFO_COLOR).build();
-    
+
     @Setting(comment = "Force login failed because the player is offline")
     private Text forceLoginOffline = builder("Cannot force login player. That player is offline")
             .color(INFO_COLOR).build();
@@ -310,15 +324,27 @@ public class TextConfig {
     public Text getForceRegisterSuccess() {
         return forceRegisterSuccess;
     }
-    
+
     public Text getForceLoginOffline() {
         return forceLoginOffline;
     }
-    
+
+    public Text getInvalidIP() {
+        return invalidIP;
+    }
+
+    public Text getAccountsListEmpty() {
+        return accountsListEmpty;
+    }
+
+    public Text getAccountsListNoIP() {
+        return accountsListNoIP;
+    }
+
     public Text getForceLoginAlreadyLoggedIn() {
         return forceLoginAlreadyLoggedIn;
     }
-    
+
     public Text getForceLoginSuccess() {
         return forceLoginSuccess;
     }
@@ -333,6 +359,10 @@ public class TextConfig {
 
     public Text getUnregisteredKick() {
         return unregisteredKick;
+    }
+
+    public Text getAccountsList(String username, String accounts) {
+        return accountsList.apply(ImmutableMap.of("username", username, "accounts", accounts)).build();
     }
 
     public Text getAccountDeleted(String account) {

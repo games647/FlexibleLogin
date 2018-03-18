@@ -7,6 +7,7 @@
 * Add /l to /login command alias. (can be disabled with supportSomeChatPlugins=true)
 * Add /fl to /flexiblelogin command alias.
 * Add /cp to /changepassword command alias.
+* Add /flexiblelogin accounts subcommand.
 
 ###### 0.17
 

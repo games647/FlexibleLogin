@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -60,7 +61,12 @@ public class AuthMeDatabase extends Database {
     public int getRegistrationsCount(InetAddress ip) {
         return getRegistrationsCount(ip, stmt -> stmt.setString(1, ip.getHostAddress()));
     }
-
+    
+    @Override
+    public Set<Account> getAccountsByIp(InetAddress ip) {
+        return getAccountsByIp(ip, stmt -> stmt.setString(1, ip.getHostAddress()));
+    }
+    
     @Override
     public boolean createAccount(Account account) {
         try (Connection conn = dataSource.getConnection();

@@ -4,6 +4,7 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.SQLConfig;
 import com.github.games647.flexiblelogin.config.SQLConfig.Type;
 import com.github.games647.flexiblelogin.config.Settings;
+import com.google.common.collect.ImmutableSet;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +18,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -134,6 +137,7 @@ public abstract class Database {
     public abstract boolean save(Account account);
     public abstract boolean createAccount(Account account);
     public abstract int getRegistrationsCount(InetAddress ip);
+    public abstract Set<Account> getAccountsByIp(InetAddress ip);
 
     protected abstract Optional<Account> parseLoadResult(ResultSet resultSet) throws SQLException;
 
@@ -194,6 +198,26 @@ public abstract class Database {
         }
 
         return -1;
+    }
+    
+    protected Set<Account> getAccountsByIp(InetAddress ip, StatementConsumer idSetter) {
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + tableName + " WHERE IP=?")) {
+            idSetter.accept(stmt);
+
+            ImmutableSet.Builder<Account> accountsBuilder = ImmutableSet.builder();
+            try (ResultSet resultSet = stmt.executeQuery()) {
+                do {
+                    parseLoadResult(resultSet).ifPresent(accountsBuilder::add);
+                } while(resultSet.next());
+            }
+            
+            return accountsBuilder.build();
+        } catch (SQLException sqlEx) {
+            logger.error("Error getting accounts of player", sqlEx);
+        }
+
+        return Collections.emptySet();
     }
 
     public void close() {
