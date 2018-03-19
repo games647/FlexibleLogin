@@ -23,23 +23,23 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
 
 ### Commands
 
-    /register <password> <password> - Registers using a specific password
+    /reg /register <password> <password> - Registers using a specific password
     /register - Generates your secret code for TOTP
-    /changepassword <password> <password> - Changes your current password
-    /login <password/code> - Login using your password or time based code
+    /changepw /cp /changepassword <password> <password> - Changes your current password
+    /log /l /login <password/code> - Login using your password or time based code
     /logout - Logs you out
-    /setemail - Sets your email address
-    /forgotpassword - Sends a recovery email to the email address
+    /email /setemail - Sets your email address
+    /forgot /forgotpassword - Sends a recovery email to the email address
     /unregister <uuid/name> - delete an account
 
     Admin commands
-    /flexiblelogin reload - reloads the config
+    /flexiblelogin <reload/rl> - reloads the config
     /flexiblelogin forcelogin <name> - Force login the user
-    /flexiblelogin accounts/acc <name/ip> - Get list of user accounts
-    /flexiblelogin unregister <name/uuid> - Deletes the account of a user
-    /flexiblelogin register <name/uuid> <pass> - Register the user with a specific password
-    /flexiblelogin resetpw <name> - Sets a new temp password for a new user
-
+    /flexiblelogin <accounts/acc> <name/ip> - Get list of user accounts
+    /flexiblelogin <unregister/unreg> <name/uuid> - Deletes the account of a user
+    /flexiblelogin <register/reg> <name/uuid> <pass> - Register the user with a specific password
+    /flexiblelogin <resetpw/resetpassword> <name> - Sets a new temp password for a new user
+    
 ### Permissions
 
     flexiblelogin.admin - Permission to delete accocunts

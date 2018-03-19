@@ -42,6 +42,10 @@ public class BcryptHasher implements Hasher {
 
     @Override
     public boolean checkPassword(String passwordHash, String userInput) {
+        if (passwordHash == null || passwordHash.isEmpty()) {
+            return false;
+        }
+
         String hash = passwordHash;
         if (hash.startsWith("$2y")) {
             hash = "$2a" + hash.substring(3);
