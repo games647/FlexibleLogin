@@ -201,6 +201,9 @@ public class TextConfig {
     private Text unregisteredKick = builder("You cannot connect because you have to register on the website.")
             .color(INFO_COLOR).build();
 
+    @Setting(comment = "Account storage was deleted by admin command")
+    private Text tableCleared = builder("Database cleared").color(INFO_COLOR).build();
+
     public Text getPlayersOnly() {
         return playersOnly;
     }
@@ -359,6 +362,10 @@ public class TextConfig {
 
     public Text getUnregisteredKick() {
         return unregisteredKick;
+    }
+
+    public Text getTableCleared() {
+        return tableCleared;
     }
 
     public Text getAccountsList(String username, String accounts) {

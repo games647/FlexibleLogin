@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -126,6 +127,16 @@ public abstract class Database {
         }
 
         return Optional.empty();
+    }
+
+    public void clearTable() {
+        cache.clear();
+
+        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("DELETE FROM " + tableName);
+        } catch (SQLException sqlEx) {
+            logger.error("Error deleting user account", sqlEx);
+        }
     }
 
     public abstract boolean deleteAccount(String playerName);

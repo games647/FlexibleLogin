@@ -42,6 +42,8 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.scheduler.Task;
 
+import static org.spongepowered.api.command.args.GenericArguments.flags;
+import static org.spongepowered.api.command.args.GenericArguments.none;
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
 import static org.spongepowered.api.command.args.GenericArguments.string;
 import static org.spongepowered.api.text.Text.of;
@@ -61,11 +63,17 @@ public class UnregisterCommand extends AbstractCommand {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
+        if (args.hasAny("a")) {
+            Task.builder().execute(plugin.getDatabase()::clearTable).submit(plugin);
+            src.sendMessage(settings.getText().getTableCleared());
+            return CommandResult.success();
+        }
+
         String account = args.<String>getOne("account").get();
         if (uuidPredicate.test(account)) {
             //check if the account is an UUID
             UUID uuid = UUID.fromString(account);
-           Task.builder()
+            Task.builder()
                     //Async as it could run a SQL query
                     .async()
                     .execute(new UnregisterTask(plugin, src, uuid))
@@ -82,7 +90,6 @@ public class UnregisterCommand extends AbstractCommand {
         }
 
         src.sendMessage(settings.getText().getUnregisterFailed());
-
         return CommandResult.success();
     }
 
@@ -90,7 +97,10 @@ public class UnregisterCommand extends AbstractCommand {
     public CommandSpec buildSpec() {
         return CommandSpec.builder()
                 .executor(this)
-                .arguments(onlyOne(string(of("account"))))
+                .arguments(
+                        flags().flag("a").buildWith(none()),
+                        onlyOne(string(of("account")))
+                )
                 .build();
     }
 }
