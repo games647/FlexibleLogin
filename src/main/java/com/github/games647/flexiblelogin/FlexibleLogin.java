@@ -80,7 +80,7 @@ import org.spongepowered.api.scheduler.Task;
         url = PomData.URL, description = PomData.DESCRIPTION,
         authors = {"games647", "Toranktto", "frogocomics", "sgdc3", "nalimleinad"},
         dependencies = {
-                @Dependency(id = "griefprevention", version = "[4.0.1,)", optional = true)
+                @Dependency(id = "griefprevention", optional = true)
         })
 public class FlexibleLogin {
 
