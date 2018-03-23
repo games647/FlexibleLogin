@@ -71,7 +71,7 @@ import org.spongepowered.api.scheduler.Task;
 @Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
         url = PomData.URL, description = PomData.DESCRIPTION,
         dependencies = {
-                @Dependency(id = "griefprevention", version = "[4.0.1,)", optional = true)
+                @Dependency(id = "griefprevention", optional = true)
         })
 public class FlexibleLogin {
 
