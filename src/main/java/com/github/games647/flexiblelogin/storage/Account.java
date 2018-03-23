@@ -25,7 +25,7 @@
  */
 package com.github.games647.flexiblelogin.storage;
 
-import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.hasher.Hasher;
 
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
@@ -70,8 +70,8 @@ public class Account {
         this.lastLogin = lastLogin;
     }
 
-    public synchronized boolean checkPassword(FlexibleLogin plugin, String userInput) throws Exception {
-        return plugin.getHasher().checkPassword(passwordHash, userInput);
+    public synchronized boolean checkPassword(Hasher hasher, String userInput) throws Exception {
+        return hasher.checkPassword(passwordHash, userInput);
     }
 
     public static UUID getOfflineUUID(String playerName) {
@@ -122,9 +122,6 @@ public class Account {
         this.email = email;
     }
 
-    //these methods have to thread-safe as they will be accessed
-
-    //through Async (PlayerChatEvent/LoginTask) and sync methods
     public synchronized boolean isLoggedIn() {
         return loggedIn;
     }

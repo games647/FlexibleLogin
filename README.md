@@ -26,19 +26,19 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
     /reg /register <password> <password> - Registers using a specific password
     /register - Generates your secret code for TOTP
     /changepw /cp /changepassword <password> <password> - Changes your current password
-    /log /l /login <password/code> - Login using your password or time based code
+    /log /l /login <password|code> - Login using your password or time based code
     /logout - Logs you out
     /email /setemail - Sets your email address
     /forgot /forgotpassword - Sends a recovery email to the email address
-    /unregister <uuid/name> - delete an account
+    /unregister <uuid|name> - delete an account
 
     Admin commands
-    /flexiblelogin <reload/rl> - reloads the config
+    /flexiblelogin <reload|rl> - reloads the config
     /flexiblelogin forcelogin <name> - Force login the user
-    /flexiblelogin <accounts/acc> <name/ip> - Get list of user accounts
-    /flexiblelogin <unregister/unreg> <name/uuid> [-a] - Deletes the account of a user or all using the -a flag
-    /flexiblelogin <register/reg> <name/uuid> <pass> - Register the user with a specific password
-    /flexiblelogin <resetpw/resetpassword> <name> - Sets a new temp password for a new user
+    /flexiblelogin <accounts|acc> <name|ip> - Get list of user accounts
+    /flexiblelogin <unregister|unreg> <name|uuid|-a> - Deletes the account of a user or all using the -a flag
+    /flexiblelogin <register|reg> <name|uuid> <pass> - Register the user with a specific password
+    /flexiblelogin <resetpw|resetpassword> <name> - Sets a new temp password for a new user
     
 ### Permissions
 
@@ -49,7 +49,7 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
     flexiblelogin.command.register - Use the /register command
     flexiblelogin.command.email - Use the /setemail command
     flexiblelogin.command.forgot - Use the /forgot command
-    flexiblelogin.no_auto_login - Players who have this permissions won't be auto logged in by the ip auto login feature
+    flexiblelogin.no_auto_login - Players with this won't be auto logged in by the ip auto login feature
     flexiblelogin.bypass - Users who have this permission can skip authentication
 
 ### Config

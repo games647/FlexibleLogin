@@ -59,12 +59,12 @@ public class LoginTask implements Runnable {
 
         try {
             Account account = optAccount.get();
-            if (account.checkPassword(plugin, userInput)) {
+            if (account.checkPassword(plugin.getHasher(), userInput)) {
                 attemptManager.clearAttempts(player.getUniqueId());
 
-                account.setLoggedIn(true);
                 //update the ip
                 account.setIP(player.getConnection().getAddress().getAddress());
+                account.setLoggedIn(true);
 
                 player.sendMessage(plugin.getConfigManager().getText().getLoggedIn());
                 Task.builder().execute(() -> plugin.getProtectionManager().unprotect(player)).submit(plugin);
