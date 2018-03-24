@@ -162,7 +162,7 @@ public class FlexibleDatabase extends Database {
     private void writeAccount(PreparedStatement stmt, Account account) throws SQLException {
         stmt.setString(1, account.getUsername().orElse(""));
         stmt.setString(2, account.getPassword());
-        stmt.setObject(3, account.getIP().getAddress());
+        stmt.setObject(3, account.getIP().map(InetAddress::getAddress).orElse(new byte[0]));
 
         stmt.setTimestamp(4, Timestamp.from(account.getLastLogin()));
         stmt.setString(5, account.getEmail().orElse(null));

@@ -98,8 +98,8 @@ public class Account {
         this.passwordHash = passwordHash;
     }
 
-    public synchronized InetAddress getIP() {
-        return ip;
+    public synchronized Optional<InetAddress> getIP() {
+        return Optional.ofNullable(ip);
     }
 
     public synchronized void setIP(InetAddress ip) {

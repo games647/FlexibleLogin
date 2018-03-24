@@ -31,21 +31,24 @@ import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.github.games647.flexiblelogin.validation.UUIDPredicate;
 import com.google.common.net.InetAddresses;
 import com.google.inject.Inject;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
-import static org.spongepowered.api.command.args.GenericArguments.string;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.scheduler.Task;
+
+import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
+import static org.spongepowered.api.command.args.GenericArguments.string;
 import static org.spongepowered.api.text.Text.of;
 
 public class AccountsCommand extends AbstractCommand {
@@ -69,18 +72,14 @@ public class AccountsCommand extends AbstractCommand {
             Task.builder()
                     //we are executing a SQL Query which is blocking
                     .async()
-                    .execute(() -> {
-                        queryAccountsByIP(src, accountId);
-                    })
+                    .execute(() -> queryAccountsByIP(src, accountId))
                     .submit(plugin);
             return CommandResult.success();
         } else if (namePredicate.test(accountId)) {
             Task.builder()
                     //we are executing a SQL Query which is blocking
                     .async()
-                    .execute(() -> {
-                        queryAccountsByName(src, accountId);
-                    })
+                    .execute(() -> queryAccountsByName(src, accountId))
                     .submit(plugin);
             return CommandResult.success();
         }
@@ -90,7 +89,7 @@ public class AccountsCommand extends AbstractCommand {
     }
 
     private void queryAccountsByIP(CommandSource src, String ipString) {
-        InetAddress ip = null;
+        InetAddress ip;
 
         try {
             ip = InetAddress.getByName(ipString);
@@ -110,15 +109,14 @@ public class AccountsCommand extends AbstractCommand {
             return;
         }
 
-        InetAddress ip = optAccount.get().getIP();
-
-        if (ip == null) {
-            src.sendMessage(plugin.getConfigManager().getText().getAccountsListNoIP());
+        Optional<InetAddress> optIp = optAccount.get().getIP();
+        if (optIp.isPresent()) {
+            Set<Account> accounts = plugin.getDatabase().getAccountsByIp(optIp.get());
+            sendAccountNames(src, username, accounts);
             return;
         }
 
-        Set<Account> accounts = plugin.getDatabase().getAccountsByIp(ip);
-        sendAccountNames(src, username, accounts);
+        src.sendMessage(plugin.getConfigManager().getText().getAccountsListNoIP());
     }
 
     private void sendAccountNames(CommandSource src, String username, Set<Account> accounts) {

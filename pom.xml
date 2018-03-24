@@ -46,8 +46,6 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
         <junit.jupiter.version>5.0.3</junit.jupiter.version>
-
-        <spongeVersion>6.1.0-20170814.171949-4</spongeVersion>
     </properties>
 
     <build>
@@ -174,7 +172,7 @@
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
-            <version>${spongeVersion}</version>
+            <version>7.0.0</version>
             <scope>provided</scope>
         </dependency>
 

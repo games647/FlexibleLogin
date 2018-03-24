@@ -148,7 +148,8 @@ public class ConnectionListener {
 
         InetAddress newIp = source.getConnection().getAddress().getAddress();
         Instant now = Instant.now();
-        return Objects.equals(account.getIP(), newIp) && Duration.between(account.getLastLogin(), now).toHours() < 12;
+        InetAddress ip = account.getIP().orElse(null);
+        return Objects.equals(ip, newIp) && Duration.between(account.getLastLogin(), now).toHours() < 12;
     }
 
     private void scheduleTimeoutTask(Player player) {

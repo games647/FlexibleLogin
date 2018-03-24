@@ -106,7 +106,7 @@ public class AuthMeDatabase extends Database {
         stmt.setString(1, account.getUsername().get().toLowerCase());
         stmt.setString(2, account.getUsername().get());
         stmt.setString(3, account.getPassword());
-        stmt.setString(4, account.getIP().getHostAddress());
+        stmt.setString(4, account.getIP().map(InetAddress::getHostAddress).orElse(null));
 
         stmt.setTimestamp(5, Timestamp.from(account.getLastLogin()));
         stmt.setString(6, account.getEmail().orElse(null));
