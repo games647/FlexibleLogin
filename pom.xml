@@ -73,7 +73,6 @@
                             <shadedPattern>flexiblelogin.googleauth</shadedPattern>
                         </relocation>
                     </relocations>
-                    <minimizeJar>true</minimizeJar>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                 </configuration>
                 <executions>

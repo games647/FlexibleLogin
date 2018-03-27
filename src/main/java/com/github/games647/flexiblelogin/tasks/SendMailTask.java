@@ -55,7 +55,6 @@ public class SendMailTask implements Runnable {
 
     @Override
     public void run() {
-        //we only need to send the message so we use smtps
         try (Transport transport = session.getTransport()) {
             EmailConfig emailConfig = plugin.getConfigManager().getGeneral().getEmail();
 

@@ -151,9 +151,11 @@ public class ForgotPasswordCommand extends AbstractCommand {
         properties.setProperty("mail.smtp.starttls.enable", String.valueOf(true));
         properties.setProperty("mail.smtp.ssl.checkserveridentity", "true");
 
-        properties.setProperty("mail.transport.protocol", "flexiblelogin");
+        //we only need to send the message so we use smtps
+        properties.setProperty("mail.transport.protocol", "smtps");
 
         Session session = Session.getDefaultInstance(properties);
+
         //explicit override stmp provider because of issues with relocation
         try {
             session.setProvider(new Provider(Type.TRANSPORT, "smtps",
