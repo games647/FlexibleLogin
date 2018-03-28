@@ -25,10 +25,10 @@
  */
 package com.github.games647.flexiblelogin.commands;
 
-import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.EmailConfig;
 import com.github.games647.flexiblelogin.config.Settings;
+import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.tasks.SendMailTask;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
@@ -39,12 +39,11 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Supplier;
 
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Provider;
-import javax.mail.Provider.Type;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -153,26 +152,11 @@ public class ForgotPasswordCommand extends AbstractCommand {
 
         //we only need to send the message so we use smtps
         properties.setProperty("mail.transport.protocol", "smtps");
-
-        Session session = Session.getDefaultInstance(properties);
-
-        //explicit override stmp provider because of issues with relocation
-        try {
-            session.setProvider(new Provider(Type.TRANSPORT, "smtps",
-                    "flexiblelogin.sun.mail.smtp.SMTPSSLTransport", "Oracle", "1.6.0"));
-
-            session.setProvider(new Provider(Type.TRANSPORT, "flexiblelogin",
-                    "flexiblelogin.sun.mail.smtp.SMTPSSLTransport", "Oracle", "1.6.0"));
-        } catch (NoSuchProviderException noSuchProvider) {
-            logger.error("Failed to add SMTP provider", noSuchProvider);
-        }
-
-        return session;
+        return Session.getDefaultInstance(properties);
     }
 
     private MimeMessage buildMessage(User player, String email, String newPassword, EmailConfig emailConfig,
-                                     Session session)
-            throws MessagingException, UnsupportedEncodingException {
+                                     Session session) throws MessagingException, UnsupportedEncodingException {
         String serverName = Sponge.getServer().getBoundAddress()
                 .map(sa -> sa.getAddress().getHostAddress())
                 .orElse("Minecraft Server");
@@ -192,15 +176,15 @@ public class ForgotPasswordCommand extends AbstractCommand {
         message.setSentDate(Calendar.getInstance().getTime());
         String textContent = emailConfig.getText().apply(variables).toText().toPlain();
 
-        //plain text
-        MimeBodyPart textPart = new MimeBodyPart();
-        textPart.setContent(textContent, "text/html");
-
         //html part
-        MimeBodyPart htmlPart = new MimeBodyPart();
-        htmlPart.setContent(textContent, "text/html");
+        BodyPart htmlPart = new MimeBodyPart();
+        htmlPart.setContent(textContent, "text/html; charset=UTF-8");
 
-        MimeMultipart alternative = new MimeMultipart("alternative");
+        //plain text
+        BodyPart textPart = new MimeBodyPart();
+        textPart.setContent(textContent.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " "), "text/plain; charset=UTF-8");
+
+        Multipart alternative = new MimeMultipart("alternative");
         alternative.addBodyPart(htmlPart);
         alternative.addBodyPart(textPart);
         message.setContent(alternative);
