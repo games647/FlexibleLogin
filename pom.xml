@@ -65,6 +65,17 @@
                             <pattern>com.warrenstrange.googleauth</pattern>
                             <shadedPattern>flexiblelogin.googleauth</shadedPattern>
                         </relocation>
+
+                        <!--Relocate these packages, because the LaunchWrapper in SpongeVanilla ignores all classes
+                        in a sun.* package-->
+                        <relocation>
+                            <pattern>com.sun.mail</pattern>
+                            <shadedPattern>flexiblelogin.mail</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.sun.activation</pattern>
+                            <shadedPattern>flexiblelogin.activation</shadedPattern>
+                        </relocation>
                     </relocations>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                 </configuration>
@@ -192,6 +203,10 @@
                 <exclusion>
                     <groupId>commons-codec</groupId>
                     <artifactId>commons-codec</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

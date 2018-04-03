@@ -44,6 +44,9 @@ import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.NoSuchProviderException;
+import javax.mail.Provider;
+import javax.mail.Provider.Type;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -152,7 +155,17 @@ public class ForgotPasswordCommand extends AbstractCommand {
 
         //we only need to send the message so we use smtps
         properties.setProperty("mail.transport.protocol", "smtps");
-        return Session.getDefaultInstance(properties);
+
+        //explicit override stmp provider because of issues with relocation
+        Session session = Session.getDefaultInstance(properties);
+        try {
+            session.setProvider(new Provider(Type.TRANSPORT, "smtps",
+                    "flexiblelogin.mail.smtp.SMTPSSLTransport", "Oracle", "1.6.0"));
+        } catch (NoSuchProviderException noSuchProvider) {
+            logger.error("Failed to add SMTP provider", noSuchProvider);
+        }
+
+        return session;
     }
 
     private MimeMessage buildMessage(User player, String email, String newPassword, EmailConfig emailConfig,
