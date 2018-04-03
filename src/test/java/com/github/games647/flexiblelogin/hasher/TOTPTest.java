@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TOTPTest {
 
     private final IGoogleAuthenticator specImpl = new GoogleAuthenticator(new GoogleAuthenticatorConfigBuilder()
-            .setHmacHashFunction(HmacHashFunction.HmacSHA256)
+            .setHmacHashFunction(HmacHashFunction.HmacSHA512)
             //HmacSHA512 is not yet compatible with Base64
             .setKeyRepresentation(KeyRepresentation.BASE64)
             .build());
