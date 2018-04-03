@@ -27,23 +27,29 @@ package com.github.games647.flexiblelogin.hasher;
 
 import com.google.common.primitives.Ints;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
+import com.warrenstrange.googleauth.GoogleAuthenticatorConfig;
 import com.warrenstrange.googleauth.GoogleAuthenticatorConfig.GoogleAuthenticatorConfigBuilder;
+import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
+import com.warrenstrange.googleauth.GoogleAuthenticatorKey.Builder;
+import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import com.warrenstrange.googleauth.HmacHashFunction;
 import com.warrenstrange.googleauth.IGoogleAuthenticator;
 import com.warrenstrange.googleauth.KeyRepresentation;
 
 public class TOTP implements Hasher {
 
-    private static final String URL_FORMAT = "otpauth://totp/%s@%s%%3Fsecret%%3D%s"; //data
-
-    private final IGoogleAuthenticator gAuth = new GoogleAuthenticator(new GoogleAuthenticatorConfigBuilder()
-            .setHmacHashFunction(HmacHashFunction.HmacSHA256)
+    private final GoogleAuthenticatorConfig config = new GoogleAuthenticatorConfigBuilder()
+            .setHmacHashFunction(HmacHashFunction.HmacSHA512)
             //HmacSHA512 is not yet compatible with Base64
             .setKeyRepresentation(KeyRepresentation.BASE64)
-            .build());
+            .build();
 
-    public static String getQRBarcodeURL(String user, String host, String secret) {
-        return String.format(URL_FORMAT, user, host, secret);
+    private final IGoogleAuthenticator gAuth = new GoogleAuthenticator(config);
+
+    public String getGoogleBarcodeURL(String user, String host, String secret) {
+        //this returns the google chart URL
+        GoogleAuthenticatorKey key = new Builder(secret).setConfig(config).build();
+        return GoogleAuthenticatorQRGenerator.getOtpAuthURL(user, host, key);
     }
 
     @Override

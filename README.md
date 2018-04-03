@@ -2,7 +2,7 @@
 
 ## **Security Notice:** If you use a version 0.16.X version, update to 0.16.5+ or disable the change password command. 0.16.5 fixed this security bug occurred in this [commit](https://github.com/games647/FlexibleLogin/commit/43f74a466e73b0f2cfa522b5bfd68480010a7934). Older versions before 0.16 are not affected.
 
-### Description
+## Description
 
 A Sponge Minecraft server plugin for second authentication. It has a built-in
 TOTP support.
@@ -11,17 +11,17 @@ Do you want to let your players protect their account (from hackers/login steale
 while the session server is down. You can use this little plugin. You can protect your account with 
 a password you choose or with a time based password created from a secret key, generated just for you.
 
-### Requirements
+## Requirements
 
 * Sponge 7.0+
 * Java 8+
 
-### Language
+## Language
 
 This plugin has configurable language files. By default it only ships the english version of it, but there are community
 driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wiki
 
-### Commands
+## Commands
 
     /reg /register <password> <password> - Registers using a specific password
     /register - Generates your secret code for TOTP
@@ -40,7 +40,7 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
     /flexiblelogin <register|reg> <name|uuid> <pass> - Register the user with a specific password
     /flexiblelogin <resetpw|resetpassword> <name> - Sets a new temp password for a new user
     
-### Permissions
+## Permissions
 
     flexiblelogin.admin - Permission to delete accocunts
     flexiblelogin.command.login - Use the /login command
@@ -52,7 +52,7 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
     flexiblelogin.no_auto_login - Players with this won't be auto logged in by the ip auto login feature
     flexiblelogin.bypass - Users who have this permission can skip authentication
 
-### Config
+## Config
 
     # Should unregistered player be able to join the server?
     allowUnregistered=true
@@ -166,16 +166,27 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
     # How seconds the user should wait after the user tried to make too many attempts
     waitTime=300
 
-### Download
+## Downloads
 
 https://github.com/games647/FlexibleLogin/releases
 
-### Screenshots:
+###  Development builds
 
-#### TOTP Key generation (/register)
+Development builds of this project can be acquired at the provided CI (continuous integration) server. It contains the
+latest changes from the Source-Code in preparation for the following release. This means they could contain new
+features, bug fixes and other changes since the last release.
+
+Nevertheless builds are only tested using a small set of automated and minor manual tests. Therefore they **could**
+contain new bugs and are likely to be less stable than released versions.
+
+https://ci.codemc.org/job/Games647/job/FlexibleLogin/changes
+
+## Screenshots:
+
+### TOTP Key generation (/register)
 ![Minecraft image picture](https://i.imgur.com/K2GDqfW.png)
 
-#### Android App Google Authenticator (IOS App exists too)
+### Android App Google Authenticator (IOS App exists too)
 ![Google authenticator](https://i.imgur.com/Zz6RkdY.png)
 You can see there a time generated code which can be used for the login process. `/login <code>`
 Additionally it display your user account name and the server ip.

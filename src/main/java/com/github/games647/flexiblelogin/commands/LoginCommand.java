@@ -73,7 +73,6 @@ public class LoginCommand extends AbstractCommand {
         checkPlayerPermission(src);
 
         Player player = (Player) src;
-
         if (plugin.getDatabase().isLoggedIn(player)) {
             src.sendMessage(settings.getText().getAlreadyLoggedIn());
         }

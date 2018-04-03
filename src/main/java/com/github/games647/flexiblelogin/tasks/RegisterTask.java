@@ -25,10 +25,10 @@
  */
 package com.github.games647.flexiblelogin.tasks;
 
-import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.hasher.TOTP;
+import com.github.games647.flexiblelogin.storage.Account;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -75,7 +75,7 @@ public class RegisterTask implements Runnable {
                 plugin.getDatabase().addCache(player.getUniqueId(), createdAccount);
 
                 //thread-safe, because it's immutable after config load
-                if (plugin.getConfigManager().getGeneral().getHashAlgo() ==HashingAlgorithm.TOTP) {
+                if (plugin.getConfigManager().getGeneral().getHashAlgo() == HashingAlgorithm.TOTP) {
                     sendTotpHint(hashedPassword);
                 }
 
@@ -104,7 +104,9 @@ public class RegisterTask implements Runnable {
                 .map(InetAddress::getCanonicalHostName)
                 .orElse("Minecraft Server");
         try {
-            URL barcodeUrl = new URL(TOTP.getQRBarcodeURL(player.getName(), hostName, secretCode));
+            TOTP hasher = (TOTP) plugin.getHasher();
+
+            URL barcodeUrl = new URL(hasher.getGoogleBarcodeURL(player.getName(), hostName, secretCode));
             Text keyGenerated = plugin.getConfigManager().getText().getKeyGenerated(secretCode);
             player.sendMessage(keyGenerated);
             player.sendMessage(plugin.getConfigManager().getText().getScanQr().toBuilder()
