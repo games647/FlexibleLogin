@@ -2,6 +2,12 @@
 
 ###### 0.18
 
+* Build TOTP URLs with GoogleAuthenticator to expose server authenticator configuration
+* Relocate mail packages, because they are ignored by LaunchWrapper (Related #125)
+* Fix force register has nullable IP addresses (Fixes #124)
+* Remove GriefPrevention version (Fixes #123)
+* Add clear table command (Fixes #114)
+* Always ignore empty database passwords (Fixes #122)
 * Add AuthMe database schema support (Fixes #49)
 * Add /flexiblelogin forcelogin subcommand.
 * Add /l to /login command alias. (can be disabled with supportSomeChatPlugins=true)
