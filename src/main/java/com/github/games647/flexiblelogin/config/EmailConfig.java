@@ -25,9 +25,12 @@
  */
 package com.github.games647.flexiblelogin.config;
 
+import com.google.common.collect.ImmutableMap;
+
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextTemplate;
 
 import static org.spongepowered.api.text.TextTemplate.arg;
@@ -55,11 +58,12 @@ public class EmailConfig {
     private String senderName = "Your Minecraft server name";
 
     @Setting(comment = "Email subject/title")
-    private TextTemplate subjectTemplate = of("Your new Password");
+    private TextTemplate subjectTemplate = of("Your new Password on ", arg("server").optional(),
+            " for ", arg("player").optional());
 
     @Setting(comment = "Email contents. You can use HTML here")
-    private TextTemplate contentTemplate = of("New password for " + arg("player").optional() +
-            " on Minecraft server " + arg("server").optional() + ": " + arg(password).optional());
+    private TextTemplate contentTemplate = of("New password for ", arg("player").optional(),
+            " on Minecraft server ", arg("server").optional(), ": ", arg("password").optional());
 
     public boolean isEnabled() {
         return enabled;
@@ -85,11 +89,14 @@ public class EmailConfig {
         return senderName;
     }
 
-    public TextTemplate getSubject() {
-        return subjectTemplate;
+    public Text getSubject(String serverName, String playerName) {
+        return subjectTemplate.apply(ImmutableMap.of("server", serverName,
+                "player", playerName)).build();
     }
 
-    public TextTemplate getText() {
-        return contentTemplate;
+    public Text getText(String serverName, String playerName, String password) {
+        return contentTemplate.apply(ImmutableMap.of("server", serverName,
+                "player", playerName,
+                "password", password)).build();
     }
 }

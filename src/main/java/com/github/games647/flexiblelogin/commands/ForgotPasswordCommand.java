@@ -183,11 +183,11 @@ public class ForgotPasswordCommand extends AbstractCommand {
         //sender email with an alias
         message.setFrom(new InternetAddress(senderEmail, emailConfig.getSenderName()));
         message.setRecipient(RecipientType.TO, new InternetAddress(email, player.getName()));
-        message.setSubject(emailConfig.getSubject().apply(variables).build().toPlain());
+        message.setSubject(emailConfig.getSubject(serverName, player.getName()).toPlain());
 
         //current time
         message.setSentDate(Calendar.getInstance().getTime());
-        String textContent = emailConfig.getText().apply(variables).build().toPlain();
+        String textContent = emailConfig.getText(serverName, player.getName(), newPassword).toPlain();
 
         //html part
         BodyPart htmlPart = new MimeBodyPart();

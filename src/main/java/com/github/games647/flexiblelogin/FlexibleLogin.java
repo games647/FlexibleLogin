@@ -131,7 +131,6 @@ public class FlexibleLogin {
 
     private void registerCommands() {
         List<String> loginAliases = new ArrayList<>(Arrays.asList("login", "log"));
-        
         if(!this.config.getGeneral().isSupportSomeChatPlugins()) {
             loginAliases.add("l");
         }
