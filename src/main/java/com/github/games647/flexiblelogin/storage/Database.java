@@ -69,11 +69,18 @@ public abstract class Database {
                 break;
             case MYSQL:
                 //jdbc:<engine>://[<username>[:<password>]@]<host>/<database> - copied from sponge doc
-                urlBuilder.append(sqlConfig.getUsername())
-                        .append(':')
-                        .append(sqlConfig.getPassword())
-                        .append('@')
-                        .append(sqlConfig.getPath())
+                String username = sqlConfig.getUsername();
+                if (!username.isEmpty()) {
+                    urlBuilder.append(username);
+                    String password = sqlConfig.getPassword();
+                    if (!password.isEmpty()) {
+                        urlBuilder.append(':').append(password);
+                    }
+
+                    urlBuilder.append('@');
+                }
+
+                urlBuilder.append(sqlConfig.getPath())
                         .append(':')
                         .append(sqlConfig.getPort())
                         .append('/')
