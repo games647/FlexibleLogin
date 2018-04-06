@@ -49,7 +49,7 @@ public class TOTP implements Hasher {
     public String getGoogleBarcodeURL(String user, String host, String secret) {
         //this returns the google chart URL
         GoogleAuthenticatorKey key = new Builder(secret).setConfig(config).build();
-        return GoogleAuthenticatorQRGenerator.getOtpAuthURL(user, host, key);
+        return GoogleAuthenticatorQRGenerator.getOtpAuthURL(host, user, key);
     }
 
     @Override

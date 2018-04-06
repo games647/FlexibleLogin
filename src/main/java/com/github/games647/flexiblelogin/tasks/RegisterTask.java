@@ -29,11 +29,13 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.github.games647.flexiblelogin.storage.Account;
+import com.google.common.base.Splitter;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.stream.Collectors;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -107,7 +109,10 @@ public class RegisterTask implements Runnable {
             TOTP hasher = (TOTP) plugin.getHasher();
 
             URL barcodeUrl = new URL(hasher.getGoogleBarcodeURL(player.getName(), hostName, secretCode));
-            Text keyGenerated = plugin.getConfigManager().getText().getKeyGenerated(secretCode);
+            String readableSecret = Splitter.fixedLength(4).splitToList(secretCode).stream()
+                    .collect(Collectors.joining(" "));
+
+            Text keyGenerated = plugin.getConfigManager().getText().getKeyGenerated(readableSecret);
             player.sendMessage(keyGenerated);
             player.sendMessage(plugin.getConfigManager().getText().getScanQr().toBuilder()
                             .onClick(openUrl(barcodeUrl))
