@@ -29,32 +29,23 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.commands.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.UnregisterTask;
-import com.github.games647.flexiblelogin.validation.NamePredicate;
-import com.github.games647.flexiblelogin.validation.UUIDPredicate;
 import com.google.inject.Inject;
-
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 
 import static org.spongepowered.api.command.args.GenericArguments.flags;
 import static org.spongepowered.api.command.args.GenericArguments.none;
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
-import static org.spongepowered.api.command.args.GenericArguments.string;
+import static org.spongepowered.api.command.args.GenericArguments.user;
 import static org.spongepowered.api.text.Text.of;
 
 public class UnregisterCommand extends AbstractCommand {
-
-    @Inject
-    private UUIDPredicate uuidPredicate;
-
-    @Inject
-    private NamePredicate namePredicate;
 
     @Inject
     UnregisterCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
@@ -69,27 +60,12 @@ public class UnregisterCommand extends AbstractCommand {
             return CommandResult.success();
         }
 
-        String account = args.<String>getOne("account").get();
-        if (uuidPredicate.test(account)) {
-            //check if the account is an UUID
-            UUID uuid = UUID.fromString(account);
-            Task.builder()
-                    //Async as it could run a SQL query
-                    .async()
-                    .execute(new UnregisterTask(plugin, src, uuid))
-                    .submit(plugin);
-            return CommandResult.success();
-        } else if (namePredicate.test(account)) {
-            //check if the account is a valid player name
-            Task.builder()
-                    //Async as it could run a SQL query
-                    .async()
-                    .execute(new UnregisterTask(plugin, src, account))
-                    .submit(plugin);
-            return CommandResult.success();
-        }
-
-        src.sendMessage(settings.getText().getUnregisterFailed());
+        User user = args.<User>getOne("user").get();
+        Task.builder()
+                //Async as it could run a SQL query
+                .async()
+                .execute(new UnregisterTask(plugin, src, user.getUniqueId()))
+                .submit(plugin);
         return CommandResult.success();
     }
 
@@ -99,7 +75,7 @@ public class UnregisterCommand extends AbstractCommand {
                 .executor(this)
                 .arguments(
                         flags().flag("a").buildWith(none()),
-                        onlyOne(string(of("account")))
+                        onlyOne(user(of("user")))
                 )
                 .build();
     }

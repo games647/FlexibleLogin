@@ -40,11 +40,12 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
+import static org.spongepowered.api.command.args.GenericArguments.optional;
+import static org.spongepowered.api.command.args.GenericArguments.repeated;
 import static org.spongepowered.api.command.args.GenericArguments.string;
 import static org.spongepowered.api.text.Text.of;
 
@@ -96,10 +97,11 @@ public class RegisterCommand extends AbstractCommand {
     public CommandSpec buildSpec() {
         return CommandSpec.builder()
                 .executor(this)
-                .arguments(GenericArguments
-                        .optional(GenericArguments
-                                .repeated(
-                                        string(of("password")), 2)))
+                .arguments(optional(
+                                repeated(
+                                        string(of("password")), 2)
+                        )
+                )
                 .build();
     }
 

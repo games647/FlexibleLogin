@@ -25,14 +25,15 @@
  */
 package com.github.games647.flexiblelogin.commands.admin;
 
-import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.commands.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.validation.NamePredicate;
+import com.github.games647.flexiblelogin.storage.Account;
 import com.google.inject.Inject;
 
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -44,6 +45,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.AsynchronousExecutor;
 import org.spongepowered.api.scheduler.SpongeExecutorService;
 import org.spongepowered.api.scheduler.SynchronousExecutor;
@@ -52,13 +54,14 @@ import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.util.Identifiable;
 
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
-import static org.spongepowered.api.command.args.GenericArguments.string;
+import static org.spongepowered.api.command.args.GenericArguments.user;
 import static org.spongepowered.api.text.Text.of;
 
 public class LastLoginCommand extends AbstractCommand {
 
-    @Inject
-    private NamePredicate namePredicate;
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter
+            .ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.MEDIUM)
+            .withZone(ZoneId.systemDefault());
 
     @SynchronousExecutor
     @Inject
@@ -75,21 +78,16 @@ public class LastLoginCommand extends AbstractCommand {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
-        String username = args.<String>getOne("account").get();
-        if (namePredicate.test(username)) {
-            UUID sender = null;
-            if (src instanceof Identifiable) {
-                sender = ((Identifiable) src).getUniqueId();
-            }
+        User username = args.<User>getOne("user").get();
 
-            UUID finalSender = sender;
-            CompletableFuture.supplyAsync(() -> plugin.getDatabase().loadAccount(username), asyncExecutor)
-                    .thenAcceptAsync(optAcc -> onAccLoaded(finalSender, optAcc.orElse(null)), syncExecutor);
-
-            return CommandResult.success();
+        UUID sender = null;
+        if (src instanceof Identifiable) {
+            sender = ((Identifiable) src).getUniqueId();
         }
 
-        src.sendMessage(settings.getText().getInvalidUsername());
+        UUID finalSender = sender;
+        CompletableFuture.supplyAsync(() -> plugin.getDatabase().loadAccount(username.getUniqueId()), asyncExecutor)
+                .thenAcceptAsync(optAcc -> onAccLoaded(finalSender, optAcc.orElse(null)), syncExecutor);
         return CommandResult.success();
     }
 
@@ -108,7 +106,7 @@ public class LastLoginCommand extends AbstractCommand {
             receiver.sendMessage(settings.getText().getAccountNotFound());
         } else {
             String username = account.getUsername().orElseGet(() -> account.getId().toString());
-            String timeFormat = DateTimeFormatter.ISO_DATE_TIME.format(account.getLastLogin());
+            String timeFormat = timeFormatter.format(account.getLastLogin());
             Text message = settings.getText().getLastOnline(username, timeFormat);
             receiver.sendMessage(message);
         }
@@ -118,7 +116,9 @@ public class LastLoginCommand extends AbstractCommand {
     public CommandSpec buildSpec() {
         return CommandSpec.builder()
                 .executor(this)
-                .arguments(onlyOne(string(of("account"))))
+                .arguments(onlyOne(
+                        user(of("user")))
+                )
                 .build();
     }
 }

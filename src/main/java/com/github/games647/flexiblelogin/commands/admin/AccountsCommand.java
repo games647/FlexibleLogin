@@ -27,14 +27,10 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.commands.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.storage.Account;
-import com.github.games647.flexiblelogin.validation.NamePredicate;
-import com.github.games647.flexiblelogin.validation.UUIDPredicate;
-import com.google.common.net.InetAddresses;
 import com.google.inject.Inject;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,20 +40,16 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 
+import static org.spongepowered.api.command.args.GenericArguments.firstParsing;
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
-import static org.spongepowered.api.command.args.GenericArguments.string;
 import static org.spongepowered.api.text.Text.of;
 
 public class AccountsCommand extends AbstractCommand {
-
-    @Inject
-    private UUIDPredicate uuidPredicate;
-
-    @Inject
-    private NamePredicate namePredicate;
 
     @Inject
     AccountsCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
@@ -66,40 +58,28 @@ public class AccountsCommand extends AbstractCommand {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        String accountId = args.<String>getOne("account").get();
-
-        if (InetAddresses.isInetAddress(accountId)) {
+        Optional<InetAddress> optIP = args.getOne("ip");
+        if (optIP.isPresent()) {
             Task.builder()
                     //we are executing a SQL Query which is blocking
                     .async()
-                    .execute(() -> queryAccountsByIP(src, accountId))
+                    .execute(() -> {
+                        Set<Account> accounts = plugin.getDatabase().getAccountsByIp(optIP.get());
+                        sendAccountNames(src, optIP.get().getHostAddress(), accounts);
+                    })
                     .submit(plugin);
-            return CommandResult.success();
-        } else if (namePredicate.test(accountId)) {
-            Task.builder()
-                    //we are executing a SQL Query which is blocking
-                    .async()
-                    .execute(() -> queryAccountsByName(src, accountId))
-                    .submit(plugin);
-            return CommandResult.success();
         }
 
-        src.sendMessage(settings.getText().getInvalidUsername());
+        Optional<User> optUser = args.getOne("optUser");
+        if (optUser.isPresent()) {
+            Task.builder()
+                    //we are executing a SQL Query which is blocking
+                    .async()
+                    .execute(() -> queryAccountsByName(src, optUser.get().getName()))
+                    .submit(plugin);
+        }
+
         return CommandResult.success();
-    }
-
-    private void queryAccountsByIP(CommandSource src, String ipString) {
-        InetAddress ip;
-
-        try {
-            ip = InetAddress.getByName(ipString);
-        } catch (UnknownHostException ex) {
-            src.sendMessage(plugin.getConfigManager().getText().getInvalidIP());
-            return;
-        }
-
-        Set<Account> accounts = plugin.getDatabase().getAccountsByIp(ip);
-        sendAccountNames(src, ipString, accounts);
     }
 
     private void queryAccountsByName(CommandSource src, String username) {
@@ -119,13 +99,13 @@ public class AccountsCommand extends AbstractCommand {
         src.sendMessage(plugin.getConfigManager().getText().getAccountsListNoIP());
     }
 
-    private void sendAccountNames(CommandSource src, String username, Set<Account> accounts) {
+    private void sendAccountNames(CommandSource src, String username, Collection<Account> accounts) {
         if (accounts.isEmpty()) {
             src.sendMessage(plugin.getConfigManager().getText().getAccountsListEmpty());
             return;
         }
 
-        List<String> names = accounts.stream()
+        Iterable<String> names = accounts.stream()
                 .map(Account::getUsername)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -139,7 +119,11 @@ public class AccountsCommand extends AbstractCommand {
     public CommandSpec buildSpec() {
         return CommandSpec.builder()
                 .executor(this)
-                .arguments(onlyOne(string(of("account"))))
+                .arguments(onlyOne(
+                        firstParsing(
+                                GenericArguments.ip(of("ip")),
+                                GenericArguments.user(of("user"))))
+                )
                 .build();
     }
 }

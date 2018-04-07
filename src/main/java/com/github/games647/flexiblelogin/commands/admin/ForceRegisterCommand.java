@@ -28,10 +28,7 @@ package com.github.games647.flexiblelogin.commands.admin;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.commands.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.tasks.ForceRegTask;
-import com.github.games647.flexiblelogin.validation.NamePredicate;
-import com.github.games647.flexiblelogin.validation.UUIDPredicate;
 import com.google.inject.Inject;
 
 import java.util.Optional;
@@ -44,19 +41,15 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
 import static org.spongepowered.api.command.args.GenericArguments.string;
+import static org.spongepowered.api.command.args.GenericArguments.user;
 import static org.spongepowered.api.text.Text.of;
 
 public class ForceRegisterCommand extends AbstractCommand {
-
-    @Inject
-    private UUIDPredicate uuidPredicate;
-
-    @Inject
-    private NamePredicate namePredicate;
 
     @Inject
     ForceRegisterCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
@@ -65,46 +58,23 @@ public class ForceRegisterCommand extends AbstractCommand {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
-        String accountId = args.<String>getOne("account").get();
+        User user = args.<User>getOne("user").get();
         String password = args.<String>getOne("password").get();
-        if (uuidPredicate.test(accountId)) {
-            onUuidRegister(accountId, src, password);
 
-            return CommandResult.success();
-        } else if (namePredicate.test(accountId)) {
-            onNameRegister(src, accountId, password);
-            return CommandResult.success();
-        }
-
+        onUuidRegister(user.getUniqueId(), src, password);
         return CommandResult.success();
     }
 
-    private void onNameRegister(CommandSource src, String accountId, String password) {
-        Optional<Player> player = Sponge.getServer().getPlayer(accountId);
-        if (player.isPresent()) {
-            src.sendMessage(settings.getText().getForceRegisterOnline());
-        } else {
-            UUID offlineUUID = Account.getOfflineUUID(accountId);
-
-            Task.builder()
-                    //Async as it could run a SQL query
-                    .async()
-                    .execute(new ForceRegTask(plugin, src, offlineUUID, password))
-                    .submit(plugin);
-        }
-    }
-
-    private void onUuidRegister(String accountId, CommandSource src, String password) {
+    private void onUuidRegister(UUID account, CommandSource src, String password) {
         //check if the account is an UUID
-        UUID uuid = UUID.fromString(accountId);
-        Optional<Player> player = Sponge.getServer().getPlayer(uuid);
+        Optional<Player> player = Sponge.getServer().getPlayer(account);
         if (player.isPresent()) {
             src.sendMessage(settings.getText().getForceRegisterOnline());
         } else {
             Task.builder()
                     //Async as it could run a SQL query
                     .async()
-                    .execute(new ForceRegTask(plugin, src, uuid, password))
+                    .execute(new ForceRegTask(plugin, src, account, password))
                     .submit(plugin);
         }
     }
@@ -115,7 +85,9 @@ public class ForceRegisterCommand extends AbstractCommand {
                 .executor(this)
                 .arguments(
                         onlyOne(
-                                string(of("account"))), string(of("password")))
+                                user(of("user"))
+                        ),
+                        string(of("password")))
                 .build();
     }
 }

@@ -23,10 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.tasks.reset;
+package com.github.games647.flexiblelogin.tasks;
 
-import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.storage.Account;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -35,22 +35,46 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 
-public class UUIDResetPwTask extends ResetPwTask {
+public class UUIDResetPwTask implements Runnable {
 
+    private final FlexibleLogin plugin;
+
+    private final CommandSource src;
+    private final String password;
     private final UUID uuid;
 
     public UUIDResetPwTask(FlexibleLogin plugin, CommandSource src, String password, UUID uuid) {
-        super(plugin, src, password);
+        this.plugin = plugin;
+        this.src = src;
+        this.password = password;
+
         this.uuid = uuid;
     }
 
     @Override
-    public Optional<Player> getIfPresent() {
-        return Sponge.getServer().getPlayer(uuid);
+    public void run() {
+        Optional<Player> player = Sponge.getServer().getPlayer(uuid);
+
+        Optional<Account> account;
+        account = player.map(player1 -> plugin.getDatabase().getAccount(player1))
+                .orElseGet(() -> plugin.getDatabase().loadAccount(uuid));
+
+        if (account.isPresent()) {
+            resetPassword(account.get());
+        } else {
+            src.sendMessage(plugin.getConfigManager().getText().getAccountNotFound());
+        }
     }
 
-    @Override
-    public Optional<Account> loadAccount() {
-        return plugin.getDatabase().loadAccount(uuid);
+    private void resetPassword(Account account) {
+        try {
+            account.setPasswordHash(plugin.getHasher().hash(password));
+            plugin.getDatabase().save(account);
+
+            src.sendMessage(plugin.getConfigManager().getText().getChangePassword());
+        } catch (Exception ex) {
+            plugin.getLogger().error("Error creating hash", ex);
+            src.sendMessage(plugin.getConfigManager().getText().getErrorExecutingCommand());
+        }
     }
 }

@@ -28,33 +28,23 @@ package com.github.games647.flexiblelogin.commands.admin;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.commands.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.tasks.reset.NameResetPwTask;
-import com.github.games647.flexiblelogin.tasks.reset.ResetPwTask;
-import com.github.games647.flexiblelogin.tasks.reset.UUIDResetPwTask;
-import com.github.games647.flexiblelogin.validation.NamePredicate;
-import com.github.games647.flexiblelogin.validation.UUIDPredicate;
+import com.github.games647.flexiblelogin.tasks.UUIDResetPwTask;
 import com.google.inject.Inject;
-
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
 import static org.spongepowered.api.command.args.GenericArguments.string;
+import static org.spongepowered.api.command.args.GenericArguments.user;
 import static org.spongepowered.api.text.Text.of;
 
 public class ResetPasswordCommand extends AbstractCommand {
-
-    @Inject
-    private UUIDPredicate uuidPredicate;
-
-    @Inject
-    private NamePredicate namePredicate;
 
     @Inject
     ResetPasswordCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
@@ -63,24 +53,14 @@ public class ResetPasswordCommand extends AbstractCommand {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
-        String accountId = args.<String>getOne("account").get();
+        User user = args.<User>getOne("user").get();
         String password = args.<String>getOne("password").get();
-
-        ResetPwTask resetTask;
-        if (uuidPredicate.test(accountId)) {
-            UUID uuid = UUID.fromString(accountId);
-            resetTask = new UUIDResetPwTask(plugin, src, password, uuid);
-        } else if (namePredicate.test(accountId)) {
-            resetTask = new NameResetPwTask(plugin, src, password, accountId);
-        } else {
-            return CommandResult.empty();
-        }
 
         //check if the account is a valid player name
         Task.builder()
                 //Async as it could run a SQL query
                 .async()
-                .execute(resetTask)
+                .execute(new UUIDResetPwTask(plugin, src, password, user.getUniqueId()))
                 .submit(plugin);
         return CommandResult.success();
     }
@@ -91,7 +71,9 @@ public class ResetPasswordCommand extends AbstractCommand {
                 .executor(this)
                 .arguments(
                         onlyOne(
-                                string(of("account"))), string(of("password")))
+                                user(of("user"))
+                        ),
+                        string(of("password")))
                 .build();
     }
 }

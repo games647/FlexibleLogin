@@ -28,7 +28,6 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.commands.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.ForceLoginTask;
-import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.google.inject.Inject;
 
 import org.slf4j.Logger;
@@ -44,9 +43,6 @@ import static org.spongepowered.api.command.args.GenericArguments.player;
 import static org.spongepowered.api.text.Text.of;
 
 public class ForceLoginCommand extends AbstractCommand {
-
-    @Inject
-    private NamePredicate namePredicate;
 
     @Inject
     private AttemptManager attemptManager;
