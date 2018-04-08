@@ -43,7 +43,7 @@ public class LogoutCommand extends AbstractCommand {
 
     @Inject
     LogoutCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
-        super(plugin, logger, settings, "logout");
+        super(plugin, logger, settings);
     }
 
     @Override
@@ -51,8 +51,6 @@ public class LogoutCommand extends AbstractCommand {
         if (!(src instanceof Player)) {
             throw new CommandException(settings.getText().getPlayersOnly());
         }
-
-        checkPlayerPermission(src);
 
         if (!plugin.getDatabase().isLoggedIn((Player) src)) {
             throw new CommandException(settings.getText().getNotLoggedIn());
@@ -76,7 +74,7 @@ public class LogoutCommand extends AbstractCommand {
 
     @Override
     public CommandSpec buildSpec(Settings settings) {
-        return CommandSpec.builder()
+        return buildPlayerCommand(settings, "logout")
                 .executor(this)
                 .build();
     }

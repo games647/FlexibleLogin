@@ -65,7 +65,6 @@ public class PasswordRegisterCommand extends AbstractCommand implements Register
             throw new CommandException(settings.getText().getPlayersOnly());
         }
 
-        checkPlayerPermission(src);
         Collection<String> passwords = args.getAll("password");
         List<String> indexPasswords = Lists.newArrayList(passwords);
         String password = indexPasswords.get(0);
@@ -89,7 +88,7 @@ public class PasswordRegisterCommand extends AbstractCommand implements Register
 
     @Override
     public CommandSpec buildSpec(Settings settings) {
-        return CommandSpec.builder()
+        return buildPlayerCommand(settings, "register")
                 .executor(this)
                 .arguments(
                         repeated(

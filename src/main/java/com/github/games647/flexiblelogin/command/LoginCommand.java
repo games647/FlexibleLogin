@@ -63,7 +63,7 @@ public class LoginCommand extends AbstractCommand {
 
     @Inject
     LoginCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
-        super(plugin, logger, settings, "login");
+        super(plugin, logger, settings);
     }
 
     @Override
@@ -71,8 +71,6 @@ public class LoginCommand extends AbstractCommand {
         if (!(src instanceof Player)) {
             throw new CommandException(settings.getText().getPlayersOnly());
         }
-
-        checkPlayerPermission(src);
 
         Player player = (Player) src;
         if (plugin.getDatabase().isLoggedIn(player)) {
@@ -111,7 +109,7 @@ public class LoginCommand extends AbstractCommand {
 
     @Override
     public CommandSpec buildSpec(Settings settings) {
-        return CommandSpec.builder()
+        return buildPlayerCommand(settings, "login")
                 .executor(this)
                 .arguments(onlyOne(string(of("password"))))
                 .build();

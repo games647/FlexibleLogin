@@ -57,8 +57,6 @@ public class TwoFactorRegisterCommand extends AbstractCommand implements Registe
             throw new CommandException(settings.getText().getPlayersOnly());
         }
 
-        checkPlayerPermission(src);
-
         Task.builder()
                 //we are executing a SQL Query which is blocking
                 .async()
@@ -71,7 +69,7 @@ public class TwoFactorRegisterCommand extends AbstractCommand implements Registe
 
     @Override
     public CommandSpec buildSpec(Settings settings) {
-        return CommandSpec.builder()
+        return buildPlayerCommand(settings, "register")
                 .executor(this)
                 .build();
     }

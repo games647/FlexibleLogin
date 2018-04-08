@@ -50,7 +50,7 @@ public class SetMailCommand extends AbstractCommand {
 
     @Inject
     SetMailCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
-        super(plugin, logger, settings, "email");
+        super(plugin, logger, settings);
     }
 
     @Override
@@ -58,8 +58,6 @@ public class SetMailCommand extends AbstractCommand {
         if (!(src instanceof Player)) {
             throw new CommandException(settings.getText().getPlayersOnly());
         }
-
-        checkPlayerPermission(src);
 
         String email = args.<String>getOne("email").get();
 
@@ -77,7 +75,7 @@ public class SetMailCommand extends AbstractCommand {
 
     @Override
     public CommandSpec buildSpec(Settings settings) {
-        return CommandSpec.builder()
+        return buildPlayerCommand(settings, "email")
                 .executor(this)
                 .arguments(onlyOne(new MailElement(of("email"), new MailPredicate(), settings)))
                 .build();

@@ -73,7 +73,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
 
     @Inject
     ForgotPasswordCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
-        super(plugin, logger, settings, "forgot");
+        super(plugin, logger, settings);
     }
 
     @Override
@@ -81,8 +81,6 @@ public class ForgotPasswordCommand extends AbstractCommand {
         if (!(src instanceof Player)) {
             throw new CommandException(settings.getText().getPlayersOnly());
         }
-
-        checkPlayerPermission(src);
 
         if (!settings.getGeneral().getMail().isEnabled()) {
             throw new CommandException(settings.getText().getMailNotEnabled());
@@ -202,7 +200,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
 
     @Override
     public CommandSpec buildSpec(Settings settings) {
-        return CommandSpec.builder()
+        return buildPlayerCommand(settings, "forgot")
                 .executor(this)
                 .build();
     }

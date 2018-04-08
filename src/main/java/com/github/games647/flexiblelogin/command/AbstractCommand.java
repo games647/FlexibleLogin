@@ -29,10 +29,9 @@ import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
 
 import org.slf4j.Logger;
-import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.command.spec.CommandSpec.Builder;
 
 import static com.github.games647.flexiblelogin.PomData.ARTIFACT_ID;
 
@@ -42,24 +41,19 @@ public abstract class AbstractCommand implements CommandExecutor {
     protected final Logger logger;
     protected final Settings settings;
 
-    private final String permission;
-
-    public AbstractCommand(FlexibleLogin plugin, Logger logger, Settings settings, String permissionKey) {
+    public AbstractCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
         this.plugin = plugin;
         this.logger = logger;
         this.settings = settings;
-        this.permission = ARTIFACT_ID + ".command." + permissionKey;
-    }
-
-    public AbstractCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
-        this(plugin, logger, settings, "");
-    }
-
-    public void checkPlayerPermission(Subject player) throws CommandPermissionException {
-        if (settings.getGeneral().isPlayerPermissions() && !player.hasPermission(permission)) {
-            throw new CommandPermissionException();
-        }
     }
 
     public abstract CommandSpec buildSpec(Settings settings);
+
+    protected Builder buildPlayerCommand(Settings settings, String permission) {
+        if (settings.getGeneral().isPlayerPermissions()) {
+            return CommandSpec.builder().permission(ARTIFACT_ID + ".command." + permission);
+        }
+
+        return CommandSpec.builder();
+    }
 }

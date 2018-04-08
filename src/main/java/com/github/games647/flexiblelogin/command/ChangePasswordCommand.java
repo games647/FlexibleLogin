@@ -52,7 +52,7 @@ public class ChangePasswordCommand extends AbstractCommand {
 
     @Inject
     ChangePasswordCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
-        super(plugin, logger, settings, "changepw");
+        super(plugin, logger, settings);
     }
 
     @Override
@@ -60,8 +60,6 @@ public class ChangePasswordCommand extends AbstractCommand {
         if (!(src instanceof Player)) {
             throw new CommandException(settings.getText().getPlayersOnly());
         }
-
-        checkPlayerPermission(src);
 
         if (!plugin.getDatabase().isLoggedIn((Player) src)) {
             throw new CommandException(settings.getText().getNotLoggedIn());
@@ -102,7 +100,7 @@ public class ChangePasswordCommand extends AbstractCommand {
 
     @Override
     public CommandSpec buildSpec(Settings settings) {
-        return CommandSpec.builder()
+        return buildPlayerCommand(settings, "changepw")
                 .executor(this)
                 .arguments(GenericArguments
                         .repeated(
