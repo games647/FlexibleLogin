@@ -25,9 +25,10 @@
  */
 package com.github.games647.flexiblelogin.tasks;
 
-import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.AttemptManager;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.ProtectionManager;
+import com.github.games647.flexiblelogin.storage.Account;
 
 import java.util.Optional;
 
@@ -38,13 +39,15 @@ public class LoginTask implements Runnable {
 
     private final FlexibleLogin plugin;
     private final AttemptManager attemptManager;
+    private final ProtectionManager protectionManager;
 
     private final Player player;
     private final String userInput;
 
-    public LoginTask(FlexibleLogin plugin, AttemptManager attemptManager, Player player, String userInput) {
-        this.attemptManager = attemptManager;
+    public LoginTask(FlexibleLogin plugin, AttemptManager attemptManager, ProtectionManager protectionManager, Player player, String userInput) {
         this.plugin = plugin;
+        this.attemptManager = attemptManager;
+        this.protectionManager = protectionManager;
         this.player = player;
         this.userInput = userInput;
     }
@@ -67,7 +70,7 @@ public class LoginTask implements Runnable {
                 account.setLoggedIn(true);
 
                 player.sendMessage(plugin.getConfigManager().getText().getLoggedIn());
-                Task.builder().execute(() -> plugin.getProtectionManager().unprotect(player)).submit(plugin);
+                Task.builder().execute(() -> protectionManager.unprotect(player)).submit(plugin);
 
                 //flushes the ip update
                 plugin.getDatabase().save(account);

@@ -27,6 +27,7 @@ package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.AttemptManager;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.ProtectionManager;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.LoginTask;
 import com.google.inject.Inject;
@@ -51,16 +52,18 @@ import static org.spongepowered.api.text.Text.of;
 
 public class LoginCommand extends AbstractCommand {
 
-    private final AttemptManager attemptManager;
-    private final CommandManager commandManager;
+    @Inject
+    private CommandManager commandManager;
 
     @Inject
-    LoginCommand(FlexibleLogin plugin, Logger logger, Settings settings, AttemptManager attemptManager,
-                 CommandManager commandManager) {
-        super(plugin, logger, settings, "login");
+    private AttemptManager attemptManager;
 
-        this.attemptManager = attemptManager;
-        this.commandManager = commandManager;
+    @Inject
+    private ProtectionManager protectionManager;
+
+    @Inject
+    LoginCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+        super(plugin, logger, settings, "login");
     }
 
     @Override
@@ -99,7 +102,7 @@ public class LoginCommand extends AbstractCommand {
         Task.builder()
                 //we are executing a SQL Query which is blocking
                 .async()
-                .execute(new LoginTask(plugin, attemptManager, (Player) src, password))
+                .execute(new LoginTask(plugin, attemptManager, protectionManager, (Player) src, password))
                 .name("Login Query")
                 .submit(plugin);
 

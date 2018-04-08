@@ -25,6 +25,7 @@ package com.github.games647.flexiblelogin.commands.admin;
 
 import com.github.games647.flexiblelogin.AttemptManager;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.ProtectionManager;
 import com.github.games647.flexiblelogin.commands.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.ForceLoginTask;
@@ -46,6 +47,9 @@ import static org.spongepowered.api.text.Text.of;
 public class ForceLoginCommand extends AbstractCommand {
 
     @Inject
+    private ProtectionManager protectionManager;
+
+    @Inject
     private AttemptManager attemptManager;
 
     @Inject
@@ -63,7 +67,7 @@ public class ForceLoginCommand extends AbstractCommand {
         Task.builder()
                 //we are executing a SQL Query which is blocking
                 .async()
-                .execute(new ForceLoginTask(plugin, attemptManager, src, player))
+                .execute(new ForceLoginTask(plugin, attemptManager, protectionManager, player, src))
                 .name("Force Login Query")
                 .submit(plugin);
 

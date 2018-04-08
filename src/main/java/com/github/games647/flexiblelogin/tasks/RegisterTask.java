@@ -26,6 +26,7 @@
 package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.ProtectionManager;
 import com.github.games647.flexiblelogin.config.nodes.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.github.games647.flexiblelogin.storage.Account;
@@ -47,12 +48,18 @@ import static org.spongepowered.api.text.action.TextActions.openUrl;
 public class RegisterTask implements Runnable {
 
     private final FlexibleLogin plugin;
+    private final ProtectionManager protectionManager;
 
     private final Player player;
     private final String password;
 
-    public RegisterTask(FlexibleLogin plugin, Player player, String password) {
+    public RegisterTask(FlexibleLogin plugin, ProtectionManager protectionManager, Player player) {
+        this(plugin, protectionManager, player, "");
+    }
+
+    public RegisterTask(FlexibleLogin plugin, ProtectionManager protectionManager, Player player, String password) {
         this.plugin = plugin;
+        this.protectionManager = protectionManager;
         this.player = player;
         this.password = password;
     }
@@ -88,7 +95,7 @@ public class RegisterTask implements Runnable {
                 }
 
                 Task.builder()
-                        .execute(() -> plugin.getProtectionManager().unprotect(player))
+                        .execute(() -> protectionManager.unprotect(player))
                         .submit(plugin);
             } catch (Exception ex) {
                 plugin.getLogger().error("Error creating hash", ex);

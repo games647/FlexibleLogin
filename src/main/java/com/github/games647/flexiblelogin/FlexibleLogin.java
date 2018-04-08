@@ -29,7 +29,6 @@ import com.github.games647.flexiblelogin.commands.ChangePasswordCommand;
 import com.github.games647.flexiblelogin.commands.ForgotPasswordCommand;
 import com.github.games647.flexiblelogin.commands.LoginCommand;
 import com.github.games647.flexiblelogin.commands.LogoutCommand;
-import com.github.games647.flexiblelogin.commands.RegisterCommand;
 import com.github.games647.flexiblelogin.commands.SetEmailCommand;
 import com.github.games647.flexiblelogin.commands.admin.AccountsCommand;
 import com.github.games647.flexiblelogin.commands.admin.ForceLoginCommand;
@@ -38,11 +37,11 @@ import com.github.games647.flexiblelogin.commands.admin.LastLoginCommand;
 import com.github.games647.flexiblelogin.commands.admin.ReloadCommand;
 import com.github.games647.flexiblelogin.commands.admin.ResetPasswordCommand;
 import com.github.games647.flexiblelogin.commands.admin.UnregisterCommand;
-import com.github.games647.flexiblelogin.config.nodes.General.HashingAlgorithm;
+import com.github.games647.flexiblelogin.commands.register.PasswordRegisterCommand;
+import com.github.games647.flexiblelogin.commands.register.TwoFactorRegisterCommand;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.hasher.BcryptHasher;
+import com.github.games647.flexiblelogin.config.nodes.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.hasher.Hasher;
-import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.github.games647.flexiblelogin.listener.ConnectionListener;
 import com.github.games647.flexiblelogin.listener.prevent.GriefPreventListener;
 import com.github.games647.flexiblelogin.listener.prevent.PreventListener;
@@ -134,9 +133,8 @@ public class FlexibleLogin {
         if(!this.config.getGeneral().isSupportSomeChatPlugins()) {
             loginAliases.add("l");
         }
-        
+
         commandManager.register(this, injector.getInstance(LoginCommand.class).buildSpec(), loginAliases);
-        commandManager.register(this, injector.getInstance(RegisterCommand.class).buildSpec(), "register", "reg");
         commandManager.register(this, injector.getInstance(LogoutCommand.class).buildSpec(), "logout");
         commandManager.register(this, injector.getInstance(SetEmailCommand.class).buildSpec(), "setemail", "email");
         commandManager.register(this, injector.getInstance(ChangePasswordCommand.class)
@@ -196,10 +194,19 @@ public class FlexibleLogin {
             Task.builder().execute(() -> Sponge.getServer().shutdown()).submit(this);
         }
 
+        //delete existing mapping
+        commandManager.getOwnedBy(this).stream()
+                .filter(mapping -> "register".equalsIgnoreCase(mapping.getPrimaryAlias()))
+                .forEach(commandManager::removeMapping);
+
         //use bcrypt as fallback for now
-        hasher = new BcryptHasher();
+        hasher = config.getGeneral().getHashAlgo().createHasher();
         if (config.getGeneral().getHashAlgo() == HashingAlgorithm.TOTP) {
-            hasher = new TOTP();
+            commandManager.register(this, injector.getInstance(TwoFactorRegisterCommand.class).buildSpec(),
+                    "register", "reg");
+        } else if (config.getGeneral().getHashAlgo() == HashingAlgorithm.BCrypt) {
+            commandManager.register(this, injector.getInstance(PasswordRegisterCommand.class).buildSpec(),
+                    "register", "reg");
         }
 
         //schedule tasks
@@ -218,10 +225,6 @@ public class FlexibleLogin {
 
     public Database getDatabase() {
         return database;
-    }
-
-    public ProtectionManager getProtectionManager() {
-        return protectionManager;
     }
 
     public Hasher getHasher() {

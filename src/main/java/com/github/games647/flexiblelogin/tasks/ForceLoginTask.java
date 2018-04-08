@@ -25,6 +25,7 @@ package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.AttemptManager;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.ProtectionManager;
 import com.github.games647.flexiblelogin.storage.Account;
 import java.util.Optional;
 import org.spongepowered.api.command.CommandSource;
@@ -35,15 +36,18 @@ public class ForceLoginTask implements Runnable {
 
     private final FlexibleLogin plugin;
     private final AttemptManager attemptManager;
+    private final ProtectionManager protectionManager;
 
     private final Player player;
     private final CommandSource src;
 
-    public ForceLoginTask(FlexibleLogin plugin, AttemptManager attemptManager, CommandSource src, Player player) {
-        this.attemptManager = attemptManager;
+    public ForceLoginTask(FlexibleLogin plugin, AttemptManager attemptManager, ProtectionManager protectionManager,
+                          Player player, CommandSource src) {
         this.plugin = plugin;
-        this.src = src;
+        this.attemptManager = attemptManager;
+        this.protectionManager = protectionManager;
         this.player = player;
+        this.src = src;
     }
 
     @Override
@@ -64,7 +68,7 @@ public class ForceLoginTask implements Runnable {
 
         player.sendMessage(plugin.getConfigManager().getText().getLoggedIn());
         src.sendMessage(plugin.getConfigManager().getText().getForceLoginSuccess());
-        Task.builder().execute(() -> plugin.getProtectionManager().unprotect(player)).submit(plugin);
+        Task.builder().execute(() -> protectionManager.unprotect(player)).submit(plugin);
 
         //flushes the ip update
         plugin.getDatabase().save(account);

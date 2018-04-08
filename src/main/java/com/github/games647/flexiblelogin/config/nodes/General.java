@@ -26,6 +26,9 @@
 package com.github.games647.flexiblelogin.config.nodes;
 
 import com.github.games647.flexiblelogin.PomData;
+import com.github.games647.flexiblelogin.hasher.BcryptHasher;
+import com.github.games647.flexiblelogin.hasher.Hasher;
+import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -209,6 +212,16 @@ public class General {
 
         BCrypt,
 
-        TOTP
+        TOTP;
+
+        public Hasher createHasher() {
+            switch (this) {
+                case TOTP:
+                    return new TOTP();
+                case BCrypt:
+                default:
+                    return new BcryptHasher();
+            }
+        }
     }
 }
