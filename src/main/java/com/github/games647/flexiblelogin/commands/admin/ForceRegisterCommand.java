@@ -36,6 +36,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -57,19 +58,19 @@ public class ForceRegisterCommand extends AbstractCommand {
     }
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) {
+    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         User user = args.<User>getOne("user").get();
         String password = args.<String>getOne("password").get();
 
-        onUuidRegister(user.getUniqueId(), src, password);
+        uuidRegister(user.getUniqueId(), src, password);
         return CommandResult.success();
     }
 
-    private void onUuidRegister(UUID account, CommandSource src, String password) {
+    private void uuidRegister(UUID account, CommandSource src, String password) throws CommandException {
         //check if the account is an UUID
         Optional<Player> player = Sponge.getServer().getPlayer(account);
         if (player.isPresent()) {
-            src.sendMessage(settings.getText().getForceRegisterOnline());
+            throw new CommandException(settings.getText().getForceRegisterOnline());
         } else {
             Task.builder()
                     //Async as it could run a SQL query

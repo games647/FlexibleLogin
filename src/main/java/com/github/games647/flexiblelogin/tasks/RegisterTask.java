@@ -26,7 +26,7 @@
 package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.config.General.HashingAlgorithm;
+import com.github.games647.flexiblelogin.config.nodes.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.github.games647.flexiblelogin.storage.Account;
 import com.google.common.base.Splitter;

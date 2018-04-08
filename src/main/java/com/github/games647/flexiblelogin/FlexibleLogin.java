@@ -38,7 +38,7 @@ import com.github.games647.flexiblelogin.commands.admin.LastLoginCommand;
 import com.github.games647.flexiblelogin.commands.admin.ReloadCommand;
 import com.github.games647.flexiblelogin.commands.admin.ResetPasswordCommand;
 import com.github.games647.flexiblelogin.commands.admin.UnregisterCommand;
-import com.github.games647.flexiblelogin.config.General.HashingAlgorithm;
+import com.github.games647.flexiblelogin.config.nodes.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;
 import com.github.games647.flexiblelogin.hasher.Hasher;

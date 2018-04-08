@@ -31,6 +31,7 @@ import com.github.games647.flexiblelogin.tasks.ForceLoginTask;
 import com.google.inject.Inject;
 
 import org.slf4j.Logger;
+import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -53,11 +54,10 @@ public class ForceLoginCommand extends AbstractCommand {
     }
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) {
+    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         Player player = args.<Player>getOne("account").get();
         if (plugin.getDatabase().isLoggedIn(player)) {
-            src.sendMessage(settings.getText().getForceLoginAlreadyLoggedIn());
-            return CommandResult.success();
+            throw new CommandException(settings.getText().getForceLoginAlreadyLoggedIn());
         }
 
         Task.builder()

@@ -55,7 +55,7 @@ public class UnregisterCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
         if (args.hasAny("a")) {
-            Task.builder().execute(plugin.getDatabase()::clearTable).submit(plugin);
+            Task.builder().execute(plugin.getDatabase()::clearTable).async().submit(plugin);
             src.sendMessage(settings.getText().getTableCleared());
             return CommandResult.success();
         }

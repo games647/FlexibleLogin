@@ -66,20 +66,18 @@ public class LoginCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(settings.getText().getPlayersOnly());
-            return CommandResult.empty();
+            throw new CommandException(settings.getText().getPlayersOnly());
         }
 
         checkPlayerPermission(src);
 
         Player player = (Player) src;
         if (plugin.getDatabase().isLoggedIn(player)) {
-            src.sendMessage(settings.getText().getAlreadyLoggedIn());
+            throw new CommandException(settings.getText().getAlreadyLoggedIn());
         }
 
         UUID uniqueId = player.getUniqueId();
         if (!attemptManager.isAllowed(uniqueId)) {
-            src.sendMessage(settings.getText().getMaxAttempts());
             String lockCommand = settings.getGeneral().getLockCommand();
             if (!lockCommand.isEmpty()) {
                 commandManager.process(Sponge.getServer().getConsole(), lockCommand);
@@ -89,7 +87,8 @@ public class LoginCommand extends AbstractCommand {
                     .delay(settings.getGeneral().getWaitTime(), TimeUnit.SECONDS)
                     .execute(() -> attemptManager.clearAttempts(uniqueId))
                     .submit(plugin);
-            return CommandResult.success();
+
+            throw new CommandException(settings.getText().getMaxAttempts());
         }
 
         attemptManager.increaseAttempt(uniqueId);

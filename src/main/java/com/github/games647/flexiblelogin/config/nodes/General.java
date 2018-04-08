@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.config;
+package com.github.games647.flexiblelogin.config.nodes;
 
 import com.github.games647.flexiblelogin.PomData;
 import com.google.common.collect.Lists;
@@ -57,7 +57,7 @@ public class General {
     private boolean ipAutoLogin;
     
     @Setting(comment = "Should the plugin don't register alias /l (used by some chat plugins) for /login command ")
-    private boolean supportSomeChatPlugins = false;
+    private boolean supportSomeChatPlugins;
     
     @Setting(comment = "Should only the specified commands be protected from unauthorized access")
     private boolean commandOnlyProtection;

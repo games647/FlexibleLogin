@@ -25,6 +25,8 @@
  */
 package com.github.games647.flexiblelogin.config;
 
+import com.github.games647.flexiblelogin.config.nodes.General;
+import com.github.games647.flexiblelogin.config.nodes.TextConfig;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 

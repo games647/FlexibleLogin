@@ -26,8 +26,8 @@
 package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.config.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.config.Settings;
+import com.github.games647.flexiblelogin.config.nodes.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.tasks.RegisterTask;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -59,8 +59,7 @@ public class RegisterCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(settings.getText().getPlayersOnly());
-            return CommandResult.success();
+            throw new CommandException(settings.getText().getPlayersOnly());
         }
 
         checkPlayerPermission(src);
@@ -69,27 +68,25 @@ public class RegisterCommand extends AbstractCommand {
         if (!args.hasAny("password")) {
             if (settings.getGeneral().getHashAlgo() == HashingAlgorithm.TOTP) {
                 startTask(src, "");
-            } else {
-                src.sendMessage(settings.getText().getTotpNotEnabled());
+                return CommandResult.success();
             }
 
-            return CommandResult.success();
+            throw new CommandException(settings.getText().getTotpNotEnabled());
         }
 
         Collection<String> passwords = args.getAll("password");
         List<String> indexPasswords = Lists.newArrayList(passwords);
         String password = indexPasswords.get(0);
-        if (password.equals(indexPasswords.get(1))) {
-            if (password.length() >= settings.getGeneral().getMinPasswordLength()) {
-                //Check if the first two passwords are equal to prevent typos
-                startTask(src, password);
-            } else {
-                src.sendMessage(settings.getText().getTooShortPassword());
-            }
-        } else {
-            src.sendMessage(settings.getText().getUnequalPasswords());
+        if (!password.equals(indexPasswords.get(1))) {
+            //Check if the first two passwords are equal to prevent typos
+            throw new CommandException(settings.getText().getUnequalPasswords());
         }
 
+        if (password.length() < settings.getGeneral().getMinPasswordLength()) {
+            throw new CommandException(settings.getText().getTooShortPassword());
+        }
+
+        startTask(src, password);
         return CommandResult.success();
     }
 

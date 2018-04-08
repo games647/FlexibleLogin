@@ -56,27 +56,25 @@ public class SetEmailCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(settings.getText().getPlayersOnly());
-            return CommandResult.empty();
+            throw new CommandException(settings.getText().getPlayersOnly());
         }
 
         checkPlayerPermission(src);
 
         String email = args.<String>getOne("email").get();
-        if (mailPredicate.test(email)) {
-            plugin.getDatabase().getAccount((Player) src).ifPresent(account -> {
-                account.setEmail(email);
-                src.sendMessage(settings.getText().getEmailSet());
-                Task.builder()
-                        .async()
-                        .execute(() -> plugin.getDatabase().save(account))
-                        .submit(plugin);
-            });
-
-            return CommandResult.success();
+        if (!mailPredicate.test(email)) {
+            throw new CommandException(settings.getText().getNotEmail());
         }
 
-        src.sendMessage(settings.getText().getNotEmail());
+        plugin.getDatabase().getAccount((Player) src).ifPresent(account -> {
+            account.setEmail(email);
+            src.sendMessage(settings.getText().getEmailSet());
+            Task.builder()
+                    .async()
+                    .execute(() -> plugin.getDatabase().save(account))
+                    .submit(plugin);
+        });
+
         return CommandResult.success();
     }
 

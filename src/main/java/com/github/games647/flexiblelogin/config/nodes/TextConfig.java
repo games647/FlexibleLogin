@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.config;
+package com.github.games647.flexiblelogin.config.nodes;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -80,11 +80,7 @@ public class TextConfig {
     private Text emailSet = builder("Your email was set.").color(INFO_COLOR).build();
 
     @Setting(comment = "When the player enters an email that does not exist.")
-    private Text notEmail = builder("You have entered in an invalid email!").color(WARNING_COLOR).build();
-
-    @Setting(comment = "When the unregister process failed.")
-    private Text unregisterFailed = builder("Your request is neither a player name or uuid.")
-            .color(WARNING_COLOR).build();
+    private Text notEmail = builder("You have entered an invalid email!").color(WARNING_COLOR).build();
 
     @Setting(comment = "When a player successfully logs in.")
     private Text loggedIn = builder("Logged in").color(INFO_COLOR).build();
@@ -125,9 +121,6 @@ public class TextConfig {
 
     @Setting(comment = "When the player successfully created his/her account.")
     private Text accountCreated = builder("Account created").color(INFO_COLOR).build();
-
-    @Setting(comment = "When IP address is invalid.")
-    private Text invalidIP = builder("Invalid IP address").color(WARNING_COLOR).build();
 
     @Setting(comment = "Result message for the accounts admin command")
     private TextTemplate accountsList = of(
@@ -252,10 +245,6 @@ public class TextConfig {
         return notEmail;
     }
 
-    public Text getUnregisterFailed() {
-        return unregisterFailed;
-    }
-
     public Text getLoggedIn() {
         return loggedIn;
     }
@@ -332,10 +321,6 @@ public class TextConfig {
         return forceLoginOffline;
     }
 
-    public Text getInvalidIP() {
-        return invalidIP;
-    }
-
     public Text getAccountsListEmpty() {
         return accountsListEmpty;
     }
@@ -369,22 +354,34 @@ public class TextConfig {
     }
 
     public Text getAccountsList(String username, String accounts) {
-        return accountsList.apply(ImmutableMap.of("username", username, "accounts", accounts)).build();
+        return accountsList.apply(ImmutableMap.of(
+                "username", username,
+                "accounts", accounts
+        )).build();
     }
 
     public Text getAccountDeleted(String account) {
-        return accountDelete.apply(ImmutableMap.of("account", account)).build();
+        return accountDelete.apply(ImmutableMap.of(
+                "account", account
+        )).build();
     }
 
     public Text getKeyGenerated(String code) {
-        return keyGenerated.apply(ImmutableMap.of("code", code)).build();
+        return keyGenerated.apply(ImmutableMap.of(
+                "code", code
+        )).build();
     }
 
     public Text getInvalidCase(String username) {
-        return invalidCase.apply(ImmutableMap.of("username", username)).build();
+        return invalidCase.apply(ImmutableMap.of(
+                "username", username
+        )).build();
     }
 
     public Text getLastOnline(String username, String time) {
-        return lastOnline.apply(ImmutableMap.of("username", username, "time", time)).build();
+        return lastOnline.apply(ImmutableMap.of(
+                "username", username,
+                "time", time
+        )).build();
     }
 }

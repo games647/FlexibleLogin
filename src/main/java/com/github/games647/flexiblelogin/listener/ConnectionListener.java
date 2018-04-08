@@ -28,7 +28,7 @@ package com.github.games647.flexiblelogin.listener;
 import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.PomData;
-import com.github.games647.flexiblelogin.config.General;
+import com.github.games647.flexiblelogin.config.nodes.General;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.google.inject.Inject;

@@ -26,7 +26,7 @@
 package com.github.games647.flexiblelogin.commands;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.config.EmailConfig;
+import com.github.games647.flexiblelogin.config.nodes.EmailConfig;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.tasks.SendMailTask;
@@ -79,8 +79,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(settings.getText().getPlayersOnly());
-            return CommandResult.success();
+            throw new CommandException(settings.getText().getPlayersOnly());
         }
 
         checkPlayerPermission(src);
@@ -93,23 +92,20 @@ public class ForgotPasswordCommand extends AbstractCommand {
         Optional<Account> optAccount = plugin.getDatabase().getAccount(player);
         if (optAccount.isPresent()) {
             if (optAccount.get().isLoggedIn()) {
-                player.sendMessage(settings.getText().getAlreadyLoggedIn());
-                return CommandResult.success();
+                throw new CommandException(settings.getText().getAlreadyLoggedIn());
             }
         } else {
-            player.sendMessage(settings.getText().getAccountNotLoaded());
-            return CommandResult.success();
+            throw new CommandException(settings.getText().getAccountNotLoaded());
         }
 
         Account account = optAccount.get();
 
         Optional<String> optEmail = account.getEmail();
-        if (optEmail.isPresent()) {
-            prepareSend(player, account, optEmail.get());
-            return CommandResult.success();
+        if (!optEmail.isPresent()) {
+            throw new CommandException(settings.getText().getUncommittedEmailAddress());
         }
 
-        player.sendMessage(settings.getText().getUncommittedEmailAddress());
+        prepareSend(player, account, optEmail.get());
         return CommandResult.success();
     }
 

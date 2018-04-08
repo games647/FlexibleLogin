@@ -26,7 +26,7 @@
 package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.config.EmailConfig;
+import com.github.games647.flexiblelogin.config.nodes.EmailConfig;
 
 import java.util.Arrays;
 

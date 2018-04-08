@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.config;
+package com.github.games647.flexiblelogin.config.nodes;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -43,7 +43,7 @@ public class EmailConfig {
     private boolean enabled;
 
     @Setting(comment = "Mail server")
-    private String host = "smtp.gmail.com";
+    private String host = "smtp.host.com";
 
     @Setting(comment = "SMTP Port for outgoing messages")
     private int port = 465;
@@ -90,13 +90,17 @@ public class EmailConfig {
     }
 
     public Text getSubject(String serverName, String playerName) {
-        return subjectTemplate.apply(ImmutableMap.of("server", serverName,
-                "player", playerName)).build();
+        return subjectTemplate.apply(ImmutableMap.of(
+                "server", serverName,
+                "player", playerName
+        )).build();
     }
 
     public Text getText(String serverName, String playerName, String password) {
-        return contentTemplate.apply(ImmutableMap.of("server", serverName,
+        return contentTemplate.apply(ImmutableMap.of(
+                "server", serverName,
                 "player", playerName,
-                "password", password)).build();
+                "password", password
+        )).build();
     }
 }

@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.InvocationCommandException;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
@@ -57,15 +58,13 @@ public class ChangePasswordCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(settings.getText().getPlayersOnly());
-            return CommandResult.empty();
+            throw new CommandException(settings.getText().getPlayersOnly());
         }
 
         checkPlayerPermission(src);
 
         if (!plugin.getDatabase().isLoggedIn((Player) src)) {
-            src.sendMessage(settings.getText().getNotLoggedIn());
-            return CommandResult.empty();
+            throw new CommandException(settings.getText().getNotLoggedIn());
         }
 
         Account account = plugin.getDatabase().getAccount((Player) src).get();
@@ -73,29 +72,29 @@ public class ChangePasswordCommand extends AbstractCommand {
         Collection<String> passwords = args.getAll("password");
         List<String> indexPasswords = Lists.newArrayList(passwords);
         String password = indexPasswords.get(0);
-        if (password.equals(indexPasswords.get(1))) {
-            try {
-                //Check if the first two passwords are equal to prevent typos
-                String hash = plugin.getHasher().hash(password);
-                Task.builder()
-                        //we are executing a SQL Query which is blocking
-                        .async()
-                        .execute(() -> {
-                            account.setPasswordHash(hash);
-                            if (plugin.getDatabase().save(account)) {
-                                src.sendMessage(settings.getText().getChangePassword());
-                            } else {
-                                src.sendMessage(settings.getText().getErrorExecutingCommand());
-                            }
-                        })
-                        .name("Register Query")
-                        .submit(plugin);
-            } catch (Exception ex) {
-                logger.error("Error creating hash on change password", ex);
-                src.sendMessage(settings.getText().getErrorExecutingCommand());
-            }
-        } else {
-            src.sendMessage(settings.getText().getUnequalPasswords());
+        if (!password.equals(indexPasswords.get(1))) {
+            throw new CommandException(settings.getText().getUnequalPasswords());
+        }
+
+        try {
+            //Check if the first two passwords are equal to prevent typos
+            String hash = plugin.getHasher().hash(password);
+            Task.builder()
+                    //we are executing a SQL Query which is blocking
+                    .async()
+                    .execute(() -> {
+                        account.setPasswordHash(hash);
+                        if (plugin.getDatabase().save(account)) {
+                            src.sendMessage(settings.getText().getChangePassword());
+                        } else {
+                            src.sendMessage(settings.getText().getErrorExecutingCommand());
+                        }
+                    })
+                    .name("Register Query")
+                    .submit(plugin);
+        } catch (Exception ex) {
+            logger.error("Error creating hash on change password", ex);
+            throw new InvocationCommandException(settings.getText().getErrorExecutingCommand(), ex);
         }
 
         return CommandResult.success();

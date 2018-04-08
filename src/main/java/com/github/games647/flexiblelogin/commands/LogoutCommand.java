@@ -25,9 +25,9 @@
  */
 package com.github.games647.flexiblelogin.commands;
 
-import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.Settings;
+import com.github.games647.flexiblelogin.storage.Account;
 import com.google.inject.Inject;
 
 import org.slf4j.Logger;
@@ -49,28 +49,27 @@ public class LogoutCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            src.sendMessage(settings.getText().getPlayersOnly());
-            return CommandResult.success();
+            throw new CommandException(settings.getText().getPlayersOnly());
         }
 
         checkPlayerPermission(src);
 
-        if (plugin.getDatabase().isLoggedIn((Player) src)) {
-            Account account = plugin.getDatabase().getAccount((Player) src).get();
-
-            src.sendMessage(settings.getText().getLoggedOut());
-            account.setLoggedIn(false);
-
-            Task.builder()
-                    .async()
-                    .execute(() -> {
-                        //flushes the ip update
-                        plugin.getDatabase().save(account);
-                    })
-                    .submit(plugin);
-        } else {
-            src.sendMessage(settings.getText().getNotLoggedIn());
+        if (!plugin.getDatabase().isLoggedIn((Player) src)) {
+            throw new CommandException(settings.getText().getNotLoggedIn());
         }
+
+        Account account = plugin.getDatabase().getAccount((Player) src).get();
+
+        src.sendMessage(settings.getText().getLoggedOut());
+        account.setLoggedIn(false);
+
+        Task.builder()
+                .async()
+                .execute(() -> {
+                    //flushes the ip update
+                    plugin.getDatabase().save(account);
+                })
+                .submit(plugin);
 
         return CommandResult.success();
     }

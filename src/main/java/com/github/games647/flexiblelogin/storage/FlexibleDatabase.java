@@ -26,7 +26,7 @@
 package com.github.games647.flexiblelogin.storage;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.config.SQLConfig.Type;
+import com.github.games647.flexiblelogin.config.nodes.SQLConfig.Type;
 import com.github.games647.flexiblelogin.config.Settings;
 
 import java.io.BufferedReader;
