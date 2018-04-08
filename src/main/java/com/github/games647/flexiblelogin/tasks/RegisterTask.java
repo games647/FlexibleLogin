@@ -27,7 +27,7 @@ package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.ProtectionManager;
-import com.github.games647.flexiblelogin.config.nodes.General.HashingAlgorithm;
+import com.github.games647.flexiblelogin.config.node.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.github.games647.flexiblelogin.storage.Account;
 import com.google.common.base.Splitter;
@@ -70,7 +70,7 @@ public class RegisterTask implements Runnable {
         if (!plugin.getDatabase().loadAccount(player).isPresent()) {
             int regByIp = plugin.getDatabase().getRegistrationsCount(player.getConnection().getAddress().getAddress());
             if (regByIp > plugin.getConfigManager().getGeneral().getMaxIpReg()) {
-                player.sendMessage(plugin.getConfigManager().getText().getMaxIpReg());
+                player.sendMessage(plugin.getConfigManager().getText().getMaxIPReg());
                 return;
             }
 
@@ -121,7 +121,7 @@ public class RegisterTask implements Runnable {
 
             Text keyGenerated = plugin.getConfigManager().getText().getKeyGenerated(readableSecret);
             player.sendMessage(keyGenerated);
-            player.sendMessage(plugin.getConfigManager().getText().getScanQr().toBuilder()
+            player.sendMessage(plugin.getConfigManager().getText().getScanQR().toBuilder()
                             .onClick(openUrl(barcodeUrl))
                             .build());
         } catch (MalformedURLException ex) {

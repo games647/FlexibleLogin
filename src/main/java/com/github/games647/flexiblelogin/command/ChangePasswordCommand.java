@@ -23,47 +23,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.commands;
+package com.github.games647.flexiblelogin.command;
 
-import com.github.games647.flexiblelogin.AttemptManager;
+import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.ProtectionManager;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.tasks.LoginTask;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import java.util.Collection;
+import java.util.List;
 
 import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
-import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.InvocationCommandException;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
-import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
 import static org.spongepowered.api.command.args.GenericArguments.string;
 import static org.spongepowered.api.text.Text.of;
 
-public class LoginCommand extends AbstractCommand {
+public class ChangePasswordCommand extends AbstractCommand {
 
     @Inject
-    private CommandManager commandManager;
-
-    @Inject
-    private AttemptManager attemptManager;
-
-    @Inject
-    private ProtectionManager protectionManager;
-
-    @Inject
-    LoginCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
-        super(plugin, logger, settings, "login");
+    ChangePasswordCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+        super(plugin, logger, settings, "changepw");
     }
 
     @Override
@@ -74,46 +63,50 @@ public class LoginCommand extends AbstractCommand {
 
         checkPlayerPermission(src);
 
-        Player player = (Player) src;
-        if (plugin.getDatabase().isLoggedIn(player)) {
-            throw new CommandException(settings.getText().getAlreadyLoggedIn());
+        if (!plugin.getDatabase().isLoggedIn((Player) src)) {
+            throw new CommandException(settings.getText().getNotLoggedIn());
         }
 
-        UUID uniqueId = player.getUniqueId();
-        if (!attemptManager.isAllowed(uniqueId)) {
-            String lockCommand = settings.getGeneral().getLockCommand();
-            if (!lockCommand.isEmpty()) {
-                commandManager.process(Sponge.getServer().getConsole(), lockCommand);
-            }
+        Account account = plugin.getDatabase().getAccount((Player) src).get();
 
+        Collection<String> passwords = args.getAll("password");
+        List<String> indexPasswords = Lists.newArrayList(passwords);
+        String password = indexPasswords.get(0);
+        if (!password.equals(indexPasswords.get(1))) {
+            throw new CommandException(settings.getText().getUnequalPasswords());
+        }
+
+        try {
+            //Check if the first two passwords are equal to prevent typos
+            String hash = plugin.getHasher().hash(password);
             Task.builder()
-                    .delay(settings.getGeneral().getWaitTime(), TimeUnit.SECONDS)
-                    .execute(() -> attemptManager.clearAttempts(uniqueId))
+                    //we are executing a SQL Query which is blocking
+                    .async()
+                    .execute(() -> {
+                        account.setPasswordHash(hash);
+                        if (plugin.getDatabase().save(account)) {
+                            src.sendMessage(settings.getText().getChangePassword());
+                        } else {
+                            src.sendMessage(settings.getText().getErrorExecutingCommand());
+                        }
+                    })
+                    .name("Register Query")
                     .submit(plugin);
-
-            throw new CommandException(settings.getText().getMaxAttempts());
+        } catch (Exception ex) {
+            logger.error("Error creating hash on change password", ex);
+            throw new InvocationCommandException(settings.getText().getErrorExecutingCommand(), ex);
         }
-
-        attemptManager.increaseAttempt(uniqueId);
-
-        //the arg isn't optional. We can be sure there is value
-        String password = args.<String>getOne("password").get();
-
-        Task.builder()
-                //we are executing a SQL Query which is blocking
-                .async()
-                .execute(new LoginTask(plugin, attemptManager, protectionManager, (Player) src, password))
-                .name("Login Query")
-                .submit(plugin);
 
         return CommandResult.success();
     }
 
     @Override
-    public CommandSpec buildSpec() {
+    public CommandSpec buildSpec(Settings settings) {
         return CommandSpec.builder()
                 .executor(this)
-                .arguments(onlyOne(string(of("password"))))
+                .arguments(GenericArguments
+                        .repeated(
+                                string(of("password")), 2))
                 .build();
     }
 }

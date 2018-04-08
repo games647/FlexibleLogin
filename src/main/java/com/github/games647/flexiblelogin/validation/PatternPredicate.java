@@ -36,6 +36,10 @@ public class PatternPredicate implements Predicate<String> {
         this.pattern = Pattern.compile(regEx);
     }
 
+    public PatternPredicate(Pattern pattern) {
+        this.pattern = pattern;
+    }
+
     @Override
     public boolean test(String input) {
         return pattern.matcher(input).matches();

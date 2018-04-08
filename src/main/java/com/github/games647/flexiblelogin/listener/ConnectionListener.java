@@ -28,7 +28,7 @@ package com.github.games647.flexiblelogin.listener;
 import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.PomData;
-import com.github.games647.flexiblelogin.config.nodes.General;
+import com.github.games647.flexiblelogin.config.node.General;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.validation.NamePredicate;
 import com.google.inject.Inject;
@@ -158,7 +158,7 @@ public class ConnectionListener {
             return;
         }
 
-        if (!config.isCommandOnlyProtection() && config.getTimeoutLogin() != -1) {
+        if (!config.isCommandOnlyProtection() && !config.getTimeoutLogin().isNegative()) {
             Task.builder()
                     .execute(() -> {
                         if (plugin.getDatabase().getAccount(player)
@@ -166,7 +166,7 @@ public class ConnectionListener {
                             player.kick(settings.getText().getTimeoutReason());
                         }
                     })
-                    .delay(config.getTimeoutLogin(), TimeUnit.SECONDS)
+                    .delay(config.getTimeoutLogin().getSeconds(), TimeUnit.SECONDS)
                     .submit(plugin);
         }
     }

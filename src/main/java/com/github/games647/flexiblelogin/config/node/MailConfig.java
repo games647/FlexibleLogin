@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.config.nodes;
+package com.github.games647.flexiblelogin.config.node;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -37,7 +37,7 @@ import static org.spongepowered.api.text.TextTemplate.arg;
 import static org.spongepowered.api.text.TextTemplate.of;
 
 @ConfigSerializable
-public class EmailConfig {
+public class MailConfig {
 
     @Setting(comment = "Is password recovery using an email allowed")
     private boolean enabled;

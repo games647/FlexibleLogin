@@ -25,22 +25,22 @@
  */
 package com.github.games647.flexiblelogin;
 
-import com.github.games647.flexiblelogin.commands.ChangePasswordCommand;
-import com.github.games647.flexiblelogin.commands.ForgotPasswordCommand;
-import com.github.games647.flexiblelogin.commands.LoginCommand;
-import com.github.games647.flexiblelogin.commands.LogoutCommand;
-import com.github.games647.flexiblelogin.commands.SetEmailCommand;
-import com.github.games647.flexiblelogin.commands.admin.AccountsCommand;
-import com.github.games647.flexiblelogin.commands.admin.ForceLoginCommand;
-import com.github.games647.flexiblelogin.commands.admin.ForceRegisterCommand;
-import com.github.games647.flexiblelogin.commands.admin.LastLoginCommand;
-import com.github.games647.flexiblelogin.commands.admin.ReloadCommand;
-import com.github.games647.flexiblelogin.commands.admin.ResetPasswordCommand;
-import com.github.games647.flexiblelogin.commands.admin.UnregisterCommand;
-import com.github.games647.flexiblelogin.commands.register.PasswordRegisterCommand;
-import com.github.games647.flexiblelogin.commands.register.TwoFactorRegisterCommand;
+import com.github.games647.flexiblelogin.command.ChangePasswordCommand;
+import com.github.games647.flexiblelogin.command.ForgotPasswordCommand;
+import com.github.games647.flexiblelogin.command.LoginCommand;
+import com.github.games647.flexiblelogin.command.LogoutCommand;
+import com.github.games647.flexiblelogin.command.SetMailCommand;
+import com.github.games647.flexiblelogin.command.admin.AccountsCommand;
+import com.github.games647.flexiblelogin.command.admin.ForceLoginCommand;
+import com.github.games647.flexiblelogin.command.admin.ForceRegisterCommand;
+import com.github.games647.flexiblelogin.command.admin.LastLoginCommand;
+import com.github.games647.flexiblelogin.command.admin.ReloadCommand;
+import com.github.games647.flexiblelogin.command.admin.ResetPasswordCommand;
+import com.github.games647.flexiblelogin.command.admin.UnregisterCommand;
+import com.github.games647.flexiblelogin.command.register.PasswordRegisterCommand;
+import com.github.games647.flexiblelogin.command.register.TwoFactorRegisterCommand;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.config.nodes.General.HashingAlgorithm;
+import com.github.games647.flexiblelogin.config.node.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.hasher.Hasher;
 import com.github.games647.flexiblelogin.listener.ConnectionListener;
 import com.github.games647.flexiblelogin.listener.prevent.GriefPreventListener;
@@ -57,14 +57,15 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
-import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.EventManager;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
@@ -134,24 +135,24 @@ public class FlexibleLogin {
             loginAliases.add("l");
         }
 
-        commandManager.register(this, injector.getInstance(LoginCommand.class).buildSpec(), loginAliases);
-        commandManager.register(this, injector.getInstance(LogoutCommand.class).buildSpec(), "logout");
-        commandManager.register(this, injector.getInstance(SetEmailCommand.class).buildSpec(), "setemail", "email");
+        commandManager.register(this, injector.getInstance(LoginCommand.class).buildSpec(config), loginAliases);
+        commandManager.register(this, injector.getInstance(LogoutCommand.class).buildSpec(config), "logout");
+        commandManager.register(this, injector.getInstance(SetMailCommand.class).buildSpec(config), "setemail", "email");
         commandManager.register(this, injector.getInstance(ChangePasswordCommand.class)
-                .buildSpec(), "changepassword", "changepw", "cp");
+                .buildSpec(config), "changepassword", "changepw", "cp");
         commandManager.register(this, injector.getInstance(ForgotPasswordCommand.class)
-                .buildSpec(), "forgotpassword", "forgot");
+                .buildSpec(config), "forgotpassword", "forgot");
 
         //admin commands
         commandManager.register(this, CommandSpec.builder()
                 .permission(PomData.ARTIFACT_ID + ".admin")
-                .child(injector.getInstance(ReloadCommand.class).buildSpec(), "reload", "rl")
-                .child(injector.getInstance(UnregisterCommand.class).buildSpec(), "unregister", "unreg")
-                .child(injector.getInstance(ForceRegisterCommand.class).buildSpec(), "register", "reg")
-                .child(injector.getInstance(LastLoginCommand.class).buildSpec(), "lastlogin")
-                .child(injector.getInstance(ResetPasswordCommand.class).buildSpec(), "resetpw", "resetpassword")
-                .child(injector.getInstance(ForceLoginCommand.class).buildSpec(), "forcelogin")
-                .child(injector.getInstance(AccountsCommand.class).buildSpec(), "accounts", "acc")
+                .child(injector.getInstance(ReloadCommand.class).buildSpec(config), "reload", "rl")
+                .child(injector.getInstance(UnregisterCommand.class).buildSpec(config), "unregister", "unreg")
+                .child(injector.getInstance(ForceRegisterCommand.class).buildSpec(config), "register", "reg")
+                .child(injector.getInstance(LastLoginCommand.class).buildSpec(config), "lastlogin")
+                .child(injector.getInstance(ResetPasswordCommand.class).buildSpec(config), "resetpw", "resetpassword")
+                .child(injector.getInstance(ForceLoginCommand.class).buildSpec(config), "forcelogin")
+                .child(injector.getInstance(AccountsCommand.class).buildSpec(config), "accounts", "acc")
                 .build(), PomData.ARTIFACT_ID, "fl");
     }
 
@@ -169,12 +170,12 @@ public class FlexibleLogin {
 
         Sponge.getScheduler().getScheduledTasks(this).forEach(Task::cancel);
 
-        Server server = Sponge.getServer();
-        server.getOnlinePlayers().forEach(protectionManager::unprotect);
+        Collection<Player> onlinePlayers = Sponge.getServer().getOnlinePlayers();
+        onlinePlayers.forEach(protectionManager::unprotect);
 
         init();
 
-        server.getOnlinePlayers().stream()
+        onlinePlayers.stream()
                 .peek(protectionManager::protect)
                 .parallel()
                 .forEach(database::loadAccount);
@@ -202,16 +203,16 @@ public class FlexibleLogin {
         //use bcrypt as fallback for now
         hasher = config.getGeneral().getHashAlgo().createHasher();
         if (config.getGeneral().getHashAlgo() == HashingAlgorithm.TOTP) {
-            commandManager.register(this, injector.getInstance(TwoFactorRegisterCommand.class).buildSpec(),
+            commandManager.register(this, injector.getInstance(TwoFactorRegisterCommand.class).buildSpec(config),
                     "register", "reg");
         } else if (config.getGeneral().getHashAlgo() == HashingAlgorithm.BCrypt) {
-            commandManager.register(this, injector.getInstance(PasswordRegisterCommand.class).buildSpec(),
+            commandManager.register(this, injector.getInstance(PasswordRegisterCommand.class).buildSpec(config),
                     "register", "reg");
         }
 
         //schedule tasks
         Task.builder().execute(new MessageTask(this, config))
-                .interval(config.getGeneral().getMessageInterval(), TimeUnit.SECONDS)
+                .interval(config.getGeneral().getMessageInterval().getSeconds(), TimeUnit.SECONDS)
                 .submit(this);
     }
 

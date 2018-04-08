@@ -26,7 +26,7 @@
 package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.config.nodes.TeleportConfig;
+import com.github.games647.flexiblelogin.config.node.TeleportConfig;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 

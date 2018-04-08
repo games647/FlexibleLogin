@@ -28,8 +28,8 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
     /changepw /cp /changepassword <password> <password> - Changes your current password
     /log /l /login <password|code> - Login using your password or time based code
     /logout - Logs you out
-    /email /setemail - Sets your email address
-    /forgot /forgotpassword - Sends a recovery email to the email address
+    /mail /setemail - Sets your mail address
+    /forgot /forgotpassword - Sends a recovery mail to the mail address
     /unregister <uuid|name> - delete an account
 
     Admin commands
@@ -47,7 +47,7 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
     flexiblelogin.command.logout - Use the /logout command
     flexiblelogin.command.changepw - Use the /changepassword command
     flexiblelogin.command.register - Use the /register command
-    flexiblelogin.command.email - Use the /setemail command
+    flexiblelogin.command.mail - Use the /setemail command
     flexiblelogin.command.forgot - Use the /forgot command
     flexiblelogin.no_auto_login - Players with this won't be auto logged in by the ip auto login feature
     flexiblelogin.bypass - Users who have this permission can skip authentication
@@ -64,7 +64,7 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
     commandOnlyProtection=false
     # Email configuration for password recovery
     emailConfiguration {
-        # Username for the account you want to the email from
+        # Username for the account you want to the mail from
         account=""
         # Email contents. You can use HTML here
         contentTemplate {
@@ -79,15 +79,15 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
                 openArg="{"
             }
         }
-        # Is password recovery using an email allowed
+        # Is password recovery using an mail allowed
         enabled=false
         # Mail server
         host="smtp.gmail.com"
-        # Password for the account you want to the email from
+        # Password for the account you want to the mail from
         password=""
         # SMTP Port for outgoing messages
         port=465
-        # Displays as sender in the email client
+        # Displays as sender in the mail client
         senderName="Your Minecraft server name"
         # Email subject/title
         subjectTemplate {

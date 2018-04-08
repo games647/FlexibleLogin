@@ -1,7 +1,9 @@
 /*
- * The MIT License
+ * This file is part of FlexibleLogin
  *
- * Copyright 2018 Toranktto.
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2015-2018 contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -10,21 +12,21 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.commands.admin;
+package com.github.games647.flexiblelogin.command.admin;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.commands.AbstractCommand;
+import com.github.games647.flexiblelogin.command.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.storage.Account;
 import com.google.inject.Inject;
@@ -85,7 +87,7 @@ public class AccountsCommand extends AbstractCommand {
     private void queryAccountsByName(CommandSource src, String username) {
         Optional<Account> optAccount = plugin.getDatabase().loadAccount(username);
         if (!optAccount.isPresent()) {
-            src.sendMessage(plugin.getConfigManager().getText().getAccountNotFound());
+            src.sendMessage(settings.getText().getAccountNotFound());
             return;
         }
 
@@ -96,12 +98,12 @@ public class AccountsCommand extends AbstractCommand {
             return;
         }
 
-        src.sendMessage(plugin.getConfigManager().getText().getAccountsListNoIP());
+        src.sendMessage(settings.getText().getAccountsListNoIP());
     }
 
     private void sendAccountNames(CommandSource src, String username, Collection<Account> accounts) {
         if (accounts.isEmpty()) {
-            src.sendMessage(plugin.getConfigManager().getText().getAccountsListEmpty());
+            src.sendMessage(settings.getText().getAccountsListEmpty());
             return;
         }
 
@@ -111,18 +113,20 @@ public class AccountsCommand extends AbstractCommand {
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
-        src.sendMessage(plugin.getConfigManager().getText().getAccountsList(username,
+        src.sendMessage(settings.getText().getAccountsList(username,
                 String.join(", ", names)));
     }
 
     @Override
-    public CommandSpec buildSpec() {
+    public CommandSpec buildSpec(Settings settings) {
         return CommandSpec.builder()
                 .executor(this)
-                .arguments(onlyOne(
-                        firstParsing(
-                                GenericArguments.ip(of("ip")),
-                                GenericArguments.user(of("user"))))
+                .arguments(
+                        onlyOne(
+                                firstParsing(
+                                        GenericArguments.ip(of("ip")),
+                                        GenericArguments.user(of("user")))
+                        )
                 )
                 .build();
     }

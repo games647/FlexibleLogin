@@ -23,15 +23,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.commands.admin;
+package com.github.games647.flexiblelogin.command.admin;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.commands.AbstractCommand;
+import com.github.games647.flexiblelogin.command.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.google.inject.Inject;
 
 import org.slf4j.Logger;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -53,7 +52,7 @@ public class ReloadCommand extends AbstractCommand {
     }
 
     @Override
-    public CommandSpec buildSpec() {
+    public CommandSpec buildSpec(Settings settings) {
         return CommandSpec.builder()
                 .executor(this)
                 .build();

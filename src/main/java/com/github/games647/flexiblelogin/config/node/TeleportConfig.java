@@ -23,16 +23,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.config.nodes;
+package com.github.games647.flexiblelogin.config.node;
 
 import java.util.Optional;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 @ConfigSerializable
 public class TeleportConfig {
@@ -44,7 +46,7 @@ public class TeleportConfig {
     private boolean defaultSpawn;
 
     @Setting(comment = "Spawn world or let it empty to use the default world specified in the server properties")
-    private String worldName = "";
+    private WorldProperties worldName;
 
     @Setting
     private int coordX;
@@ -63,10 +65,6 @@ public class TeleportConfig {
         return defaultSpawn;
     }
 
-    public String getWorldName() {
-        return worldName;
-    }
-
     public int getX() {
         return coordX;
     }
@@ -80,11 +78,16 @@ public class TeleportConfig {
     }
 
     public Optional<Location<World>> getSpawnLocation() {
-        if (worldName.isEmpty()) {
-            worldName = Sponge.getServer().getDefaultWorldName();
+        Server server = Sponge.getServer();
+        if (worldName == null) {
+            worldName = server.getDefaultWorld().orElse(null);
+            if (worldName == null) {
+                //Default is not available too
+                return Optional.empty();
+            }
         }
 
-        return Sponge.getServer().getWorld(worldName).map(world -> {
+        return server.getWorld(worldName.getUniqueId()).map(world -> {
             if (defaultSpawn) {
                 return world.getSpawnLocation();
             }

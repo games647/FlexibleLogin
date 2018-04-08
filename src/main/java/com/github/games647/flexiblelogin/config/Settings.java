@@ -25,29 +25,38 @@
  */
 package com.github.games647.flexiblelogin.config;
 
-import com.github.games647.flexiblelogin.config.nodes.General;
-import com.github.games647.flexiblelogin.config.nodes.TextConfig;
+import com.github.games647.flexiblelogin.config.node.General;
+import com.github.games647.flexiblelogin.config.node.TextConfig;
+import com.github.games647.flexiblelogin.config.serializer.DurationSerializer;
+import com.github.games647.flexiblelogin.config.serializer.WorldSerializer;
+import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection;
 
 import org.slf4j.Logger;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 @Singleton
 public class Settings {
 
     private final Logger logger;
     private final Path dataFolder;
+
+    private final ConfigurationOptions options = getConfigurationOptions();
 
     private ObjectMapper<General>.BoundInstance configMapper;
     private ObjectMapper<TextConfig>.BoundInstance textMapper;
@@ -59,11 +68,21 @@ public class Settings {
         this.dataFolder = dataFolder;
 
         try {
-            configMapper = ObjectMapper.forClass(General.class).bindToNew();
-            textMapper = ObjectMapper.forClass(TextConfig.class).bindToNew();
+            configMapper = options.getObjectMapperFactory().getMapper(General.class).bindToNew();
+            textMapper = options.getObjectMapperFactory().getMapper(TextConfig.class).bindToNew();
         } catch (ObjectMappingException objMappingExc) {
             logger.error("Invalid plugin structure", objMappingExc);
         }
+    }
+
+    private ConfigurationOptions getConfigurationOptions() {
+        ConfigurationOptions defaults = ConfigurationOptions.defaults();
+
+        TypeSerializerCollection serializers = defaults.getSerializers().newChild();
+        serializers.registerType(TypeToken.of(Duration.class), new DurationSerializer());
+        serializers.registerType(TypeToken.of(WorldProperties.class), new WorldSerializer(Sponge.getServer()));
+
+        return defaults.setSerializers(serializers);
     }
 
     public void load() {
@@ -86,8 +105,8 @@ public class Settings {
             logger.error("Failed to create default config file", ioEx);
         }
 
-        loadMapper(configMapper, configFile, ConfigurationOptions.defaults());
-        loadMapper(textMapper, textFile, ConfigurationOptions.defaults()
+        loadMapper(configMapper, configFile, options);
+        loadMapper(textMapper, textFile, options
                 .setHeader("Visit: https://github.com/games647/FlexibleLogin/wiki for community given templates"));
     }
 

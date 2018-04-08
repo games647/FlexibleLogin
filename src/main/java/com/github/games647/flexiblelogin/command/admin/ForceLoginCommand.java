@@ -23,57 +23,64 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.commands.admin;
+package com.github.games647.flexiblelogin.command.admin;
 
+import com.github.games647.flexiblelogin.AttemptManager;
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.commands.AbstractCommand;
+import com.github.games647.flexiblelogin.ProtectionManager;
+import com.github.games647.flexiblelogin.command.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.tasks.UUIDResetPwTask;
+import com.github.games647.flexiblelogin.tasks.ForceLoginTask;
 import com.google.inject.Inject;
 
 import org.slf4j.Logger;
+import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
-import static org.spongepowered.api.command.args.GenericArguments.string;
-import static org.spongepowered.api.command.args.GenericArguments.user;
+import static org.spongepowered.api.command.args.GenericArguments.player;
 import static org.spongepowered.api.text.Text.of;
 
-public class ResetPasswordCommand extends AbstractCommand {
+public class ForceLoginCommand extends AbstractCommand {
 
     @Inject
-    ResetPasswordCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+    private ProtectionManager protectionManager;
+
+    @Inject
+    private AttemptManager attemptManager;
+
+    @Inject
+    ForceLoginCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
         super(plugin, logger, settings);
     }
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) {
-        User user = args.<User>getOne("user").get();
-        String password = args.<String>getOne("password").get();
+    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+        Player player = args.<Player>getOne("account").get();
+        if (plugin.getDatabase().isLoggedIn(player)) {
+            throw new CommandException(settings.getText().getForceLoginAlreadyLoggedIn());
+        }
 
-        //check if the account is a valid player name
         Task.builder()
-                //Async as it could run a SQL query
+                //we are executing a SQL Query which is blocking
                 .async()
-                .execute(new UUIDResetPwTask(plugin, src, password, user.getUniqueId()))
+                .execute(new ForceLoginTask(plugin, attemptManager, protectionManager, player, src))
+                .name("Force Login Query")
                 .submit(plugin);
+
         return CommandResult.success();
     }
 
     @Override
-    public CommandSpec buildSpec() {
+    public CommandSpec buildSpec(Settings settings) {
         return CommandSpec.builder()
                 .executor(this)
-                .arguments(
-                        onlyOne(
-                                user(of("user"))
-                        ),
-                        string(of("password")))
+                .arguments(onlyOne(player(of("account"))))
                 .build();
     }
 }

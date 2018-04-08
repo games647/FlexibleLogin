@@ -23,10 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.commands;
+package com.github.games647.flexiblelogin.command;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.config.nodes.EmailConfig;
+import com.github.games647.flexiblelogin.config.node.MailConfig;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.tasks.SendMailTask;
@@ -84,8 +84,8 @@ public class ForgotPasswordCommand extends AbstractCommand {
 
         checkPlayerPermission(src);
 
-        if (!settings.getGeneral().getEmail().isEnabled()) {
-            src.sendMessage(settings.getText().getEmailNotEnabled());
+        if (!settings.getGeneral().getMail().isEnabled()) {
+            throw new CommandException(settings.getText().getMailNotEnabled());
         }
 
         Player player = (Player) src;
@@ -100,9 +100,9 @@ public class ForgotPasswordCommand extends AbstractCommand {
 
         Account account = optAccount.get();
 
-        Optional<String> optEmail = account.getEmail();
+        Optional<String> optEmail = account.getMail();
         if (!optEmail.isPresent()) {
-            throw new CommandException(settings.getText().getUncommittedEmailAddress());
+            throw new CommandException(settings.getText().getUncommittedMailAddress());
         }
 
         prepareSend(player, account, optEmail.get());
@@ -112,7 +112,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
     private void prepareSend(Player player, Account account, String email) {
         String newPassword = passwordSupplier.get();
 
-        EmailConfig emailConfig = settings.getGeneral().getEmail();
+        MailConfig emailConfig = settings.getGeneral().getMail();
         Session session = buildSession(emailConfig);
 
         try {
@@ -136,7 +136,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
         }
     }
 
-    private Session buildSession(EmailConfig emailConfig) {
+    private Session buildSession(MailConfig emailConfig) {
         Properties properties = new Properties();
         properties.setProperty("mail.smtp.host", emailConfig.getHost());
         properties.setProperty("mail.smtp.auth", "true");
@@ -164,7 +164,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
         return session;
     }
 
-    private MimeMessage buildMessage(User player, String email, String newPassword, EmailConfig emailConfig,
+    private MimeMessage buildMessage(User player, String email, String newPassword, MailConfig emailConfig,
                                      Session session) throws MessagingException, UnsupportedEncodingException {
         String serverName = Sponge.getServer().getBoundAddress()
                 .map(sa -> sa.getAddress().getHostAddress())
@@ -201,7 +201,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
     }
 
     @Override
-    public CommandSpec buildSpec() {
+    public CommandSpec buildSpec(Settings settings) {
         return CommandSpec.builder()
                 .executor(this)
                 .build();

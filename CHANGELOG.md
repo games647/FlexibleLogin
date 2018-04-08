@@ -79,7 +79,7 @@ safeLoc.setPosition(newPos)
 * Safe teleport players outside of Nether portals (Fixes #81)
 * Cache flexiblelogin plugin commands that should be ignored for events
 * Fix errors if GriefPrevention isn't loaded
-* Enhance email SSL security
+* Enhance mail SSL security
 * Revert BCrypt workaround
 * Use Instant for lastLogin
 * Remove code duplicates
@@ -154,7 +154,7 @@ safeLoc.setPosition(newPos)
 * Only auto login if the last login is between 12 hours
 * Add permission to prevent ip auto login (Fixes #43)
 * Remove cache
-* Fix email prefix (now from https://emailregex.com/) (Fixes #483)
+* Fix mail prefix (now from https://emailregex.com/) (Fixes #483)
 * Fix creating default config
 * Change login alias from /l -> /log
 
@@ -298,7 +298,7 @@ safeLoc.setPosition(newPos)
 
 ##### 0.2.1
 
-* Fixed email sending
+* Fixed mail sending
 * Fixed MySQL support (Missing connection account properties)
 * Fixed UUID support for MySQL
 
@@ -307,7 +307,7 @@ safeLoc.setPosition(newPos)
 * Implement Password recovery
 * Added /forgotPassword command
 * Added /setEmail command
-* Added email column to the database
+* Added mail column to the database
 * Added /unregister command for admins to delete user accounts
 * Added player messages if a command fails to execute
 

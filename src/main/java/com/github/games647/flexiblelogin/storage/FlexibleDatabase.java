@@ -26,7 +26,7 @@
 package com.github.games647.flexiblelogin.storage;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.config.nodes.SQLConfig.Type;
+import com.github.games647.flexiblelogin.config.node.SQLConfig.Type;
 import com.github.games647.flexiblelogin.config.Settings;
 
 import java.io.BufferedReader;
@@ -165,7 +165,7 @@ public class FlexibleDatabase extends Database {
         stmt.setObject(3, account.getIP().map(InetAddress::getAddress).orElse(new byte[0]));
 
         stmt.setTimestamp(4, Timestamp.from(account.getLastLogin()));
-        stmt.setString(5, account.getEmail().orElse(null));
+        stmt.setString(5, account.getMail().orElse(null));
         stmt.setBoolean(6, account.isLoggedIn());
 
         stmt.setObject(7, toArray(account.getId()));
@@ -183,9 +183,9 @@ public class FlexibleDatabase extends Database {
 
         InetAddress ip = parseAddress(resultSet.getBytes(5));
         Instant lastLogin = parseTimestamp(resultSet, 6);
-        String email = resultSet.getString(7);
+        String mail = resultSet.getString(7);
 
-        return Optional.of(new Account(uuid, username, password, ip, email, lastLogin));
+        return Optional.of(new Account(uuid, username, password, ip, mail, lastLogin));
     }
 
     private InetAddress parseAddress(byte[] bytes) {

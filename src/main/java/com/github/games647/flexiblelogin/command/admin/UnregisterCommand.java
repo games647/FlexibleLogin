@@ -23,10 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.commands.admin;
+package com.github.games647.flexiblelogin.command.admin;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.commands.AbstractCommand;
+import com.github.games647.flexiblelogin.command.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.tasks.UnregisterTask;
 import com.google.inject.Inject;
@@ -70,7 +70,7 @@ public class UnregisterCommand extends AbstractCommand {
     }
 
     @Override
-    public CommandSpec buildSpec() {
+    public CommandSpec buildSpec(Settings settings) {
         return CommandSpec.builder()
                 .executor(this)
                 .arguments(

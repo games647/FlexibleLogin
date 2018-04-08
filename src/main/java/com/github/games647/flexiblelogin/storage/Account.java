@@ -42,7 +42,7 @@ public class Account {
     private String username;
     private String passwordHash;
     private InetAddress ip;
-    private String email;
+    private String mail;
 
     private Instant lastLogin;
     private transient boolean loggedIn;
@@ -61,12 +61,12 @@ public class Account {
         this.lastLogin = Instant.now();
     }
 
-    public Account(UUID uuid, String username, String password, InetAddress ip, String email, Instant lastLogin) {
+    public Account(UUID uuid, String username, String password, InetAddress ip, String mail, Instant lastLogin) {
         this.uuid = uuid;
         this.username = username;
         this.passwordHash = password;
         this.ip = ip;
-        this.email = email;
+        this.mail = mail;
         this.lastLogin = lastLogin;
     }
 
@@ -110,16 +110,16 @@ public class Account {
         return lastLogin;
     }
 
-    public synchronized Optional<String> getEmail() {
-        if (email == null || email.isEmpty()) {
+    public synchronized Optional<String> getMail() {
+        if (mail == null || mail.isEmpty()) {
             return Optional.empty();
         }
 
-        return Optional.of(email);
+        return Optional.of(mail);
     }
 
-    public synchronized void setEmail(String email) {
-        this.email = email;
+    public synchronized void setMail(String mail) {
+        this.mail = mail;
     }
 
     public synchronized boolean isLoggedIn() {
@@ -140,7 +140,7 @@ public class Account {
                 "uuid=" + uuid +
                 ", username='" + username + '\'' +
                 ", ip=" + ip +
-                ", email='" + email + '\'' +
+                ", mail='" + mail + '\'' +
                 ", loggedIn=" + loggedIn +
                 ", lastLogin=" + lastLogin +
                 '}';

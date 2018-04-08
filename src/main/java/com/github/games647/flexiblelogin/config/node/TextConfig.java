@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.config.nodes;
+package com.github.games647.flexiblelogin.config.node;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -89,7 +89,7 @@ public class TextConfig {
     private Text incorrectPassword = builder("Incorrect password").color(WARNING_COLOR).build();
 
     @Setting(comment = "When the recovery email was sent!")
-    private Text mailSent = builder("Email sent").color(INFO_COLOR).build();
+    private Text mailSent = builder("Mail sent").color(INFO_COLOR).build();
 
     @Setting(comment = "When a player's account does not exist.")
     private Text accountNotFound = builder("Account not found").color(WARNING_COLOR).build();
@@ -188,7 +188,7 @@ public class TextConfig {
     private Text alreadyOnline = builder("You are already online").color(INFO_COLOR).build();
 
     @Setting(comment = "If email recovery is not enabled")
-    private Text emailNotEnabled = builder("Email recovery is not enabled.").color(INFO_COLOR).build();
+    private Text emailNotEnabled = builder("Mail recovery is not enabled.").color(INFO_COLOR).build();
 
     @Setting(comment = "If unregistered player shouldn't join the server")
     private Text unregisteredKick = builder("You cannot connect because you have to register on the website.")
@@ -209,7 +209,7 @@ public class TextConfig {
         return alreadyLoggedIn;
     }
 
-    public Text getUncommittedEmailAddress() {
+    public Text getUncommittedMailAddress() {
         return uncommittedEmailAddress;
     }
 
@@ -237,11 +237,11 @@ public class TextConfig {
         return unequalPasswords;
     }
 
-    public Text getEmailSet() {
+    public Text getMailSet() {
         return emailSet;
     }
 
-    public Text getNotEmail() {
+    public Text getNotMail() {
         return notEmail;
     }
 
@@ -273,7 +273,7 @@ public class TextConfig {
         return accountCreated;
     }
 
-    public Text getScanQr() {
+    public Text getScanQR() {
         return scanQr;
     }
 
@@ -301,7 +301,7 @@ public class TextConfig {
         return maxAttempts;
     }
 
-    public Text getMaxIpReg() {
+    public Text getMaxIPReg() {
         return maxIpReg;
     }
 
@@ -341,7 +341,7 @@ public class TextConfig {
         return alreadyOnline;
     }
 
-    public Text getEmailNotEnabled() {
+    public Text getMailNotEnabled() {
         return emailNotEnabled;
     }
 

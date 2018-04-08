@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.config.nodes;
+package com.github.games647.flexiblelogin.config.node;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
@@ -32,17 +32,17 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class SQLConfig {
 
     @Setting(comment = "SQL server type. You can choose between H2, SQLite and MySQL/MariaDB. " +
-            "If you use MySQL/MariaDB. Just write MySQL")
+            "If you use MySQL/MariaDB. Just write MySQL.")
     private Type type = Type.H2;
 
     @Setting(comment = "Path where the database is located." +
             " This can be a file path (H2/SQLite) or an IP/Domain (MySQL/MariaDB)")
     private String path = "%DIR%";
 
-    @Setting(comment = "Port for example MySQL connections")
+    @Setting(comment = "Port for MySQL/MariaDB connections")
     private int port = 3306;
 
-    @Setting(comment = "FlexibleDatabase name")
+    @Setting(comment = "Database name")
     private String database = "flexiblelogin";
 
     @Setting(comment = "Username to login the database system")
@@ -98,6 +98,8 @@ public class SQLConfig {
     public enum Type {
 
         MYSQL,
+
+        MARIADB,
 
         SQLITE,
 

@@ -23,9 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.commands;
+package com.github.games647.flexiblelogin.command;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.command.arg.MailElement;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.validation.MailPredicate;
 import com.google.inject.Inject;
@@ -40,16 +41,15 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
-import static org.spongepowered.api.command.args.GenericArguments.string;
 import static org.spongepowered.api.text.Text.of;
 
-public class SetEmailCommand extends AbstractCommand {
+public class SetMailCommand extends AbstractCommand {
 
     @Inject
     private MailPredicate mailPredicate;
 
     @Inject
-    SetEmailCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+    SetMailCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
         super(plugin, logger, settings, "email");
     }
 
@@ -62,13 +62,10 @@ public class SetEmailCommand extends AbstractCommand {
         checkPlayerPermission(src);
 
         String email = args.<String>getOne("email").get();
-        if (!mailPredicate.test(email)) {
-            throw new CommandException(settings.getText().getNotEmail());
-        }
 
         plugin.getDatabase().getAccount((Player) src).ifPresent(account -> {
-            account.setEmail(email);
-            src.sendMessage(settings.getText().getEmailSet());
+            account.setMail(email);
+            src.sendMessage(settings.getText().getMailSet());
             Task.builder()
                     .async()
                     .execute(() -> plugin.getDatabase().save(account))
@@ -79,10 +76,10 @@ public class SetEmailCommand extends AbstractCommand {
     }
 
     @Override
-    public CommandSpec buildSpec() {
+    public CommandSpec buildSpec(Settings settings) {
         return CommandSpec.builder()
                 .executor(this)
-                .arguments(onlyOne(string(of("email"))))
+                .arguments(onlyOne(new MailElement(of("email"), new MailPredicate(), settings)))
                 .build();
     }
 }

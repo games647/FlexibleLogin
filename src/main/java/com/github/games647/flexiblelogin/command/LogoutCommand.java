@@ -23,73 +23,61 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.commands.admin;
+package com.github.games647.flexiblelogin.command;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.commands.AbstractCommand;
 import com.github.games647.flexiblelogin.config.Settings;
-import com.github.games647.flexiblelogin.tasks.ForceRegTask;
+import com.github.games647.flexiblelogin.storage.Account;
 import com.google.inject.Inject;
 
-import java.util.Optional;
-import java.util.UUID;
-
 import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 
-import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
-import static org.spongepowered.api.command.args.GenericArguments.string;
-import static org.spongepowered.api.command.args.GenericArguments.user;
-import static org.spongepowered.api.text.Text.of;
-
-public class ForceRegisterCommand extends AbstractCommand {
+public class LogoutCommand extends AbstractCommand {
 
     @Inject
-    ForceRegisterCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
-        super(plugin, logger, settings);
+    LogoutCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
+        super(plugin, logger, settings, "logout");
     }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        User user = args.<User>getOne("user").get();
-        String password = args.<String>getOne("password").get();
+        if (!(src instanceof Player)) {
+            throw new CommandException(settings.getText().getPlayersOnly());
+        }
 
-        uuidRegister(user.getUniqueId(), src, password);
+        checkPlayerPermission(src);
+
+        if (!plugin.getDatabase().isLoggedIn((Player) src)) {
+            throw new CommandException(settings.getText().getNotLoggedIn());
+        }
+
+        Account account = plugin.getDatabase().getAccount((Player) src).get();
+
+        src.sendMessage(settings.getText().getLoggedOut());
+        account.setLoggedIn(false);
+
+        Task.builder()
+                .async()
+                .execute(() -> {
+                    //flushes the ip update
+                    plugin.getDatabase().save(account);
+                })
+                .submit(plugin);
+
         return CommandResult.success();
     }
 
-    private void uuidRegister(UUID account, CommandSource src, String password) throws CommandException {
-        //check if the account is an UUID
-        Optional<Player> player = Sponge.getServer().getPlayer(account);
-        if (player.isPresent()) {
-            throw new CommandException(settings.getText().getForceRegisterOnline());
-        } else {
-            Task.builder()
-                    //Async as it could run a SQL query
-                    .async()
-                    .execute(new ForceRegTask(plugin, src, account, password))
-                    .submit(plugin);
-        }
-    }
-
     @Override
-    public CommandSpec buildSpec() {
+    public CommandSpec buildSpec(Settings settings) {
         return CommandSpec.builder()
                 .executor(this)
-                .arguments(
-                        onlyOne(
-                                user(of("user"))
-                        ),
-                        string(of("password")))
                 .build();
     }
 }
-

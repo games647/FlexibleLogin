@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.flexiblelogin.config.nodes;
+package com.github.games647.flexiblelogin.config.node;
 
 import com.github.games647.flexiblelogin.PomData;
 import com.github.games647.flexiblelogin.hasher.BcryptHasher;
@@ -31,7 +31,9 @@ import com.github.games647.flexiblelogin.hasher.Hasher;
 import com.github.games647.flexiblelogin.hasher.TOTP;
 import com.google.common.collect.Lists;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
@@ -45,13 +47,13 @@ public class General {
     private SQLConfig sqlConfiguration = new SQLConfig();
 
     @Setting(comment = "Email configuration for password recovery")
-    private EmailConfig emailConfiguration = new EmailConfig();
+    private MailConfig emailConfiguration = new MailConfig();
 
     @Setting(comment = "Algorithms for hashing user passwords. You can also choose totp")
     private HashingAlgorithm hashAlgo = HashingAlgorithm.BCrypt;
 
     @Setting(comment = "Regular expression for verifying validate player names. Default is a-zA-Z with 2-16 length")
-    private String validNames = "^\\w{2,16}$";
+    private Pattern validNames = Pattern.compile("^\\w{2,16}$");
 
     @Setting(comment = "Should the player name always be case sensitive equal to the time the player registered?")
     private boolean caseSensitiveNameCheck = true;
@@ -69,7 +71,7 @@ public class General {
     private int minPasswordLength = 4;
 
     @Setting(comment = "Number of seconds a player has time to login or will be kicked.-1 deactivates this features")
-    private int timeoutLogin = 60;
+    private Duration timeoutLogin = Duration.ofMinutes(1);
 
     @Setting(comment = "Should this plugin check for player permissions")
     private boolean playerPermissions;
@@ -87,7 +89,7 @@ public class General {
     private int maxAttempts = 3;
 
     @Setting(comment = "How seconds the user should wait after the user tried to make too many attempts")
-    private int waitTime = 300;
+    private Duration waitTime = Duration.ofMinutes(5);
 
     @Setting(comment = "Custom command that should run after the user tried to make too many attempts")
     private String lockCommand = "";
@@ -96,7 +98,7 @@ public class General {
     private int maxIpReg;
 
     @Setting(comment = "Interval where the please login will be printed to the user")
-    private int messageInterval = 2;
+    private Duration messageInterval = Duration.ofSeconds(2);
 
     @Setting(comment = "Should unregistered player be able to join the server?")
     private boolean allowUnregistered = true;
@@ -111,7 +113,7 @@ public class General {
             + " all commands are protected")
     private List<String> protectedCommands = Lists.newArrayList("op", "pex");
 
-    public EmailConfig getEmail() {
+    public MailConfig getMail() {
         return emailConfiguration;
     }
 
@@ -135,7 +137,7 @@ public class General {
         return commandOnlyProtection;
     }
 
-    public int getTimeoutLogin() {
+    public Duration getTimeoutLogin() {
         return timeoutLogin;
     }
 
@@ -167,7 +169,7 @@ public class General {
         return maxAttempts;
     }
 
-    public int getWaitTime() {
+    public Duration getWaitTime() {
         return waitTime;
     }
 
@@ -179,7 +181,7 @@ public class General {
         return maxIpReg;
     }
 
-    public String getValidNames() {
+    public Pattern getValidNames() {
         return validNames;
     }
 
@@ -191,7 +193,7 @@ public class General {
         return lockCommand;
     }
 
-    public int getMessageInterval() {
+    public Duration getMessageInterval() {
         return messageInterval;
     }
 

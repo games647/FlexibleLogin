@@ -26,7 +26,7 @@
 package com.github.games647.flexiblelogin.tasks;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.config.nodes.EmailConfig;
+import com.github.games647.flexiblelogin.config.node.MailConfig;
 
 import java.util.Arrays;
 
@@ -44,14 +44,14 @@ public class SendMailTask implements Runnable {
 
     private final FlexibleLogin plugin;
     private final Session session;
-    private final Message email;
+    private final Message mail;
 
     private final Player player;
 
-    public SendMailTask(FlexibleLogin plugin, Player player, Session session, Message email) {
+    public SendMailTask(FlexibleLogin plugin, Player player, Session session, Message mail) {
         this.plugin = plugin;
         this.session = session;
-        this.email = email;
+        this.mail = mail;
         this.player = player;
     }
 
@@ -69,15 +69,15 @@ public class SendMailTask implements Runnable {
             mc.addMailcap("multipart/*;; x-java-content-handler=flexiblelogin.mail.handlers.multipart_mixed");
             mc.addMailcap("message/rfc822;; x-java-content- handler=flexiblelogin.mail.handlers.message_rfc822");
 
-            EmailConfig emailConfig = plugin.getConfigManager().getGeneral().getEmail();
+            MailConfig mailConfig = plugin.getConfigManager().getGeneral().getMail();
 
             //connect to host and send message
             if (!transport.isConnected()) {
-                String password = emailConfig.getPassword();
-                transport.connect(emailConfig.getHost(), emailConfig.getAccount(), password);
+                String password = mailConfig.getPassword();
+                transport.connect(mailConfig.getHost(), mailConfig.getAccount(), password);
             }
 
-            transport.sendMessage(email, email.getAllRecipients());
+            transport.sendMessage(mail, mail.getAllRecipients());
             player.sendMessage(plugin.getConfigManager().getText().getMailSent());
         } catch (NoSuchProviderException providerEx) {
             plugin.getLogger().error("Transport provider not found", providerEx);
@@ -85,7 +85,7 @@ public class SendMailTask implements Runnable {
 
             player.sendMessage(plugin.getConfigManager().getText().getErrorExecutingCommand());
         } catch (MessagingException messagingEx) {
-            plugin.getLogger().error("Error sending email", messagingEx);
+            plugin.getLogger().error("Error sending mail", messagingEx);
             player.sendMessage(plugin.getConfigManager().getText().getErrorExecutingCommand());
         } finally {
             Thread.currentThread().setContextClassLoader(oldClassLoader);
