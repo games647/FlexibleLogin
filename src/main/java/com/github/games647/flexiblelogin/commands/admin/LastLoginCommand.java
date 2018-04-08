@@ -50,7 +50,6 @@ import org.spongepowered.api.scheduler.AsynchronousExecutor;
 import org.spongepowered.api.scheduler.SpongeExecutorService;
 import org.spongepowered.api.scheduler.SynchronousExecutor;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.util.Identifiable;
 
 import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
@@ -92,7 +91,7 @@ public class LastLoginCommand extends AbstractCommand {
     }
 
     private void onAccLoaded(UUID src, Account account) {
-        MessageReceiver receiver = Sponge.getServer().getConsole();
+        CommandSource receiver = Sponge.getServer().getConsole();
         if (src != null) {
             Optional<Player> player = Sponge.getServer().getPlayer(src);
             if (!player.isPresent()) {
@@ -106,7 +105,7 @@ public class LastLoginCommand extends AbstractCommand {
             receiver.sendMessage(settings.getText().getAccountNotFound());
         } else {
             String username = account.getUsername().orElseGet(() -> account.getId().toString());
-            String timeFormat = timeFormatter.format(account.getLastLogin());
+            String timeFormat = timeFormatter.withLocale(receiver.getLocale()).format(account.getLastLogin());
             Text message = settings.getText().getLastOnline(username, timeFormat);
             receiver.sendMessage(message);
         }
