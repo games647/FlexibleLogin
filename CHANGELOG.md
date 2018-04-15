@@ -2,6 +2,9 @@
 
 ###### 0.18
 
+* Register different command classes for totp and password
+* Use Sponge API for more type safe argument parsing
+* Localize lastlogin for the player dependent locale
 * Build TOTP URLs with GoogleAuthenticator to expose server authenticator configuration
 * Relocate mail packages, because they are ignored by LaunchWrapper (Related #125)
 * Fix force register has nullable IP addresses (Fixes #124)

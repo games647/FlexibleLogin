@@ -72,7 +72,7 @@ public class AccountsCommand extends AbstractCommand {
                     .submit(plugin);
         }
 
-        Optional<User> optUser = args.getOne("optUser");
+        Optional<User> optUser = args.getOne("user");
         if (optUser.isPresent()) {
             Task.builder()
                     //we are executing a SQL Query which is blocking
@@ -122,10 +122,13 @@ public class AccountsCommand extends AbstractCommand {
         return CommandSpec.builder()
                 .executor(this)
                 .arguments(
-                        onlyOne(
-                                firstParsing(
-                                        GenericArguments.ip(of("ip")),
-                                        GenericArguments.user(of("user")))
+                        firstParsing(
+                                onlyOne(
+                                        GenericArguments.ip(of("ip"))
+                                ),
+                                onlyOne(
+                                        GenericArguments.user(of("user"))
+                                )
                         )
                 )
                 .build();

@@ -80,7 +80,11 @@ public class ForceLoginCommand extends AbstractCommand {
     public CommandSpec buildSpec(Settings settings) {
         return CommandSpec.builder()
                 .executor(this)
-                .arguments(onlyOne(player(of("account"))))
+                .arguments(
+                        onlyOne(
+                                player(of("account"))
+                        )
+                )
                 .build();
     }
 }

@@ -1,6 +1,6 @@
 # FlexibleLogin
 
-## **Security Notice:** If you use a version 0.16.X version, update to 0.16.5+ or disable the change password command. 0.16.5 fixed this security bug occurred in this [commit](https://github.com/games647/FlexibleLogin/commit/43f74a466e73b0f2cfa522b5bfd68480010a7934). Older versions before 0.16 are not affected.
+## **Security Notice:** If you use a version 0.16.X version, update to 0.16.5+ or disable the change password command. 0.16.5 fixed a security bug introduced in this [commit](https://github.com/games647/FlexibleLogin/commit/43f74a466e73b0f2cfa522b5bfd68480010a7934). Older versions before 0.16 are not affected.
 
 ## Description
 
@@ -13,7 +13,7 @@ a password you choose or with a time based password created from a secret key, g
 
 ## Requirements
 
-* Sponge 7.0+
+* Sponge 7+ (FlexibleLogin 0.17.X is the last version for Sponge 6)
 * Java 8+
 
 ## Language
@@ -23,6 +23,7 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
 
 ## Commands
 
+    User commands:
     /reg /register <password> <password> - Registers using a specific password
     /register - Generates your secret code for TOTP
     /changepw /cp /changepassword <password> <password> - Changes your current password
@@ -32,13 +33,13 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
     /forgot /forgotpassword - Sends a recovery mail to the mail address
     /unregister <uuid|name> - delete an account
 
-    Admin commands
-    /flexiblelogin <reload|rl> - reloads the config
-    /flexiblelogin forcelogin <name> - Force login the user
-    /flexiblelogin <accounts|acc> <name|ip> - Get list of user accounts
-    /flexiblelogin <unregister|unreg> <name|uuid|-a> - Deletes the account of a user or all using the -a flag
-    /flexiblelogin <register|reg> <name|uuid> <pass> - Register the user with a specific password
-    /flexiblelogin <resetpw|resetpassword> <name> - Sets a new temp password for a new user
+    Admin commands: (you can use /flexiblelogin as an alias) 
+    /fl <reload|rl> - reloads the config
+    /fl forcelogin <name> - Force login the user
+    /fl <accounts|acc> <name|ip> - Get list of user accounts
+    /fl <unregister|unreg> <name|uuid|-a> - Deletes the account of a user or all using the -a flag
+    /fl <register|reg> <name|uuid> <pass> - Register the user with a specific password
+    /fl <resetpw|resetpassword> <name> - Sets a new temp password for a new user
     
 ## Permissions
 
@@ -176,7 +177,7 @@ Development builds of this project can be acquired at the provided CI (continuou
 latest changes from the Source-Code in preparation for the following release. This means they could contain new
 features, bug fixes and other changes since the last release.
 
-Nevertheless builds are only tested using a small set of automated and minor manual tests. Therefore they **could**
+Nevertheless builds are only tested using a small set of automated and a few manual tests. Therefore they **could**
 contain new bugs and are likely to be less stable than released versions.
 
 https://ci.codemc.org/job/Games647/job/FlexibleLogin/changes
@@ -184,9 +185,10 @@ https://ci.codemc.org/job/Games647/job/FlexibleLogin/changes
 ## Screenshots:
 
 ### TOTP Key generation (/register)
-![Minecraft image picture](https://i.imgur.com/K2GDqfW.png)
+![Minecraft image picture](https://i.imgur.com/K2GDqfW.png?1)
 
 ### Android App Google Authenticator (IOS App exists too)
-![Google authenticator](https://i.imgur.com/Zz6RkdY.png)
+![Google authenticator](https://i.imgur.com/HWNR8SK.png)
+
 You can see there a time generated code which can be used for the login process. `/login <code>`
 Additionally it display your user account name and the server ip.

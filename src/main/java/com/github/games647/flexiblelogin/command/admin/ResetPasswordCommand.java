@@ -73,7 +73,10 @@ public class ResetPasswordCommand extends AbstractCommand {
                         onlyOne(
                                 user(of("user"))
                         ),
-                        string(of("password")))
+                        onlyOne(
+                                string(of("password"))
+                        )
+                )
                 .build();
     }
 }
