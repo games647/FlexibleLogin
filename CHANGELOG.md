@@ -18,7 +18,17 @@
 * Add /cp to /changepassword command alias.
 * Add /flexiblelogin accounts subcommand.
 
+###### 0.17.2
+
+* Remove GriefPrevention version (Fixes #123)
+
+###### 0.17.1
+
+* Fix attempts checking condition (Fixes #112)
+
 ###### 0.17
+
+**Warning:** There could be a breaking change that requires you to change the configuration of hashing from BCRYPT to BCrypt.
 
 * Add experimental permission protection to fix compatibility with NEB (Fixes #111)
 * Use a single task to print not logged messages

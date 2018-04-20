@@ -116,6 +116,10 @@ public class Settings {
             HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setPath(file).build();
             try {
                 rootNode = loader.load(options.setShouldCopyDefaults(true));
+                ConfigurationNode hashNode = rootNode.getNode("hashAlgo");
+                if ("bcrypt".equalsIgnoreCase(hashNode.getString())) {
+                    hashNode.setValue("BCrypt");
+                }
 
                 //load the config into the object
                 mapper.populate(rootNode);
