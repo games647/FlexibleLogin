@@ -1,6 +1,20 @@
 # Changelog
 
+###### 0.17.3
+
+* Fix breaking configuration change for BCrypt hashing method
+
+###### 0.17.2
+
+* Remove GriefPrevention version (Fixes #123)
+
+###### 0.17.1
+
+* Fix attempts checking condition (Fixes #112)
+
 ###### 0.17
+
+**Warning:** There could be a breaking change that requires you to change the configuration of hashing from BCRYPT to BCrypt.
 
 * Add experimental permission protection to fix compatibility with NEB (Fixes #111)
 * Use a single task to print not logged messages
@@ -111,7 +125,7 @@ safeLoc.setPosition(newPos)
 ##### 0.14.1
 
 * Compare the playername case sensitive (Fixes #66)
-* Fix creating accoutn (Fixes #67)
+* Fix creating accounts (Fixes #67)
 
 ##### 0.14 
 

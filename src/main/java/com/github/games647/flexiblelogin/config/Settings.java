@@ -94,6 +94,10 @@ public class Settings {
         if (mapper != null) {
             try {
                 rootNode = loader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true));
+                ConfigurationNode hashNode = rootNode.getNode("hashAlgo");
+                if ("bcrypt".equalsIgnoreCase(hashNode.getString())) {
+                    hashNode.setValue("BCrypt");
+                }
 
                 //load the config into the object
                 mapper.populate(rootNode);
