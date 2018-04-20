@@ -111,10 +111,9 @@ public class AccountsCommand extends AbstractCommand {
                 .map(Account::getUsername)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
-        src.sendMessage(settings.getText().getAccountsList(username,
-                String.join(", ", names)));
+        src.sendMessage(settings.getText().getAccountsList(username, String.join(", ", names)));
     }
 
     @Override

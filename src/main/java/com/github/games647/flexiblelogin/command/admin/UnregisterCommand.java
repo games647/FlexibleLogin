@@ -74,7 +74,7 @@ public class UnregisterCommand extends AbstractCommand {
         return CommandSpec.builder()
                 .executor(this)
                 .arguments(
-                        flags().flag("a").buildWith(none()),
+                        flags().flag("-all").buildWith(none()),
                         onlyOne(user(of("user")))
                 )
                 .build();

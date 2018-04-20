@@ -37,7 +37,7 @@ driven templates on the wiki page: https://github.com/games647/FlexibleLogin/wik
     /fl <reload|rl> - reloads the config
     /fl forcelogin <name> - Force login the user
     /fl <accounts|acc> <name|ip> - Get list of user accounts
-    /fl <unregister|unreg> <name|uuid|-a> - Deletes the account of a user or all using the -a flag
+    /fl <unregister|unreg> <name|uuid|--all> - Deletes the account of a user or all using the -a flag
     /fl <register|reg> <name|uuid> <pass> - Register the user with a specific password
     /fl <resetpw|resetpassword> <name> - Sets a new temp password for a new user
     
