@@ -32,6 +32,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextTemplate;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -64,10 +65,14 @@ public class TextConfig {
     private Text loggedOut = builder("Logged out.").color(INFO_COLOR).build();
 
     @Setting(comment = "When the player is not logged in of his/her account.")
-    private Text notLoggedIn = builder("Not logged in. Type /login to login in").color(WARNING_COLOR).build();
+    private Text notLoggedIn = builder("Not logged in. Type /login to login in")
+            .onClick(TextActions.suggestCommand("/login "))
+            .color(WARNING_COLOR).build();
 
     @Setting(comment = "When the player not registered an account.")
-    private Text notRegistered = builder("Not registered. Type /register to register").color(WARNING_COLOR).build();
+    private Text notRegistered = builder("Not registered. Type /register to register")
+            .onClick(TextActions.suggestCommand("/register "))
+            .color(WARNING_COLOR).build();
 
     @Setting(comment = "When totp is not enabled.")
     private Text totpNotEnabled = builder("Totp is not enabled. You have to enter two passwords.")
@@ -135,7 +140,13 @@ public class TextConfig {
 
     @Setting(comment = "When a secret-key is created (header).")
     private TextTemplate keyGenerated = of(
-            INFO_COLOR, "SecretKey generated: ", TextColors.YELLOW, arg("code")
+            INFO_COLOR, "SecretKey generated: ", TextColors.YELLOW, TextActions.showText(
+                    builder("Representation: Base32 \n" +
+                            "HashFunction: HmacSHA512 \n" +
+                            "Digits: 6 \n" +
+                            "Window size: 3 \n" +
+                            "Time frame: 1000000ms").color(INFO_COLOR).build()
+            ), arg("code")
     );
 
     @Setting(comment = "When a player registered using TOTP and the code can be scanned by clicking on it")
