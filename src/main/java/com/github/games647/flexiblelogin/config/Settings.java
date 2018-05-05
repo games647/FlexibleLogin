@@ -28,7 +28,6 @@ package com.github.games647.flexiblelogin.config;
 import com.github.games647.flexiblelogin.config.node.General;
 import com.github.games647.flexiblelogin.config.node.TextConfig;
 import com.github.games647.flexiblelogin.config.serializer.DurationSerializer;
-import com.github.games647.flexiblelogin.config.serializer.WorldSerializer;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -46,9 +45,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection;
 
 import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.world.storage.WorldProperties;
 
 @Singleton
 public class Settings {
@@ -80,7 +77,6 @@ public class Settings {
 
         TypeSerializerCollection serializers = defaults.getSerializers().newChild();
         serializers.registerType(TypeToken.of(Duration.class), new DurationSerializer());
-        serializers.registerType(TypeToken.of(WorldProperties.class), new WorldSerializer(Sponge.getServer()));
 
         return defaults.setSerializers(serializers);
     }

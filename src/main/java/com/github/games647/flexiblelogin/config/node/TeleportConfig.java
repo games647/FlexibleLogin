@@ -34,7 +34,6 @@ import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.storage.WorldProperties;
 
 @ConfigSerializable
 public class TeleportConfig {
@@ -45,8 +44,8 @@ public class TeleportConfig {
     @Setting(comment = "Should the plugin use the default spawn from the world you specify below")
     private boolean defaultSpawn;
 
-    @Setting(comment = "Spawn world or let it empty to use the default world specified in the server properties")
-    private WorldProperties worldName;
+    @Setting(comment = "Spawn world or leave it empty to use the default world specified in the server properties")
+    private String worldName;
 
     @Setting
     private int coordX;
@@ -80,14 +79,10 @@ public class TeleportConfig {
     public Optional<Location<World>> getSpawnLocation() {
         Server server = Sponge.getServer();
         if (worldName == null) {
-            worldName = server.getDefaultWorld().orElse(null);
-            if (worldName == null) {
-                //Default is not available too
-                return Optional.empty();
-            }
+            worldName = server.getDefaultWorldName();
         }
 
-        return server.getWorld(worldName.getUniqueId()).map(world -> {
+        return server.getWorld(worldName).map(world -> {
             if (defaultSpawn) {
                 return world.getSpawnLocation();
             }
