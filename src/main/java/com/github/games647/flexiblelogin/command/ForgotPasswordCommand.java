@@ -69,7 +69,7 @@ public class ForgotPasswordCommand extends AbstractCommand {
 
     private static final int PASSWORD_LENGTH = 16;
 
-    private final Supplier<String> passwordSupplier = () -> RandomStringUtils.random(PASSWORD_LENGTH);
+    private final Supplier<String> passwordSupplier = () -> RandomStringUtils.randomAlphanumeric(PASSWORD_LENGTH);
 
     @Inject
     ForgotPasswordCommand(FlexibleLogin plugin, Logger logger, Settings settings) {
