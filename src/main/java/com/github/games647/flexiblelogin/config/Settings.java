@@ -26,6 +26,8 @@
 package com.github.games647.flexiblelogin.config;
 
 import com.github.games647.flexiblelogin.config.node.General;
+import com.github.games647.flexiblelogin.config.node.General.HashingAlgorithm;
+import com.github.games647.flexiblelogin.config.node.SQLConfig.StorageType;
 import com.github.games647.flexiblelogin.config.node.TextConfig;
 import com.github.games647.flexiblelogin.config.serializer.DurationSerializer;
 import com.google.common.reflect.TypeToken;
@@ -42,6 +44,7 @@ import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection;
 
 import org.slf4j.Logger;
@@ -77,6 +80,12 @@ public class Settings {
 
         TypeSerializerCollection serializers = defaults.getSerializers().newChild();
         serializers.registerType(TypeToken.of(Duration.class), new DurationSerializer());
+
+        //explicit set enum serializer because otherwise they will be interpreted as class with the requirement of
+        //a public constructor
+        TypeSerializer<Enum> enumSerializer = serializers.get(TypeToken.of(Enum.class));
+        serializers.registerType(TypeToken.of(StorageType.class), enumSerializer);
+        serializers.registerType(TypeToken.of(HashingAlgorithm.class), enumSerializer);
 
         return defaults.setSerializers(serializers);
     }

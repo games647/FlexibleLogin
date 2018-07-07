@@ -26,7 +26,7 @@
 package com.github.games647.flexiblelogin.storage;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
-import com.github.games647.flexiblelogin.config.node.SQLConfig.Type;
+import com.github.games647.flexiblelogin.config.node.SQLConfig.StorageType;
 import com.github.games647.flexiblelogin.config.Settings;
 
 import java.io.BufferedReader;
@@ -69,7 +69,7 @@ public class FlexibleDatabase extends Database {
                 builder.append(line.replace("{TABLE_NAME}", tableName));
                 if (line.endsWith(";")) {
                     String sql = builder.toString();
-                    if (type.getGeneral().getSQL().getType() == Type.SQLITE) {
+                    if (type.getGeneral().getSQL().getType() == StorageType.SQLITE) {
                         sql = sql.replace("AUTO_INCREMENT", "AUTOINCREMENT");
                     }
 

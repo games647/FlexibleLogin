@@ -27,7 +27,7 @@ package com.github.games647.flexiblelogin.storage;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.config.node.SQLConfig;
-import com.github.games647.flexiblelogin.config.node.SQLConfig.Type;
+import com.github.games647.flexiblelogin.config.node.SQLConfig.StorageType;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.google.common.collect.ImmutableSet;
 
@@ -63,7 +63,7 @@ public abstract class Database {
     private static final String SQL_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     protected final Logger logger;
-    protected final SQLConfig.Type storageType;
+    protected final StorageType storageType;
 
     protected final Map<UUID, Account> cache = new ConcurrentHashMap<>();
     protected final DataSource dataSource;
@@ -216,7 +216,7 @@ public abstract class Database {
     }
 
     protected Instant parseTimestamp(ResultSet resultSet, int pos) throws SQLException {
-        if (storageType == Type.SQLITE) {
+        if (storageType == StorageType.SQLITE) {
             //workaround for SQLite that causes time parsing errors in combination with CURRENT_TIMESTAMP in SQL
             String timestamp = resultSet.getString(pos);
 

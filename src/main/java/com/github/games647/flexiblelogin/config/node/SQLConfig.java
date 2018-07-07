@@ -33,7 +33,7 @@ public class SQLConfig {
 
     @Setting(comment = "SQL server type. You can choose between H2, SQLite and MySQL/MariaDB. " +
             "If you use MySQL/MariaDB. Just write MySQL.")
-    private Type type = Type.H2;
+    private StorageType type = StorageType.H2;
 
     @Setting(comment = "Path where the database is located." +
             " This can be a file path (H2/SQLite) or an IP/Domain (MySQL/MariaDB)")
@@ -59,7 +59,7 @@ public class SQLConfig {
             "this option is empty, compatibility will be disabled and FlexibleLogin's schema will be used.")
     private String authMeTable = "";
 
-    public Type getType() {
+    public StorageType getType() {
         return type;
     }
 
@@ -92,10 +92,9 @@ public class SQLConfig {
     }
 
     /**
-     * Sponge has support for all these three drivers
+     * Sponge has support for all these four drivers
      */
-    @ConfigSerializable
-    public enum Type {
+    public enum StorageType {
 
         MYSQL,
 

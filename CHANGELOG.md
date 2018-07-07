@@ -18,6 +18,10 @@
 * Add /cp to /changepassword command alias.
 * Add /flexiblelogin accounts subcommand.
 
+###### 0.17.4
+
+* Fix loading storage type method after recent configurate update
+
 ###### 0.17.3
 
 * Fix breaking configuration change for BCrypt hashing method
