@@ -27,15 +27,16 @@ package com.github.games647.flexiblelogin.listener.prevent;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.PomData;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.google.inject.Inject;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandMapping;
+import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -55,23 +56,15 @@ import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 
-import static java.util.stream.Collectors.toSet;
-
 public class PreventListener extends AbstractPreventListener {
 
     private final CommandManager commandManager;
-    private final Set<String> ignoredCommands;
 
     @Inject
     PreventListener(FlexibleLogin plugin, Settings settings, CommandManager commandManager) {
         super(plugin, settings);
 
         this.commandManager = commandManager;
-        this.ignoredCommands = commandManager
-                .getOwnedBy(plugin)
-                .stream()
-                .map(CommandMapping::getPrimaryAlias)
-                .collect(toSet());
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
@@ -99,13 +92,16 @@ public class PreventListener extends AbstractPreventListener {
         Optional<? extends CommandMapping> commandOpt = commandManager.get(command);
         if (commandOpt.isPresent()) {
             command = commandOpt.get().getPrimaryAlias();
+
+            //do not blacklist our own commands
+            if (commandManager.getOwner(commandOpt.get())
+                    .map(pc -> pc.getId().equals(PomData.ARTIFACT_ID))
+                    .orElse(false)) {
+                return;
+            }
         }
 
-        //do not blacklist our own commands
-        if (ignoredCommands.contains(command)) {
-            return;
-        }
-
+        commandEvent.setResult(CommandResult.empty());
         if (settings.getGeneral().isCommandOnlyProtection()) {
             List<String> protectedCommands = settings.getGeneral().getProtectedCommands();
             if (protectedCommands.contains(command) && !plugin.getDatabase().isLoggedIn(player)) {
