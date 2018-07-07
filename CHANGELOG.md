@@ -18,6 +18,10 @@
 * Add /cp to /changepassword command alias.
 * Add /flexiblelogin accounts subcommand.
 
+###### 0.17.3
+
+* Fix breaking configuration change for BCrypt hashing method
+
 ###### 0.17.2
 
 * Remove GriefPrevention version (Fixes #123)
