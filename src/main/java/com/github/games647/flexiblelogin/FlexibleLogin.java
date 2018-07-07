@@ -43,6 +43,7 @@ import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.config.node.General.HashingAlgorithm;
 import com.github.games647.flexiblelogin.hasher.Hasher;
 import com.github.games647.flexiblelogin.listener.ConnectionListener;
+import com.github.games647.flexiblelogin.listener.prevent.ChatLoggerListener;
 import com.github.games647.flexiblelogin.listener.prevent.GriefPreventListener;
 import com.github.games647.flexiblelogin.listener.prevent.PreventListener;
 import com.github.games647.flexiblelogin.storage.AuthMeDatabase;
@@ -124,6 +125,7 @@ public class FlexibleLogin {
         eventManager.registerListeners(this, protectionManager);
         eventManager.registerListeners(this, injector.getInstance(ConnectionListener.class));
         eventManager.registerListeners(this, injector.getInstance(PreventListener.class));
+        eventManager.registerListeners(this, injector.getInstance(ChatLoggerListener.class));
         if (pluginManager.isLoaded("GriefPrevention")) {
             eventManager.registerListeners(this, injector.getInstance(GriefPreventListener.class));
         }

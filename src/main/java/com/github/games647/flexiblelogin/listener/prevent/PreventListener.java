@@ -91,10 +91,11 @@ public class PreventListener extends AbstractPreventListener {
 
         Optional<? extends CommandMapping> commandOpt = commandManager.get(command);
         if (commandOpt.isPresent()) {
-            command = commandOpt.get().getPrimaryAlias();
+            CommandMapping mapping = commandOpt.get();
+            command = mapping.getPrimaryAlias();
 
             //do not blacklist our own commands
-            if (commandManager.getOwner(commandOpt.get())
+            if (commandManager.getOwner(mapping)
                     .map(pc -> pc.getId().equals(PomData.ARTIFACT_ID))
                     .orElse(false)) {
                 return;
