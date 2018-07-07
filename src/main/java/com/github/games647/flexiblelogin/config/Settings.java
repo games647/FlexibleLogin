@@ -25,6 +25,9 @@
  */
 package com.github.games647.flexiblelogin.config;
 
+import com.github.games647.flexiblelogin.config.General.HashingAlgorithm;
+import com.github.games647.flexiblelogin.config.SQLConfig.StorageType;
+import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -38,6 +41,8 @@ import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.config.ConfigDir;
@@ -47,6 +52,8 @@ public class Settings {
 
     private final Logger logger;
     private final Path dataFolder;
+
+    private final ConfigurationOptions options = getConfigurationOptions();
 
     private ObjectMapper<General>.BoundInstance configMapper;
     private ObjectMapper<TextConfig>.BoundInstance textMapper;
@@ -58,11 +65,25 @@ public class Settings {
         this.dataFolder = dataFolder;
 
         try {
-            configMapper = ObjectMapper.forClass(General.class).bindToNew();
-            textMapper = ObjectMapper.forClass(TextConfig.class).bindToNew();
+            configMapper = options.getObjectMapperFactory().getMapper(General.class).bindToNew();
+            textMapper = options.getObjectMapperFactory().getMapper(TextConfig.class).bindToNew();
         } catch (ObjectMappingException objMappingExc) {
             logger.error("Invalid plugin structure", objMappingExc);
         }
+    }
+
+    private ConfigurationOptions getConfigurationOptions() {
+        ConfigurationOptions defaults = ConfigurationOptions.defaults();
+
+        TypeSerializerCollection serializers = defaults.getSerializers().newChild();
+
+        //explicit set enum serializer because otherwise they will be interpreted as class with the requirement of
+        //a public constructor
+        TypeSerializer<Enum> enumSerializer = serializers.get(TypeToken.of(Enum.class));
+        serializers.registerType(TypeToken.of(StorageType.class), enumSerializer);
+        serializers.registerType(TypeToken.of(HashingAlgorithm.class), enumSerializer);
+
+        return defaults.setSerializers(serializers);
     }
 
     public void load() {
@@ -93,7 +114,7 @@ public class Settings {
         ConfigurationNode rootNode;
         if (mapper != null) {
             try {
-                rootNode = loader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true));
+                rootNode = loader.load(getConfigurationOptions().setShouldCopyDefaults(true));
                 ConfigurationNode hashNode = rootNode.getNode("hashAlgo");
                 if ("bcrypt".equalsIgnoreCase(hashNode.getString())) {
                     hashNode.setValue("BCrypt");

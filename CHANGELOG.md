@@ -1,5 +1,9 @@
 # Changelog
 
+###### 0.17.4
+
+* Fix loading storage type method after recent configurate update
+
 ###### 0.17.3
 
 * Fix breaking configuration change for BCrypt hashing method
@@ -21,7 +25,7 @@
 * Kick unregistered players if configured to do so (Fixes #93)
 * Add support for AuthMeBridge (Fixes #108) to allow integration on BungeeCord
 * Catch uncheckedexception for database setup too
-* Add workarkound for time parsing bug in SQLite (Fixes #106)
+* Add workaround for time parsing bug in SQLite (Fixes #106)
 * Delay server shutdown to shutdown correctly on failed database setup (Related #109)
 * Reduce file size by minimizing google auth dependency 
 * Use JSON Text objects for more flexibility of messages
@@ -31,7 +35,7 @@
 
 ###### 0.16.8
 
-* Ignore teleports for prevent listener otherwise we prevent our own teleports
+* Ignore teleport for prevent listener otherwise we prevent our own teleport
 * Override smtp provider (Related #92)
 * Add support for plain text messages
 * Make valid usernames configurable (Fixes #94)
@@ -78,7 +82,7 @@ safeLoc.setPosition(newPos)
 * Safe teleport players outside of Nether portals (Fixes #81)
 * Cache flexiblelogin plugin commands that should be ignored for events
 * Fix errors if GriefPrevention isn't loaded
-* Enhance email SSL security
+* Enhance mail SSL security
 * Revert BCrypt workaround
 * Use Instant for lastLogin
 * Remove code duplicates
@@ -125,7 +129,7 @@ safeLoc.setPosition(newPos)
 ##### 0.14.1
 
 * Compare the playername case sensitive (Fixes #66)
-* Fix creating accounts (Fixes #67)
+* Fix creating account (Fixes #67)
 
 ##### 0.14 
 
@@ -153,7 +157,7 @@ safeLoc.setPosition(newPos)
 * Only auto login if the last login is between 12 hours
 * Add permission to prevent ip auto login (Fixes #43)
 * Remove cache
-* Fix email prefix (now from https://emailregex.com/) (Fixes #483)
+* Fix mail prefix (now from https://emailregex.com/) (Fixes #483)
 * Fix creating default config
 * Change login alias from /l -> /log
 
@@ -217,7 +221,7 @@ safeLoc.setPosition(newPos)
 ##### 0.5
 
 * Moved Bcrypt to a maven maven dependency
-* Added timeout for logins
+* Added timeout for login
 * Added permissions
 * Added loggedIn boolean column
 * Renamed table to flexiblelogin_users - the plugin will automatically convert it into the new table
@@ -297,7 +301,7 @@ safeLoc.setPosition(newPos)
 
 ##### 0.2.1
 
-* Fixed email sending
+* Fixed mail sending
 * Fixed MySQL support (Missing connection account properties)
 * Fixed UUID support for MySQL
 
@@ -306,7 +310,7 @@ safeLoc.setPosition(newPos)
 * Implement Password recovery
 * Added /forgotPassword command
 * Added /setEmail command
-* Added email column to the database
+* Added mail column to the database
 * Added /unregister command for admins to delete user accounts
 * Added player messages if a command fails to execute
 

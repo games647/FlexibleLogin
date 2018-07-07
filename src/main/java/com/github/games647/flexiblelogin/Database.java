@@ -26,7 +26,7 @@
 package com.github.games647.flexiblelogin;
 
 import com.github.games647.flexiblelogin.config.SQLConfig;
-import com.github.games647.flexiblelogin.config.SQLConfig.SQLType;
+import com.github.games647.flexiblelogin.config.SQLConfig.StorageType;
 import com.github.games647.flexiblelogin.config.Settings;
 
 import java.io.File;
@@ -109,7 +109,7 @@ public class Database {
         return getAccount(player).map(Account::isLoggedIn).orElse(false);
     }
 
-    public void createTable(SQLType type) throws SQLException {
+    public void createTable(StorageType type) throws SQLException {
         try (Connection con = dataSource.getConnection();
              Statement statement = con.createStatement()) {
             String createTable = "CREATE TABLE IF NOT EXISTS " + USERS_TABLE + " ( "
@@ -123,7 +123,7 @@ public class Database {
                     + "`LoggedIn` BOOLEAN DEFAULT 0, "
                     + "UNIQUE (`UUID`) "
                     + ')';
-            if (type == SQLType.SQLITE) {
+            if (type == StorageType.SQLITE) {
                 createTable = createTable.replace("AUTO_INCREMENT", "");
             }
 
