@@ -103,7 +103,7 @@ public class General {
     @Setting(comment = "Should unregistered player be able to join the server?")
     private boolean allowUnregistered = true;
 
-    @Setting
+    @Setting(comment = "Teleport players who are not logged in")
     private TeleportConfig teleportConfig = new TeleportConfig();
 
     @Setting(comment = "Experimental feature to protect permissions for players who aren't logged in yet")
