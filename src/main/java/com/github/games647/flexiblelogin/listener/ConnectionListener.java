@@ -25,6 +25,7 @@
  */
 package com.github.games647.flexiblelogin.listener;
 
+import com.github.games647.flexiblelogin.ProtectionManager;
 import com.github.games647.flexiblelogin.storage.Account;
 import com.github.games647.flexiblelogin.FlexibleLogin;
 import com.github.games647.flexiblelogin.PomData;
@@ -59,6 +60,9 @@ public class ConnectionListener {
 
     @Inject
     private NamePredicate namePredicate;
+
+    @Inject
+    private ProtectionManager protectionManager;
 
     @Inject
     ConnectionListener(FlexibleLogin plugin, Settings settings) {
@@ -131,6 +135,7 @@ public class ConnectionListener {
             if (canAutoLogin(account, player)) {
                 //user will be auto logged in
                 player.sendMessage(settings.getText().getIpAutoLogin());
+                Task.builder().execute(() -> protectionManager.unprotect(player)).submit(plugin);
                 account.setLoggedIn(true);
             }
         } else if (!settings.getGeneral().isAllowUnregistered()) {

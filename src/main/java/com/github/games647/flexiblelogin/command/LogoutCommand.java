@@ -26,6 +26,7 @@
 package com.github.games647.flexiblelogin.command;
 
 import com.github.games647.flexiblelogin.FlexibleLogin;
+import com.github.games647.flexiblelogin.ProtectionManager;
 import com.github.games647.flexiblelogin.config.Settings;
 import com.github.games647.flexiblelogin.storage.Account;
 import com.google.inject.Inject;
@@ -46,20 +47,26 @@ public class LogoutCommand extends AbstractCommand {
         super(plugin, logger, settings);
     }
 
+    @Inject
+    private ProtectionManager protectionManager;
+
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
             throw new CommandException(settings.getText().getPlayersOnly());
         }
 
-        if (!plugin.getDatabase().isLoggedIn((Player) src)) {
+        Player player = (Player) src;
+
+        if (!plugin.getDatabase().isLoggedIn(player)) {
             throw new CommandException(settings.getText().getNotLoggedIn());
         }
 
-        Account account = plugin.getDatabase().getAccount((Player) src).get();
+        Account account = plugin.getDatabase().getAccount(player).get();
 
         src.sendMessage(settings.getText().getLoggedOut());
         account.setLoggedIn(false);
+        Task.builder().execute(() -> protectionManager.protect(player)).submit(plugin);
 
         Task.builder()
                 .async()
