@@ -25,19 +25,18 @@
  */
 package com.github.games647.flexiblelogin.hasher;
 
-import org.mindrot.jbcrypt.BCrypt;
+import at.favre.lib.crypto.bcrypt.BCrypt;
+import at.favre.lib.crypto.bcrypt.BCrypt.Version;
 
 public class BcryptHasher implements Hasher {
+
+    private static final int COST_FACTOR = 6;
+    private final BCrypt.Hasher hashAlg = BCrypt.with(Version.VERSION_2Y);
 
     @Override
     public String hash(String rawPassword) {
         //generate a different salt for each user
-        String hash = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
-        if (hash.startsWith("$2a")) {
-            return "$2y" + hash.substring(3);
-        }
-
-        return hash;
+        return hashAlg.hashToString(COST_FACTOR, rawPassword.toCharArray());
     }
 
     @Override
@@ -46,11 +45,6 @@ public class BcryptHasher implements Hasher {
             return false;
         }
 
-        String hash = passwordHash;
-        if (hash.startsWith("$2y")) {
-            hash = "$2a" + hash.substring(3);
-        }
-
-        return BCrypt.checkpw(userInput, hash);
+        return BCrypt.verifyer().verify(userInput.toCharArray(), passwordHash).verified;
     }
 }

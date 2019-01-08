@@ -58,7 +58,7 @@
                     <relocations>
                         <!--Do not relocate Java Mail, because some files in Meta-INF depend on the correct path-->
                         <relocation>
-                            <pattern>org.mindrot</pattern>
+                            <pattern>at.favre.lib</pattern>
                             <shadedPattern>flexiblelogin.bcrypt</shadedPattern>
                         </relocation>
                         <relocation>
@@ -188,9 +188,9 @@
 
         <!--BCrypt hashing in java-->
         <dependency>
-            <groupId>de.svenkubiak</groupId>
-            <artifactId>jBCrypt</artifactId>
-            <version>0.4.1</version>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+            <version>0.5.0</version>
         </dependency>
 
         <!--2FA code generation and verification-->
