@@ -213,5 +213,6 @@ Desktop (Linux, Mac, Windows):
     * Requires YubiKey hardware token
 * NitroKey App [Download](https://www.nitrokey.com/download)
     * Requires Nitrokey hardware token
-* OnlyKey App
+* OnlyKey App 
+[Chromium Store](https://chrome.google.com/webstore/detail/onlykey-configuration/adafilbceehejjehoccladhbkgbjmica)
     * Requires OnlyKey hardware token
