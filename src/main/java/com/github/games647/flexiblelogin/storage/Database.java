@@ -83,7 +83,7 @@ public abstract class Database {
     }
 
     private String buildJDBCUrl(SQLConfig sqlConfig, Path configDir) {
-        String storagePath = sqlConfig.getPath().replace("%DIR%", configDir.normalize().toString());
+        String storagePath = sqlConfig.getPath().replace("%DIR%", configDir.toAbsolutePath().toString());
 
         StorageType type = sqlConfig.getType();
         StringBuilder urlBuilder = new StringBuilder("jdbc:")
