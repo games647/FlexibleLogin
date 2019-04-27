@@ -88,7 +88,7 @@ public abstract class Database {
         StorageType type = sqlConfig.getType();
         StringBuilder urlBuilder = new StringBuilder("jdbc:")
                 .append(type.getJDBCId())
-                .append("://");
+                .append(':');
         switch (type) {
             case SQLITE:
                 urlBuilder.append(storagePath).append(File.separatorChar).append("database.db");
@@ -121,11 +121,6 @@ public abstract class Database {
         }
 
         String jdbcUrl = urlBuilder.toString();
-        if (type == StorageType.H2 || type == StorageType.SQLITE) {
-            // only use h2 and sqlite, because mysql and mariadb could contain the password
-            logger.info("Using the {} for the database", jdbcUrl);
-        }
-
         return jdbcUrl;
     }
 
