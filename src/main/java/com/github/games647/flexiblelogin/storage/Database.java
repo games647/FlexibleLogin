@@ -85,10 +85,11 @@ public abstract class Database {
     private String buildJDBCUrl(SQLConfig sqlConfig, Path configDir) {
         String storagePath = sqlConfig.getPath().replace("%DIR%", configDir.normalize().toString());
 
+        StorageType type = sqlConfig.getType();
         StringBuilder urlBuilder = new StringBuilder("jdbc:")
-                .append(sqlConfig.getType().getJDBCId())
+                .append(type.getJDBCId())
                 .append("://");
-        switch (sqlConfig.getType()) {
+        switch (type) {
             case SQLITE:
                 urlBuilder.append(storagePath).append(File.separatorChar).append("database.db");
                 break;
@@ -119,7 +120,13 @@ public abstract class Database {
                 break;
         }
 
-        return urlBuilder.toString();
+        String jdbcUrl = urlBuilder.toString();
+        if (type == StorageType.H2 || type == StorageType.SQLITE) {
+            // only use h2 and sqlite, because mysql and mariadb could contain the password
+            logger.info("Using the {} for the database", jdbcUrl);
+        }
+
+        return jdbcUrl;
     }
 
     public Optional<Account> getAccount(User player) {
