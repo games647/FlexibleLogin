@@ -88,7 +88,7 @@ public abstract class Database {
         StorageType type = sqlConfig.getType();
         StringBuilder urlBuilder = new StringBuilder("jdbc:")
                 .append(type.getJDBCId())
-                .append(':');
+                .append("://");
         switch (type) {
             case SQLITE:
                 urlBuilder.append(storagePath).append(File.separatorChar).append("database.db");
@@ -245,7 +245,7 @@ public abstract class Database {
 
         return -1;
     }
-    
+
     protected Set<Account> getAccountsByIp(InetAddress ip, StatementConsumer idSetter) {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + tableName + " WHERE IP=?")) {
@@ -257,7 +257,7 @@ public abstract class Database {
                     parseLoadResult(resultSet).ifPresent(accountsBuilder::add);
                 } while(resultSet.next());
             }
-            
+
             return accountsBuilder.build();
         } catch (SQLException sqlEx) {
             logger.error("Error getting accounts of player", sqlEx);
