@@ -88,7 +88,7 @@ public abstract class Database {
         StorageType type = sqlConfig.getType();
         StringBuilder urlBuilder = new StringBuilder("jdbc:")
                 .append(type.getJDBCId())
-                .append("://");
+                .append(":");
         switch (type) {
             case SQLITE:
                 urlBuilder.append(storagePath).append(File.separatorChar).append("database.db");
@@ -96,6 +96,7 @@ public abstract class Database {
             case MARIADB:
             case MYSQL:
                 //jdbc:<engine>://[<username>[:<password>]@]<host>/<database> - copied from sponge doc
+                urlBuilder.append("//");
                 String username = sqlConfig.getUsername();
                 if (!username.isEmpty()) {
                     urlBuilder.append(username);
