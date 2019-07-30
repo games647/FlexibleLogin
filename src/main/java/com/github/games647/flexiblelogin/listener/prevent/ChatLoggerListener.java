@@ -49,6 +49,7 @@ public class ChatLoggerListener {
         Optional<? extends CommandMapping> commandOpt = commandManager.get(command);
         return commandOpt.map(commandMapping -> commandManager.getOwner(commandMapping)
                 .map(pc -> pc.getId().equals(PomData.ARTIFACT_ID))
-                .orElse(false));
+                .orElse(false))
+                .orElse(false);
     }
 }
