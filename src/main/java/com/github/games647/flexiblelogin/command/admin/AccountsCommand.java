@@ -61,25 +61,21 @@ public class AccountsCommand extends AbstractCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         Optional<InetAddress> optIP = args.getOne("ip");
-        if (optIP.isPresent()) {
-            Task.builder()
-                    //we are executing a SQL Query which is blocking
-                    .async()
-                    .execute(() -> {
-                        Set<Account> accounts = plugin.getDatabase().getAccountsByIp(optIP.get());
-                        sendAccountNames(src, optIP.get().getHostAddress(), accounts);
-                    })
-                    .submit(plugin);
-        }
+        optIP.ifPresent(inetAddress -> Task.builder()
+                //we are executing a SQL Query which is blocking
+                .async()
+                .execute(() -> {
+                    Set<Account> accounts = plugin.getDatabase().getAccountsByIp(inetAddress);
+                    sendAccountNames(src, inetAddress.getHostAddress(), accounts);
+                })
+                .submit(plugin));
 
         Optional<User> optUser = args.getOne("user");
-        if (optUser.isPresent()) {
-            Task.builder()
-                    //we are executing a SQL Query which is blocking
-                    .async()
-                    .execute(() -> queryAccountsByName(src, optUser.get().getName()))
-                    .submit(plugin);
-        }
+        optUser.ifPresent(user -> Task.builder()
+                //we are executing a SQL Query which is blocking
+                .async()
+                .execute(() -> queryAccountsByName(src, user.getName()))
+                .submit(plugin));
 
         return CommandResult.success();
     }

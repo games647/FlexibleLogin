@@ -36,7 +36,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.stream.Collectors;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -116,8 +115,7 @@ public class RegisterTask implements Runnable {
             TOTP hasher = (TOTP) plugin.getHasher();
 
             URL barcodeUrl = new URL(hasher.getGoogleBarcodeURL(player.getName(), hostName, secretCode));
-            String readableSecret = Splitter.fixedLength(4).splitToList(secretCode).stream()
-                    .collect(Collectors.joining(" "));
+            String readableSecret = String.join(" ", Splitter.fixedLength(4).splitToList(secretCode));
 
             Text keyGenerated = plugin.getConfigManager().getText().getKeyGenerated(readableSecret);
             player.sendMessage(keyGenerated);

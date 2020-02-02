@@ -40,6 +40,7 @@ import static org.spongepowered.api.text.Text.builder;
 import static org.spongepowered.api.text.TextTemplate.arg;
 import static org.spongepowered.api.text.TextTemplate.of;
 
+@SuppressWarnings("FieldMayBeFinal")
 @ConfigSerializable
 public class TextConfig {
 

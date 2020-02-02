@@ -77,12 +77,12 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.api.scheduler.Task;
 
-@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
-        url = PomData.URL, description = PomData.DESCRIPTION,
-        authors = {"games647", "Toranktto", "frogocomics", "sgdc3", "nalimleinad"},
-        dependencies = {
-                @Dependency(id = "griefprevention", optional = true)
-        })
+@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION, url = PomData.URL,
+        description = PomData.DESCRIPTION,
+        authors = {
+                "games647", "Toranktto", "frogocomics", "sgdc3", "nalimleinad"
+        },
+        dependencies = @Dependency(id = "griefprevention", optional = true))
 public class FlexibleLogin {
 
     private final Logger logger;
