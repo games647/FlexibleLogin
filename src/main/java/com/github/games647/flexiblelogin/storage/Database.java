@@ -150,8 +150,8 @@ public abstract class Database {
     public Optional<String> exists(String username, String nameColumn) {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT " + nameColumn
-                     + " FROM " + tableName + " WHERE " + nameColumn + "=?")) {
-            stmt.setString(1, username);
+                     + " FROM " + tableName + " WHERE UPPER(" + nameColumn + ")=?")) {
+            stmt.setString(1, username.toUpperCase());
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
