@@ -41,6 +41,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
@@ -48,20 +49,23 @@ import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.cause.Root;
+import org.spongepowered.api.event.filter.type.Exclude;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
+import org.spongepowered.api.event.item.inventory.ClickInventoryEvent.NumberPress;
+import org.spongepowered.api.event.item.inventory.CraftItemEvent.Preview;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
+import org.spongepowered.api.item.inventory.crafting.CraftingInventory;
 
 public class PreventListener extends AbstractPreventListener {
 
     private final CommandManager commandManager;
 
-    @Inject
-    PreventListener(FlexibleLogin plugin, Settings settings, CommandManager commandManager) {
+    @Inject PreventListener(FlexibleLogin plugin, Settings settings, CommandManager commandManager) {
         super(plugin, settings);
 
         this.commandManager = commandManager;
@@ -96,8 +100,8 @@ public class PreventListener extends AbstractPreventListener {
 
             //do not blacklist our own commands
             if (commandManager.getOwner(mapping)
-                    .map(pc -> pc.getId().equals(PomData.ARTIFACT_ID))
-                    .orElse(false)) {
+                .map(pc -> pc.getId().equals(PomData.ARTIFACT_ID))
+                .orElse(false)) {
                 return;
             }
         }
@@ -134,16 +138,19 @@ public class PreventListener extends AbstractPreventListener {
         checkLoginStatus(interactItemEvent, player);
     }
 
+    @Exclude(NumberPress.class)
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onInventoryChange(ChangeInventoryEvent changeInventoryEvent, @First Player player) {
         checkLoginStatus(changeInventoryEvent, player);
     }
 
+    @Exclude(NumberPress.class)
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onInventoryInteract(InteractInventoryEvent interactInventoryEvent, @First Player player) {
         checkLoginStatus(interactInventoryEvent, player);
     }
 
+    @Exclude(NumberPress.class)
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onInventoryClick(ClickInventoryEvent clickInventoryEvent, @First Player player) {
         checkLoginStatus(clickInventoryEvent, player);
