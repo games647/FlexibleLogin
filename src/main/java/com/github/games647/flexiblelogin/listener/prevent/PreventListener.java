@@ -41,7 +41,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
@@ -53,13 +52,11 @@ import org.spongepowered.api.event.filter.type.Exclude;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent.NumberPress;
-import org.spongepowered.api.event.item.inventory.CraftItemEvent.Preview;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
-import org.spongepowered.api.item.inventory.crafting.CraftingInventory;
 
 public class PreventListener extends AbstractPreventListener {
 
@@ -138,6 +135,10 @@ public class PreventListener extends AbstractPreventListener {
         checkLoginStatus(interactItemEvent, player);
     }
 
+    // Ignore number press events, because Sponge before this commit
+    // https://github.com/SpongePowered/SpongeForge/commit/f0605fb0bd62ca2f958425378776608c41f16cca
+    // has a duplicate bug. Using this exclude we can ignore it, but still cancel the movement of the item
+    // it appears to be fixed using SpongeForge 4005 (fixed) and 4004 with this change
     @Exclude(NumberPress.class)
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onInventoryChange(ChangeInventoryEvent changeInventoryEvent, @First Player player) {
