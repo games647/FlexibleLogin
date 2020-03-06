@@ -48,8 +48,10 @@ import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.cause.Root;
+import org.spongepowered.api.event.filter.type.Exclude;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
+import org.spongepowered.api.event.item.inventory.ClickInventoryEvent.NumberPress;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
@@ -60,8 +62,7 @@ public class PreventListener extends AbstractPreventListener {
 
     private final CommandManager commandManager;
 
-    @Inject
-    PreventListener(FlexibleLogin plugin, Settings settings, CommandManager commandManager) {
+    @Inject PreventListener(FlexibleLogin plugin, Settings settings, CommandManager commandManager) {
         super(plugin, settings);
 
         this.commandManager = commandManager;
@@ -96,8 +97,8 @@ public class PreventListener extends AbstractPreventListener {
 
             //do not blacklist our own commands
             if (commandManager.getOwner(mapping)
-                    .map(pc -> pc.getId().equals(PomData.ARTIFACT_ID))
-                    .orElse(false)) {
+                .map(pc -> pc.getId().equals(PomData.ARTIFACT_ID))
+                .orElse(false)) {
                 return;
             }
         }
@@ -134,16 +135,23 @@ public class PreventListener extends AbstractPreventListener {
         checkLoginStatus(interactItemEvent, player);
     }
 
+    // Ignore number press events, because Sponge before this commit
+    // https://github.com/SpongePowered/SpongeForge/commit/f0605fb0bd62ca2f958425378776608c41f16cca
+    // has a duplicate bug. Using this exclude we can ignore it, but still cancel the movement of the item
+    // it appears to be fixed using SpongeForge 4005 (fixed) and 4004 with this change
+    @Exclude(NumberPress.class)
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onInventoryChange(ChangeInventoryEvent changeInventoryEvent, @First Player player) {
         checkLoginStatus(changeInventoryEvent, player);
     }
 
+    @Exclude(NumberPress.class)
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onInventoryInteract(InteractInventoryEvent interactInventoryEvent, @First Player player) {
         checkLoginStatus(interactInventoryEvent, player);
     }
 
+    @Exclude(NumberPress.class)
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onInventoryClick(ClickInventoryEvent clickInventoryEvent, @First Player player) {
         checkLoginStatus(clickInventoryEvent, player);
