@@ -1,6 +1,26 @@
 # FlexibleLogin
 
-## **Security Notice:** If you use a version 0.16.X version, update to 0.16.5+ or disable the change password command. 0.16.5 fixed a security bug introduced in this [commit](https://github.com/games647/FlexibleLogin/commit/43f74a466e73b0f2cfa522b5bfd68480010a7934). Older versions before 0.16 are not affected.
+## Security advisories:
+
+These contains a list of security fixes for transparency. This should get you informed quickly and deploy patched 
+versions promptly.
+
+|ID| Severity | Affected | Patched | Impact + Relevance | References
+|---|---|---|---|---|---|
+|1|Moderate| FlexibleLogin between 0.18 and 0.18.1 | SpongeForge > RC4005 or in FlexibleLogin 0.18.1 is a workaround  | Exploit for inventory duplication if not logged in (ex: survival servers) | [Introduced](https://github.com/SpongePowered/SpongeCommon/commit/562ddf9fa3b19e9146b34c7a870c9cd9b6c0452b), [Fixed Sponge](8ab92195bc0c5601fb18837347368938c12921c3), [Workaround](0a08a0ffcfea8af536093f6762ff73cacc055dc8) 
+|2|High| FlexibleLogin between 0.16 and 0.16.5 | FlexibleLogin 0.16.5 | Change password command permission check (If command usage is allowed) | [Introduced](43f74a466e73b0f2cfa522b5bfd68480010a7934), [Fixed](172422c383a22f7feeabbe6aef487adbd9f8dbd9) |
+
+Details:
+1. SpongeCommon introduced a bug for not capturing the inventory changes on crafting with number press usage. This 
+allows inventory item duplication in combination with FlexibleLogin if the user is not logged in. Sponge fixed in the 
+mentioned above build and commit. So you should update your server version. If that's not possible, FlexibleLogin 0.18.1
+includes a workaround. Alternative you could remove the inventory until the player logs in.
+2. FlexibleLogin had an incorrect permission check for using the change password command. This allowed unauthorized
+players to use the command. There is no known usage that this was actively used.
+
+If you have any questions or comments about this advisories, please:
+* Open a issue
+* Send a private message on the Sponge Forums
 
 ## Description
 
@@ -13,7 +33,7 @@ a password you choose or with a time based password created from a secret key, g
 
 ## Requirements
 
-* Sponge 7+ (FlexibleLogin 0.17.X is the last version for Sponge 6)
+* Sponge 7.1+
 * Java 8+
 
 ## Language
