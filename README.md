@@ -7,7 +7,7 @@ versions promptly.
 
 |ID| Severity | Affected | Patched | Impact + Relevance | References
 |---|---|---|---|---|---|
-|1|Moderate| FlexibleLogin between 0.18 and 0.18.1 | SpongeForge > RC4005 or in FlexibleLogin 0.18.1 is a workaround  | Exploit for inventory duplication if not logged in (ex: survival servers) | [Introduced](https://github.com/SpongePowered/SpongeCommon/commit/562ddf9fa3b19e9146b34c7a870c9cd9b6c0452b), [Fixed Sponge](8ab92195bc0c5601fb18837347368938c12921c3), [Workaround](0a08a0ffcfea8af536093f6762ff73cacc055dc8) 
+|1|Moderate| FlexibleLogin between 0.18 and 0.18.1 | SpongeForge > RC4005 or in FlexibleLogin 0.18.1 is a workaround  | Exploit for inventory duplication if not logged in (ex: survival servers) | [Introduced](https://github.com/SpongePowered/SpongeCommon/commit/562ddf9fa3b19e9146b34c7a870c9cd9b6c0452b), [Fixed Sponge](https://github.com/SpongePowered/SpongeForge/issues/3097), [Workaround](0a08a0ffcfea8af536093f6762ff73cacc055dc8) 
 |2|High| FlexibleLogin between 0.16 and 0.16.5 | FlexibleLogin 0.16.5 | Change password command permission check (If command usage is allowed) | [Introduced](43f74a466e73b0f2cfa522b5bfd68480010a7934), [Fixed](172422c383a22f7feeabbe6aef487adbd9f8dbd9) |
 
 Details:
