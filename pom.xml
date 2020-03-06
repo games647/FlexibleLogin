@@ -35,7 +35,7 @@
     <packaging>jar</packaging>
 
     <name>FlexibleLogin</name>
-    <version>0.18.1</version>
+    <version>0.19-SNAPSHOT</version>
     <description>Second Auth plugin for Sponge Minecraft servers</description>
     <url>https://github.com/games647/FlexibleLogin</url>
 
